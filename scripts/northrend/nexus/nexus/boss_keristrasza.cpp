@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -84,7 +84,10 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
         if (m_creature->isAlive())
         {   
             if (m_pInstance->GetData(TYPE_KERISTRASZA) != SPECIAL)
+            {
+                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 m_creature->CastSpell(m_creature, SPELL_FROZEN_PRISON, true);
+            }
         }
     }
 
@@ -93,6 +96,20 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
 
         m_creature->CastSpell(m_creature, SPELL_INTENSE_COLD, true);
+    }
+
+    void AttackStart(Unit* pWho)
+    {
+        if(m_creature->HasAura(SPELL_FROZEN_PRISON))
+            return;
+
+        if (m_creature->Attack(pWho, true))
+        {
+            m_creature->AddThreat(pWho);
+            m_creature->SetInCombatWith(pWho);
+            pWho->SetInCombatWith(m_creature);
+            m_creature->GetMotionMaster()->MoveChase(pWho);
+        }
     }
 
     void JustDied(Unit* pKiller)
@@ -114,13 +131,13 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (!m_bIsEnraged && m_creature->GetHealthPercent() < 25.0f)
+        if (!m_bIsEnraged && m_creature->GetHealth()*100 < m_creature->GetMaxHealth()*25)
         {
             if (!m_creature->IsNonMeleeSpellCasted(false))
             {
                 m_bIsEnraged = true;
                 DoScriptText(SAY_ENRAGE, m_creature);
-                DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
+                DoCast(m_creature, SPELL_ENRAGE);
             }
         }
 
@@ -133,7 +150,7 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
                     {
                         if (Player* pPlayer = pTarget->GetCharmerOrOwnerPlayerOrPlayerItself())
-                            DoCastSpellIfCan(pPlayer, SPELL_CRYSTAL_CHAINS);
+                            DoCast(pPlayer, SPELL_CRYSTAL_CHAINS);
 
                         uiCrystalChainTimer = 30000;
                     }

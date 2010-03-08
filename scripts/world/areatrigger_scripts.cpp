@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,51 +17,26 @@
 /* ScriptData
 SDName: Areatrigger_Scripts
 SD%Complete: 100
-SDComment: Quest support: 6681, 11686, 10589/10604, 13315/13351
+SDComment: Quest support: 6681, 11686, 10589/10604.
 SDCategory: Areatrigger
 EndScriptData */
 
 /* ContentData
-at_aldurthar_gate               5284,5285,5286,5287
 at_coilfang_waterfall           4591
 at_legion_teleporter            4560 Teleporter TO Invasion Point: Cataclysm
 at_ravenholdt
 at_warsong_slaughterhouse
 at_warsong_grainery
 at_torp_farm
+at_stormwind_counting_house
+at_stormwind_auction_house
+at_stormwind_barber_shop
+at_orgrimmar_bank
+at_orgrimmar_auction_house
+at_orgrimmar_barber_shop
 EndContentData */
 
 #include "precompiled.h"
-
-/*######
-## Quest 13315/13351
-######*/
-
-enum
-{
-    TRIGGER_SOUTH               = 5284,
-    TRIGGER_CENTRAL             = 5285,
-    TRIGGER_NORTH               = 5286,
-    TRIGGER_NORTHWEST           = 5287,
-
-    NPC_SOUTH_GATE              = 32195,
-    NPC_CENTRAL_GATE            = 32196,
-    NPC_NORTH_GATE              = 32197,
-    NPC_NORTHWEST_GATE          = 32199
-};
-
-bool AreaTrigger_at_aldurthar_gate(Player* pPlayer, AreaTriggerEntry *pAt)
-{
-    switch(pAt->id)
-    {
-        case TRIGGER_SOUTH: pPlayer->KilledMonsterCredit(NPC_SOUTH_GATE, 0); break;
-        case TRIGGER_CENTRAL: pPlayer->KilledMonsterCredit(NPC_CENTRAL_GATE, 0); break;
-        case TRIGGER_NORTH: pPlayer->KilledMonsterCredit(NPC_NORTH_GATE, 0); break;
-        case TRIGGER_NORTHWEST: pPlayer->KilledMonsterCredit(NPC_NORTHWEST_GATE, 0); break;
-    }
-
-    return true;
-}
 
 /*######
 ## at_coilfang_waterfall
@@ -170,15 +145,81 @@ bool AreaTrigger_at_torp_farm(Player* pPlayer, AreaTriggerEntry *pAt)
 
     return true;
 }
+/*######
+## Quest 24849
+######*/
+
+enum
+{
+    QUEST_HOT_ON_THE_TRAIL_ALI           = 24849,
+    NPC_CREDIT_STORMWIND_COUNTING_HOUSE  = 45672,
+    NPC_CREDIT_STORMWIND_AUCTION_HOUSE   = 45669,
+    NPC_CREDIT_STORMWIND_BARBER_SHOP     = 45671
+};
+
+bool AreaTrigger_at_stormwind_counting_house(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+       if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_ALI) == QUEST_STATUS_INCOMPLETE)
+               pPlayer->KilledMonsterCredit(NPC_CREDIT_STORMWIND_COUNTING_HOUSE, 0);
+
+    return true;
+}
+
+bool AreaTrigger_at_stomrwind_auction_house(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+    if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_ALI) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->KilledMonsterCredit(NPC_CREDIT_STORMWIND_AUCTION_HOUSE, 0);
+
+    return true;
+}
+
+bool AreaTrigger_at_stormwind_barber_shop(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+    if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_ALI) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->KilledMonsterCredit(NPC_CREDIT_STORMWIND_BARBER_SHOP, 0);
+
+    return true;
+}
+
+/*######
+## Quest 24851
+######*/
+
+enum
+{
+    QUEST_HOT_ON_THE_TRAIL_HORDE        = 24851,
+    NPC_CREDIT_ORGRIMMAR_BANK           = 45673,
+    NPC_CREDIT_ORGRIMMAR_AUCTION_HOUSE  = 45674,
+    NPC_CREDIT_ORGRIMMAR_BARBER_SHOP    = 45675
+};
+
+bool AreaTrigger_at_orgrimmar_bank(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+       if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_HORDE) == QUEST_STATUS_INCOMPLETE)
+               pPlayer->KilledMonsterCredit(NPC_CREDIT_ORGRIMMAR_BANK, 0);
+
+    return true;
+}
+
+bool AreaTrigger_at_orgrimmar_auction_house(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+    if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_HORDE) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->KilledMonsterCredit(NPC_CREDIT_ORGRIMMAR_AUCTION_HOUSE, 0);
+
+    return true;
+}
+
+bool AreaTrigger_at_orgrimmar_barber_shop(Player* pPlayer, AreaTriggerEntry *pAt)
+{
+    if (!pPlayer->isDead() && pPlayer->GetQuestStatus(QUEST_HOT_ON_THE_TRAIL_HORDE) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->KilledMonsterCredit(NPC_CREDIT_ORGRIMMAR_BARBER_SHOP, 0);
+
+    return true;
+}
 
 void AddSC_areatrigger_scripts()
 {
     Script *newscript;
-
-    newscript = new Script;
-    newscript->Name = "at_aldurthar_gate";
-    newscript->pAreaTrigger = &AreaTrigger_at_aldurthar_gate;
-    newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "at_coilfang_waterfall";
@@ -208,5 +249,35 @@ void AddSC_areatrigger_scripts()
     newscript = new Script;
     newscript->Name = "at_torp_farm";
     newscript->pAreaTrigger = &AreaTrigger_at_torp_farm;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_stormwind_counting_house";
+    newscript->pAreaTrigger = &AreaTrigger_at_stormwind_counting_house;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_stormwind_auction_house";
+    newscript->pAreaTrigger = &AreaTrigger_at_stomrwind_auction_house;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_stormwind_barber_shop";
+    newscript->pAreaTrigger = &AreaTrigger_at_stormwind_barber_shop;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_orgrimmar_bank";
+    newscript->pAreaTrigger = &AreaTrigger_at_orgrimmar_bank;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_orgrimmar_auction_house";
+    newscript->pAreaTrigger = &AreaTrigger_at_orgrimmar_auction_house;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "at_orgrimmar_barber_shop";
+    newscript->pAreaTrigger = &AreaTrigger_at_orgrimmar_barber_shop;
     newscript->RegisterSelf();
 }

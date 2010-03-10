@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -205,35 +205,7 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
             pSummoned->CastSpell(pSummoned, m_bIsRegularMode ? SPELL_HEAT_N : SPELL_HEAT_H, false, NULL, NULL, m_creature->GetGUID());
         }
     }
-    void DoTemper()
-    {
-        Creature *pAnvil = GetClosestCreatureWithEntry(m_creature, NPC_VOLKHAN_ANVIL, 50.0f); 
 
-        if(!pAnvil)
-            return;
-
-        DoScriptText(EMOTE_TO_ANVIL, m_creature);
-
-        float fX, fY, fZ;
-        pAnvil->GetContactPoint(m_creature, fX, fY, fZ, INTERACTION_DISTANCE);
-
-        m_creature->AttackStop();
-
-        if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
-            m_creature->GetMotionMaster()->MovementExpired();
-
-        m_creature->GetMap()->CreatureRelocation(m_creature, fX, fY, fZ, pAnvil->GetOrientation());
-        m_creature->SendMonsterMove(fX, fY, fZ, SPLINETYPE_NORMAL, m_creature->GetSplineFlags(), 1);
-        pAnvil->CastSpell(m_creature, SPELL_TEMPER_DUMMY, false);
-        m_bIsStriking = true;
-
-        for(uint8 i = 0; i < MAX_GOLEM; ++i)
-        {
-            m_creature->SummonCreature(NPC_MOLTEN_GOLEM,
-            pAnvil->GetPositionX(), pAnvil->GetPositionY(), pAnvil->GetPositionZ(), 0.0f,
-            TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);    
-        }
-    }
     void UpdateAI(const uint32 uiDiff)
     {
         //Return since we have no target
@@ -269,7 +241,7 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
 
                 DoScriptText(urand(0, 1) ? SAY_STOMP_1 : SAY_STOMP_2, m_creature);
 
-                DoCast(m_creature, m_bIsRegularMode ? SPELL_SHATTERING_STOMP_N : SPELL_SHATTERING_STOMP_H);
+                DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_SHATTERING_STOMP_N : SPELL_SHATTERING_STOMP_H);
 
                 DoScriptText(EMOTE_SHATTER, m_creature);
 
@@ -294,7 +266,7 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
         }
 
         // Health check
-        if (!m_bCanShatterGolem && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < (100-(20*m_uiHealthAmountModifier)))
+        if (!m_bCanShatterGolem && m_creature->GetHealthPercent() < float(100 - 20*m_uiHealthAmountModifier))
         {
             ++m_uiHealthAmountModifier;
 
@@ -304,7 +276,8 @@ struct MANGOS_DLL_DECL boss_volkhanAI : public ScriptedAI
             DoScriptText(urand(0, 1) ? SAY_FORGE_1 : SAY_FORGE_2, m_creature);
 
             m_bHasTemper = true;
-            DoTemper();
+
+            m_creature->CastSpell(m_creature, SPELL_TEMPER, false);
         }
 
         DoMeleeAttackIfReady();
@@ -319,14 +292,14 @@ CreatureAI* GetAI_boss_volkhan(Creature* pCreature)
 bool EffectDummyCreature_boss_volkhan(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
 {
     //always check spellid and effectindex
-    if (uiSpellId == SPELL_TEMPER_DUMMY && uiEffIndex == 0)
+    if (uiSpellId == SPELL_TEMPER_DUMMY && uiEffIndex == EFFECT_INDEX_0)
     {
         if (pCaster->GetEntry() != NPC_VOLKHAN_ANVIL || pCreatureTarget->GetEntry() != NPC_VOLKHAN)
             return true;
 
         for(uint8 i = 0; i < MAX_GOLEM; ++i)
         {
-            //pCreatureTarget->CastSpell(pCaster, SPELL_SUMMON_MOLTEN_GOLEM, true);
+            pCreatureTarget->CastSpell(pCaster, SPELL_SUMMON_MOLTEN_GOLEM, true);
 
             //TODO: remove this line of hack when summon effect implemented
             pCreatureTarget->SummonCreature(NPC_MOLTEN_GOLEM,
@@ -348,7 +321,7 @@ bool EffectDummyCreature_boss_volkhan(Unit* pCaster, uint32 uiSpellId, SpellEffe
 bool EffectDummyCreature_npc_volkhan_anvil(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
 {
     //always check spellid and effectindex
-    if (uiSpellId == SPELL_TEMPER && uiEffIndex == 0)
+    if (uiSpellId == SPELL_TEMPER && uiEffIndex == EFFECT_INDEX_0)
     {
         if (pCaster->GetEntry() != NPC_VOLKHAN || pCreatureTarget->GetEntry() != NPC_VOLKHAN_ANVIL)
             return true;
@@ -365,6 +338,7 @@ bool EffectDummyCreature_npc_volkhan_anvil(Unit* pCaster, uint32 uiSpellId, Spel
 
         ((Creature*)pCaster)->GetMap()->CreatureRelocation((Creature*)pCaster, fX, fY, fZ, pCreatureTarget->GetOrientation());
         ((Creature*)pCaster)->SendMonsterMove(fX, fY, fZ, SPLINETYPE_NORMAL, ((Creature*)pCaster)->GetSplineFlags(), 1);
+
         pCreatureTarget->CastSpell(pCaster, SPELL_TEMPER_DUMMY, false);
 
         //always return true when we are handling this spell and effect
@@ -372,32 +346,6 @@ bool EffectDummyCreature_npc_volkhan_anvil(Unit* pCaster, uint32 uiSpellId, Spel
     }
 
     return false;
-}
-struct MANGOS_DLL_DECL npc_volkhan_anvilAI : public ScriptedAI
-{
-    npc_volkhan_anvilAI(Creature *pCreature) : ScriptedAI(pCreature)
-    {
-        Reset();
-    }
-    void Reset()
-    {
-        SetCombatMovement(false);    
-    }
-
-    void AttackStart(Unit* pWho)
-    {
-        EnterEvadeMode();
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        return;
-    }
-};
-
-CreatureAI* GetAI_npc_volkhan_anvil(Creature* pCreature)
-{
-    return new npc_volkhan_anvilAI(pCreature);
 }
 
 /*######
@@ -462,12 +410,11 @@ struct MANGOS_DLL_DECL mob_molten_golemAI : public ScriptedAI
 
             m_creature->RemoveAllAuras();
             m_creature->AttackStop();
-            SetCombatMovement(false);
 
             if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
                 m_creature->GetMotionMaster()->MovementExpired();
 
-            uiDamage = 0;
+            uiDamage = m_creature->GetHealth()-1;
 
             m_creature->UpdateEntry(NPC_BRITTLE_GOLEM);
             m_creature->SetHealth(1);
@@ -492,7 +439,7 @@ struct MANGOS_DLL_DECL mob_molten_golemAI : public ScriptedAI
 
         if (m_uiBlast_Timer < uiDiff)
         {
-            DoCast(m_creature, SPELL_BLAST_WAVE);
+            DoCastSpellIfCan(m_creature, SPELL_BLAST_WAVE);
             m_uiBlast_Timer = 20000;
         }
         else
@@ -500,7 +447,7 @@ struct MANGOS_DLL_DECL mob_molten_golemAI : public ScriptedAI
 
         if (m_uiImmolation_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_IMMOLATION_STRIKE_N : SPELL_IMMOLATION_STRIKE_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_IMMOLATION_STRIKE_N : SPELL_IMMOLATION_STRIKE_H);
             m_uiImmolation_Timer = 5000;
         }
         else
@@ -528,7 +475,6 @@ void AddSC_boss_volkhan()
     newscript = new Script;
     newscript->Name = "npc_volkhan_anvil";
     newscript->pEffectDummyCreature = &EffectDummyCreature_npc_volkhan_anvil;
-    newscript->GetAI = &GetAI_npc_volkhan_anvil;
     newscript->RegisterSelf();
 
     newscript = new Script;

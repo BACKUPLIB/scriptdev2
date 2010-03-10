@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -73,7 +73,6 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
     bool m_bIsRegularMode;
 
     bool m_bIsSplitPhase;
-    bool m_bSplit;
     uint32 m_uiSplit_Timer;
     uint32 m_uiSparkAtHomeCount;
 
@@ -89,7 +88,6 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
         m_bIsSplitPhase = true;
         m_uiSplit_Timer = 25000;
         m_uiSparkAtHomeCount = 0;
-        m_bSplit = false;
 
         m_uiStaticOverload_Timer = urand(5000, 6000);
         m_uiBallLightning_Timer = urand(10000, 11000);
@@ -123,8 +121,6 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_IONAR, NOT_STARTED);
-
-        m_creature->SetVisibility(VISIBILITY_ON);
     }
 
     void AttackStart(Unit* pWho)
@@ -239,10 +235,9 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
                 {
                     CallBackSparks();
                     m_bIsSplitPhase = false;
-                    m_bSplit = true;
                 }
                 // Lightning effect and restore Ionar
-                else if(m_bSplit)
+                else if (m_uiSparkAtHomeCount == MAX_SPARKS)
                 {
                     m_creature->SetVisibility(VISIBILITY_ON);
                     m_creature->CastSpell(m_creature, SPELL_SPARK_DESPAWN, false);
@@ -258,7 +253,6 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
                         if (m_creature->getVictim())
                             m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                     }
-                    m_bSplit= false;
                 }
             }
             else
@@ -273,7 +267,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
         if (m_uiStaticOverload_Timer < uiDiff)
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_STATIC_OVERLOAD_N : SPELL_STATIC_OVERLOAD_H);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_STATIC_OVERLOAD_N : SPELL_STATIC_OVERLOAD_H);
 
             m_uiStaticOverload_Timer = urand(5000, 6000);
         }
@@ -282,14 +276,14 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
 
         if (m_uiBallLightning_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_BALL_LIGHTNING_N : SPELL_BALL_LIGHTNING_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_BALL_LIGHTNING_N : SPELL_BALL_LIGHTNING_H);
             m_uiBallLightning_Timer = urand(10000, 11000);
         }
         else
             m_uiBallLightning_Timer -= uiDiff;
 
         // Health check
-        if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < (100-(20*m_uiHealthAmountModifier)))
+        if (m_creature->GetHealthPercent() < float(100 - 20*m_uiHealthAmountModifier))
         {
             ++m_uiHealthAmountModifier;
 
@@ -298,7 +292,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
             if (m_creature->IsNonMeleeSpellCasted(false))
                 m_creature->InterruptNonMeleeSpells(false);
 
-            DoCast(m_creature, SPELL_DISPERSE);
+            DoCastSpellIfCan(m_creature, SPELL_DISPERSE);
         }
 
         DoMeleeAttackIfReady();
@@ -313,7 +307,7 @@ CreatureAI* GetAI_boss_ionar(Creature* pCreature)
 bool EffectDummyCreature_boss_ionar(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
 {
     //always check spellid and effectindex
-    if (uiSpellId == SPELL_DISPERSE && uiEffIndex == 0)
+    if (uiSpellId == SPELL_DISPERSE && uiEffIndex == EFFECT_INDEX_0)
     {
         if (pCreatureTarget->GetEntry() != NPC_IONAR)
             return true;

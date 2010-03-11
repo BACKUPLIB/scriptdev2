@@ -71,6 +71,7 @@ extern void AddSC_boss_malchezaar();
 extern void AddSC_boss_terestian_illhoof();
 extern void AddSC_netherspite_infernal();
 extern void AddSC_boss_moroes();
+extern void AddSC_boss_netherspite();
 extern void AddSC_bosses_opera();
 extern void AddSC_instance_karazhan();
 extern void AddSC_karazhan();
@@ -477,6 +478,7 @@ void AddScripts()
     AddSC_boss_terestian_illhoof();
     AddSC_netherspite_infernal();
     AddSC_boss_moroes();
+    AddSC_boss_netherspite();
     AddSC_bosses_opera();
     AddSC_instance_karazhan();
     AddSC_karazhan();

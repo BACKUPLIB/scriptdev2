@@ -92,7 +92,12 @@ enum Events
     EVENT_VOID_ZONE             = 7,
 
     //banish phase events
-    EVENT_NETHERBREATH          = 8
+    EVENT_NETHERBREATH          = 8,
+
+    // WORKAROUND:
+    EVENT_RECAST_BEAM_1         = 9,
+    EVENT_RECAST_BEAM_2         = 10,
+    EVENT_RECAST_BEAM_3         = 11
 };
 
 
@@ -316,6 +321,32 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM,0),SPELL_NETHERBREATH);
                 timers[EVENT_NETHERBREATH] = 5000;
                 return false;
+            case EVENT_RECAST_BEAM_1:
+            case EVENT_RECAST_BEAM_2:
+            case EVENT_RECAST_BEAM_3:
+            {
+                Unit* portal = m_creature->GetUnit(*m_creature, pPortals[ev-9].GUID);
+                if (!portal)
+                {
+                    // portal lost!?
+                    pPortals[ev-9].GUID         = 0;
+                    pPortals[ev-9].active       = false;
+                    pPortals[ev-9].targetGUID   = 0;
+                    return false;
+                }
+
+                Unit* target = m_creature->GetUnit(*m_creature, pPortals[ev-9].targetGUID);
+
+                if (!target)
+                {
+                    pPortals[ev-9].targetGUID   = m_creature->GetGUID();
+                    target = m_creature;
+                }
+
+                portal->CastSpell(target, beamVisual[ev-9], false);
+                timers.erase(ev);
+                return false;
+            }
             default:
                 break;
         }
@@ -414,7 +445,10 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
         // recast beam visual if tagret changed
         if (target->GetGUID() != pPortals[beam].targetGUID)
         {
-            portal->CastSpell(target, beamVisual[beam], false);
+            portal->InterruptSpell(CURRENT_CHANNELED_SPELL);
+            // WORKAROUND: cast one tick later
+            timers[Events(EVENT_RECAST_BEAM_1 + beam)] = 1;
+            //portal->CastSpell(target, beamVisual[beam], false);
         }
 
         // add buff, needs to be casted by target!!

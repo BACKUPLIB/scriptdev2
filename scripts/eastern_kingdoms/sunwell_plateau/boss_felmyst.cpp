@@ -28,32 +28,6 @@ Fly Phase           = 50%
 DeatchCloud Spell   = 50%
 */
 
-/*
-60sek boden
-80sek luft
-kreist anfangs über der arena 
-pfeil vom himmel holen -> 
-felmyst landet ->
-nach 15sek: erste gasnova -> gasnova während der bodenphase 2 oder 3 mal
-
-einschliessen alle 25 bis 30 sekunden
-
-korrosion (gleiches icon wie gasnova)
-
-->luftphase->
-0hp in luftphase -> stirbt wenn er in bodenphase kommt
-
-Dämonische Dampf -> grüner Strahl(10sekunden lang?): verfolgt 2 mal hintereinander zufälligen spieler, spieler stirbt bei berührung
-Strahl -> hinterlässt Dampf am Boden aus dem Skelette spawnen, neue skelette spawnen bei berührung
-
-nach 2 x dämonischer Dampf ->
-neue Phase-> Dampfteppich(3mal):Deckt norden, mitte oder süden ein-> gedankenkontrolliert spieler bei berührung
-Teppich ca 12 sekunden lang.
-
-*/
-
-
-
 #include "precompiled.h"
 #include "sunwell_plateau.h"
  
@@ -227,6 +201,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
         //Event Resets
         m_creature->SetVisibility(VISIBILITY_OFF);
         m_creature->setFaction(35); 
+		m_creature->SetSplineFlags(SPLINEFLAG_FLYING);
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_FELMYST, NOT_STARTED);

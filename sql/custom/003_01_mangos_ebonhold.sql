@@ -1,4 +1,4 @@
-﻿-- Into the Realm of Shadows
+-- Into the Realm of Shadows
 UPDATE `creature_template` SET `ScriptName`='npc_salanar_the_horseman',ainame="" WHERE `entry`='28653';
 UPDATE `creature_template` SET `ScriptName`='mob_dark_rider_of_acherus',ainame="" WHERE `entry`='28768';
 
@@ -29,11 +29,11 @@ INSERT INTO `creature_ai_scripts` VALUES ('90033', '29007', '4', '0', '100', '0'
 
 -- The Light of Dawn (to do)
 UPDATE `creature_template` SET `ScriptName`='npc_highlord_darion_mograine',ainame="" WHERE `entry`='29173';
-UPDATE `creature_template` SET `ScriptName`='npc_the_lich_king_tirion_dawn',ainame="" WHERE `entry` in (29183,29175);
+UPDATE `creature_template` SET `ScriptName`='npc_the_lich_king_tirion_dawn',ainame="" WHERE `entry` IN (29183,29175);
 UPDATE creature_template SET AIName='EventAI',unit_flags=0,type_flags=8 WHERE entry IN (29199,29204,29200,29174,29182,29186,29190,29219,29206,29176,29178,29179,29180,29177,29181);
-DELETE FROM `spell_script_target` WHERE `entry` in (53658, 53679, 53701, 53705, 53706, 53677, 53685);
+DELETE FROM `spell_script_target` WHERE `entry` IN (53658, 53679, 53701, 53705, 53706, 53677, 53685);
 -- insert into spell_script_target values (53658, 1, 29173);
-insert into spell_script_target values (53679, 1, 29183);
+INSERT INTO spell_script_target VALUES (53679, 1, 29183);
 insert into spell_script_target values (53701, 1, 29175);
 insert into spell_script_target values (53705, 1, 29183);
 insert into spell_script_target values (53706, 1, 29183);

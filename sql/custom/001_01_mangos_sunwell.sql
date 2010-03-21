@@ -56,6 +56,7 @@ UPDATE `creature_template` SET `minhealth`=7350000,`maxhealth`=7350000 WHERE `en
 # fixes for boss_felmyst fight
 # add npc 25038 (Felmyst)
 INSERT INTO creature VALUES(700000,25038,580,1,1,0,0,1459.34,636.8,19.56,19.95,30000,0,0,4900000,3390,0,0);
+UPDATE `creature_template` SET `ScriptName`="boss_felmyst" WHERE `entry` = 25038;
 
 # fixes for boss_eredar_twins fight
 # update npc 25165 (Sacrolash)

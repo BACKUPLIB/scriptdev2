@@ -41,6 +41,7 @@ UPDATE `creature_template` SET `minhealth`=14700, `maxhealth`=14700 WHERE `entry
 
 # fixes for boss_Kalecgos fight
 # add npc 24891 (Kalecgos humanoid)
+DELETE FROM `creature` WHERE `GUID`=600000;
 INSERT INTO `creature` VALUES(600000,24891,580,1,1,0,0,1702.3,938.0,-74.55,4.93,30000,0,0,828555,169350,0,0);
 # update kalecgos, sathorvarr, kalecgos_humanoid
 UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287',`minmana`=1690000, `maxmana`=1690000  WHERE `entry` = 24850; 
@@ -55,7 +56,8 @@ UPDATE `creature_template` SET `minhealth`=7350000,`maxhealth`=7350000 WHERE `en
 
 # fixes for boss_felmyst fight
 # add npc 25038 (Felmyst)
-INSERT INTO creature VALUES(700000,25038,580,1,1,0,0,1459.34,636.8,19.56,19.95,30000,0,0,4900000,3390,0,0);
+DELETE FROM `creature` WHERE `GUID`=700000;
+INSERT INTO `creature` VALUES(700000,25038,580,1,1,0,0,1459.34,636.8,19.56,19.95,30000,0,0,4900000,3390,0,0);
 UPDATE `creature_template` SET `ScriptName`="boss_felmyst" WHERE `entry` = 25038;
 
 # fixes for boss_eredar_twins fight

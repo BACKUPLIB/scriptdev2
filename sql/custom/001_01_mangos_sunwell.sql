@@ -1,4 +1,3 @@
-
 # SUNWELL INSTANCE UPDATE
 
 # mob updates:
@@ -59,6 +58,8 @@ UPDATE `creature_template` SET `minhealth`=7350000,`maxhealth`=7350000 WHERE `en
 DELETE FROM `creature` WHERE `GUID`=700000;
 INSERT INTO `creature` VALUES(700000,25038,580,1,1,0,0,1459.34,636.8,19.56,19.95,30000,0,0,4900000,3390,0,0);
 UPDATE `creature_template` SET `ScriptName`="boss_felmyst" WHERE `entry` = 25038;
+UPDATE `creature_template` SET `ScriptName`="mob_felmyst_vapor"WHERE `entry`= 25265;
+UPDATE `creature_template` SET `ScriptName`="mob_deathcloud" WHERE `entry`=25703;
 
 # fixes for boss_eredar_twins fight
 # update npc 25165 (Sacrolash)

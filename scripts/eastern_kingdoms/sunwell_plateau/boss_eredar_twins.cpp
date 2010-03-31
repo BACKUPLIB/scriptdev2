@@ -332,7 +332,7 @@ struct MANGOS_DLL_DECL boss_alythessAI : public ScriptedAI
 		{
 			if(m_uiShadowNovaTimer < diff)
 			{
-				if(Unit* victim = SelectUnit(SELECT_TARGET_TOPAGGRO,0))// todo: victim should be 2nd on threat list
+				if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM,0))// todo: victim should be 2nd on threat list
 				{	
 					m_uiNovaTargetGUID = victim->GetGUID();
 
@@ -630,7 +630,7 @@ struct MANGOS_DLL_DECL boss_sacrolashAI : public ScriptedAI
 		{
 			if(m_uiShadowNovaTimer < diff)
 			{
-				if(Unit* victim = SelectUnit(SELECT_TARGET_TOPAGGRO,0))// todo: victim should be 2nd on threat list
+				if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM,0))// todo: victim should be 2nd on threat list
 				{
 					m_uiNovaTargetGUID = victim->GetGUID();
 
@@ -792,7 +792,7 @@ struct MANGOS_DLL_DECL npc_shadow_imageAI : public ScriptedAI
 			}
 			m_uiShadowfuryTimer = 8000;	
         }else m_uiShadowfuryTimer -= diff;
-return;
+
         DoMeleeAttackIfReady();
     }
 };

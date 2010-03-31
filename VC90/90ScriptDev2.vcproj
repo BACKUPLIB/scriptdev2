@@ -464,6 +464,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\scripts\eastern_kingdoms\redridge_mountains.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\scripts\eastern_kingdoms\searing_gorge.cpp"
 					>
 				</File>
@@ -1051,6 +1055,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\scripts\eastern_kingdoms\sunwell_plateau\boss_muru_entropius.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\scripts\eastern_kingdoms\sunwell_plateau\instance_sunwell_plateau.cpp"
 						>
 					</File>
@@ -1067,7 +1075,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\scripts\eastern_kingdoms\uldaman\instance_uldaman.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\scripts\eastern_kingdoms\uldaman\uldaman.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\eastern_kingdoms\uldaman\uldaman.h"
 						>
 					</File>
 				</Filter>
@@ -1994,26 +2010,6 @@
 				<Filter
 					Name="vault_of_archavon"
 					>
-					<File
-						RelativePath="..\scripts\northrend\vault_of_archavon\boss_archavon.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\northrend\vault_of_archavon\boss_emalon.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\northrend\vault_of_archavon\boss_koralon.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\northrend\vault_of_archavon\instance_vault_of_archavon.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\northrend\vault_of_archavon\vault_of_archavon.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="violet_hold"

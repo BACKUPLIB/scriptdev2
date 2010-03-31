@@ -306,8 +306,6 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, true); // useless(?)
 		pPlayer->TeleportTo(pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), DRAGON_REALM_Z, pPlayer->GetOrientation()); //teleport back to normal realm
         pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, true);
-		
-
     }
 
     void EjectPlayers()
@@ -320,8 +318,8 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
         {
             Player* plr = itr->getSource();
-
-            if (plr && !plr->HasAura(SPELL_SPECTRAL_EXHAUSTION))
+			// only choose players without spectral exhaustion debuff that are in demon realm
+			if (plr && !plr->HasAura(SPELL_SPECTRAL_EXHAUSTION) && plr->GetPositionZ() < DEMON_REALM_Z+3)
             {
                 SpectralRealmList.remove(plr->GetGUID());
                 EjectPlayer(plr);

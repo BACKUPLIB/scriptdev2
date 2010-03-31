@@ -202,12 +202,14 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
         m_creature->SetVisibility(VISIBILITY_OFF);
         m_creature->setFaction(35); 
 		m_creature->SetSplineFlags(SPLINEFLAG_FLYING);
+		if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+			m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_FELMYST, NOT_STARTED);
 
         if(!m_creature->HasAura(SPELL_SUNWELLRADIANCE_AURA))
-			DoCastSpellIfCan(m_creature, SPELL_SUNWELLRADIANCE_AURA);
+			DoCast(m_creature, SPELL_SUNWELLRADIANCE_AURA);
 
 		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(54812))
 			pMadrigosa->SetVisibility(VISIBILITY_ON);
@@ -297,7 +299,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 				m_bFog						= false;
 				m_bNextCycle				= false;
 
-				
+				m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
 				return;
             }else m_uiFlyPhaseTimer -= diff;
@@ -353,6 +355,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                 m_uiFlyPhaseTimer       = 60000;
                 m_bIsFlyPhase           = false;
+				m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
 			}else m_uiLandPhaseTimer -= diff;
 

@@ -74,7 +74,7 @@ enum KalecgosEncounter
 bool bSathalive;		
 bool bKalecalive;	
 
-#define  DEMON_REALM_Z				(float)-74.558
+//#define  DEMON_REALM_Z				(float)-74.558
 
 
 uint32 WildMagic[]= { 44978, 45001, 45002, 45004, 45006, 45010 };
@@ -89,13 +89,6 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
     boss_kalecgosAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-
-        /*if (pCreature->getFaction() != 14)
-        {
-            error_db_log("SD2: creature entry %u has faction %u but spellId %u requires different.", pCreature->GetEntry(), pCreature->getFaction(), SPELL_SPECTRAL_REALM_FORCE_FACTION);
-            pCreature->setFaction(14);
-        }*/
-
         Reset();
     }
 
@@ -104,6 +97,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
     uint32 m_uiArcaneBuffetTimer;
     uint32 m_uiFrostBreathTimer;
     uint32 m_uiWildMagicTimer;
+	uint32 m_uiTailLashTimer;
     uint32 m_uiSpectralBlastTimer;
     uint32 m_uiExitTimer;
 
@@ -118,7 +112,8 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
         m_uiArcaneBuffetTimer       = 8000;
         m_uiFrostBreathTimer        = 24000;
         m_uiWildMagicTimer          = 18000;
-        m_uiSpectralBlastTimer      = 30000;
+        m_uiSpectralBlastTimer      = urand(20000, 25000);
+		m_uiTailLashTimer           = urand(25000, 40000);
 
         m_uiExitTimer = 0;
 
@@ -127,6 +122,8 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
         m_bChecked     = false;
         m_bEnraged     = false;
         m_bHasSpectralTarget = false;
+
+
     }
 
     void JustReachedHome()	
@@ -163,7 +160,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             {
                 damage = 0;
                 m_bBanished = true;
-                DoCastSpellIfCan(m_creature, SPELL_BANISH, true);
+                DoCast(m_creature, SPELL_BANISH, true);
                 m_creature->GetMotionMaster()->MoveIdle();
             }
             else
@@ -183,15 +180,9 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
     {
         if (m_pInstance)
         {      
-			
-            //pTarget->CastSpell(pTarget, SPELL_SPECTRAL_REALM, true);		//spectral exhaustion instead of buggy spectral realm
 			pTarget->CastSpell(pTarget, SPELL_SPECTRAL_EXHAUSTION, true);
 			m_pInstance->SetData64(DATA_PLAYER_SPECTRAL_REALM, pTarget->GetGUID());
-			//just a hack for not implemented spell effect 144
 			((Player*)pTarget)->TeleportTo(pTarget->GetMapId(), pTarget->GetPositionX(), pTarget->GetPositionY(), DEMON_REALM_Z, pTarget->GetOrientation());
-			//pTarget->CastSpell(pTarget, SPELL_SPECTRAL_REALM_FORCE_FACTION, true);	//buggy
-            
-
         }
     }
 
@@ -202,7 +193,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             if (pTarget->GetTypeId() != TYPEID_PLAYER)
                 return;
 
-            if (pTarget->HasAura(SPELL_SPECTRAL_EXHAUSTION, EFFECT_INDEX_0))// || pTarget->HasAura(SPELL_SPECTRAL_REALM)) //spectral realm not used
+            if (pTarget->HasAura(SPELL_SPECTRAL_EXHAUSTION, EFFECT_INDEX_0))
                 return;
 
             if (pTarget == m_creature->getVictim())					
@@ -262,6 +253,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
         if (!m_creature->getVictim() || !m_creature->SelectHostileTarget() || m_bBanished)
             return;
 
+		//enrage kalecgos & sathrovarr @ kalecgos low health
         if (!m_bEnraged && ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 10))
         {
             if (Unit* pSathrovarr = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_SATHROVARR)))
@@ -273,7 +265,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             m_creature->CastSpell(m_creature, SPELL_CRAZED_RAGE, true);
             m_bEnraged = true;
         }
-
+		//banish when corrupted or begin outro when not corrupted(=sathrovarr dead)
         if (!m_bChecked && ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 1))
         {
             m_bChecked = true;
@@ -287,7 +279,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             else
                 BeginOutro();
         }
-
+		//let kalecgos exit the arena on outro
         if (m_uiExitTimer)
         {
             if (m_uiExitTimer <= diff)
@@ -314,8 +306,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 m_uiArcaneBuffetTimer = 20000;
             }
         }
-        else
-            m_uiArcaneBuffetTimer -= diff;
+        else m_uiArcaneBuffetTimer -= diff;
 
         if (m_uiFrostBreathTimer < diff)
         {
@@ -327,8 +318,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 m_uiFrostBreathTimer = 25000;
             }
         }
-        else
-            m_uiFrostBreathTimer -= diff;
+        else m_uiFrostBreathTimer -= diff;
 
         if (m_uiWildMagicTimer < diff)
         {
@@ -337,22 +327,27 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
 
             m_uiWildMagicTimer = 19000;
         }
-        else
-            m_uiWildMagicTimer -= diff;
+        else m_uiWildMagicTimer -= diff;
+
+		if (m_uiTailLashTimer < diff)
+        {
+            //if (m_creature->getVictim())
+			DoCastSpellIfCan(m_creature, SPELL_TAIL_LASH);
+            m_uiTailLashTimer = urand(25000, 40000);
+        }else m_uiTailLashTimer -= diff;
 
         if (m_uiSpectralBlastTimer < diff)
         {
 			
-			if (bKalecalive==true)		//no spectral blast if kalecgos_humanoid or Sathrovarr dead
-				if(bSathalive==true)
+			if (bKalecalive && bSathalive)		//no spectral blast if kalecgos_humanoid or Sathrovarr dead
 			{
 				m_bHasSpectralTarget = false;
 				m_creature->CastSpell(m_creature, SPELL_SPECTRAL_BLAST_DUMMY, false);
 				m_uiSpectralBlastTimer = 30000;
+				m_creature->MonsterYell("spectral blast timer aktiviert",LANG_UNIVERSAL,0);
 			}
         }
-        else
-            m_uiSpectralBlastTimer -= diff;
+        else m_uiSpectralBlastTimer -= diff;
 
         if (!m_bBanished)
             DoMeleeAttackIfReady();

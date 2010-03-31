@@ -67,11 +67,11 @@ extern void AddSC_boss_attumen();                           //karazhan
 extern void AddSC_boss_curator();
 extern void AddSC_boss_maiden_of_virtue();
 extern void AddSC_boss_shade_of_aran();
+extern void AddSC_boss_netherspite();
 extern void AddSC_boss_malchezaar();
 extern void AddSC_boss_terestian_illhoof();
 extern void AddSC_netherspite_infernal();
 extern void AddSC_boss_moroes();
-extern void AddSC_boss_netherspite();
 extern void AddSC_bosses_opera();
 extern void AddSC_instance_karazhan();
 extern void AddSC_karazhan();
@@ -139,9 +139,11 @@ extern void AddSC_boss_brutallus();                         //sunwell_plateau
 extern void AddSC_boss_kalecgos();
 extern void AddSC_boss_felmyst();
 extern void AddSC_boss_eredar_twins();
+extern void AddSC_boss_muru_entropius();
 extern void AddSC_instance_sunwell_plateau();
 extern void AddSC_boss_ironaya();                           //uldaman
 extern void AddSC_uldaman();
+extern void AddSC_instance_uldaman();
 extern void AddSC_boss_akilzon();                           //zulaman
 extern void AddSC_boss_halazzi();
 extern void AddSC_boss_janalai();
@@ -180,6 +182,7 @@ extern void AddSC_hinterlands();
 extern void AddSC_ironforge();
 extern void AddSC_isle_of_queldanas();
 extern void AddSC_loch_modan();
+extern void AddSC_redridge_mountains();
 extern void AddSC_searing_gorge();
 extern void AddSC_silvermoon_city();
 extern void AddSC_silverpine_forest();
@@ -283,6 +286,7 @@ extern void AddSC_boss_kelthuzad();
 extern void AddSC_boss_loatheb();
 extern void AddSC_boss_maexxna();
 extern void AddSC_boss_noth();
+extern void AddSC_boss_heigan();
 extern void AddSC_boss_patchwerk();
 extern void AddSC_boss_razuvious();
 extern void AddSC_boss_sapphiron();
@@ -294,10 +298,6 @@ extern void AddSC_boss_telestra();
 extern void AddSC_instance_nexus();
 extern void AddSC_boss_sartharion();                        //obsidian_sanctum
 extern void AddSC_instance_obsidian_sanctum();
-extern void AddSC_instance_vault_of_archavon();             //vault_of_archavon
-extern void AddSC_boss_koralon();
-extern void AddSC_boss_emalon();
-extern void AddSC_boss_archavon();
 extern void AddSC_boss_bjarngrim();                         //Ulduar, halls_of_lightning
 extern void AddSC_boss_ionar();
 extern void AddSC_boss_loken();
@@ -474,11 +474,11 @@ void AddScripts()
     AddSC_boss_curator();
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
+    AddSC_boss_netherspite();
     AddSC_boss_malchezaar();
     AddSC_boss_terestian_illhoof();
     AddSC_netherspite_infernal();
     AddSC_boss_moroes();
-    AddSC_boss_netherspite();
     AddSC_bosses_opera();
     AddSC_instance_karazhan();
     AddSC_karazhan();
@@ -546,9 +546,11 @@ void AddScripts()
     AddSC_boss_kalecgos();
 	AddSC_boss_felmyst();
 	AddSC_boss_eredar_twins();
+	AddSC_boss_muru_entropius();
     AddSC_instance_sunwell_plateau();
     AddSC_boss_ironaya();                                   //uldaman
     AddSC_uldaman();
+    AddSC_instance_uldaman();
     AddSC_boss_akilzon();                                   //zulaman
     AddSC_boss_halazzi();
     AddSC_boss_janalai();
@@ -587,6 +589,7 @@ void AddScripts()
     AddSC_ironforge();
     AddSC_isle_of_queldanas();
     AddSC_loch_modan();
+    AddSC_redridge_mountains();
     AddSC_searing_gorge();
     AddSC_silvermoon_city();
     AddSC_silverpine_forest();
@@ -690,6 +693,7 @@ void AddScripts()
     AddSC_boss_loatheb();
     AddSC_boss_maexxna();
     AddSC_boss_noth();
+    AddSC_boss_heigan();
     AddSC_boss_patchwerk();
     AddSC_boss_razuvious();
     AddSC_boss_sapphiron();
@@ -701,10 +705,6 @@ void AddScripts()
     AddSC_instance_nexus();
     AddSC_boss_sartharion();                                //obsidian_sanctum
     AddSC_instance_obsidian_sanctum();
-    AddSC_instance_vault_of_archavon();                     //vault_of_archavon
-    AddSC_boss_koralon();
-    AddSC_boss_emalon();
-    AddSC_boss_archavon();
     AddSC_boss_bjarngrim();                                 //Ulduar, halls_of_lightning
     AddSC_boss_ionar();
     AddSC_boss_loken();

@@ -43,6 +43,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     uint64 m_uiKilJaedenControllerGUID;
     uint64 m_uiAnveenaGUID;
     uint64 m_uiKalecgosGUID;
+	uint64 m_uiMuruPortalTargetGUID;
 
     // GameObjects
     uint64 m_uiForceFieldGUID;                                      // Kalecgos Encounter
@@ -59,6 +60,9 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     // Misc
     uint32 m_uiSpectralRealmTimer;
     std::list<uint64> SpectralRealmList;
+
+	uint8 m_uiPortalTargetCount;
+	uint64 m_uiShadowPortalGUID[10];
 
     void Initialize()
     {
@@ -77,6 +81,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         m_uiKilJaedenControllerGUID     = 0;
         m_uiAnveenaGUID                 = 0;
         m_uiKalecgosGUID                = 0;
+		m_uiMuruPortalTargetGUID		= 0;
 
         // GameObjects
         m_uiForceFieldGUID              = 0;
@@ -92,6 +97,11 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
         // Misc
         m_uiSpectralRealmTimer = 5000;
+		
+		m_uiPortalTargetCount = 0;
+
+		for(int i=0;i<10;i++)
+			m_uiShadowPortalGUID[i]=0;
     }
 
     bool IsEncounterInProgress() const
@@ -119,6 +129,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case 25608: m_uiKilJaedenControllerGUID = pCreature->GetGUID(); break;
             case 26046: m_uiAnveenaGUID             = pCreature->GetGUID(); break;
             case 25319: m_uiKalecgosGUID            = pCreature->GetGUID(); break;
+			case 25770: m_uiShadowPortalGUID[m_uiPortalTargetCount++] = pCreature->GetGUID(); break;
         }
     }
 
@@ -201,6 +212,8 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case DATA_ANVEENA:              return m_uiAnveenaGUID;
             case DATA_KALECGOS:             return m_uiKalecgosGUID;
             case DATA_GO_FORCEFIELD:        return m_uiForceFieldGUID;
+			case DATA_SHADOW_PORTAL:		return m_uiShadowPortalGUID[rand()%10];
+			
         }
         return 0;
     }
@@ -240,8 +253,13 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
                 break;
             case TYPE_MURU:
                 m_auiEncounter[4] = uiData;
-                if (uiData == DONE)
-                    DoUseDoorOrButton(m_uiDoorRaid_Gate_08GUID);
+				if (uiData == IN_PROGRESS)
+					DoUseDoorOrButton(m_uiDoorRaid_Gate_07GUID);
+				else if (uiData == DONE)
+				{
+					DoUseDoorOrButton(m_uiDoorRaid_Gate_07GUID);
+					DoUseDoorOrButton(m_uiDoorRaid_Gate_08GUID);
+				}
                 break;
             case TYPE_KILJAEDEN: m_auiEncounter[5] = uiData; break;
             case DATA_SET_SPECTRAL_CHECK:  m_uiSpectralRealmTimer = uiData; break;

@@ -30,7 +30,6 @@ DeatchCloud Spell   = 50%
 
 #include "precompiled.h"
 #include "sunwell_plateau.h"
-#include "../../../game/TemporarySummon.h"
  
 enum Sounds
 {
@@ -58,9 +57,8 @@ enum Spells
     SPELL_ENCAPSULATE_CHANNEL   = 45661, // encapsulate
    
     //Flight Phase
-    SPELL_DEMONIC_VAPOR         = 45391, // demonic vapor start spell
-    SPELL_FELMYST_FORCE_BEAM    = 45388, // demonic vapor, force beam cast spell
-    SPELL_SUMMON_DEATH          = 45400, // demonic vapor, unyielding death summon
+    SPELL_VAPOR_DAMAGE          = 46931, // vapor damage
+    SPELL_TRAIL_TRIGGER         = 45399, // green trail
    
     //Other
     SPELL_ENRAGE                = 26662, // Berserk -> speed 150% dmg 500%
@@ -87,11 +85,15 @@ enum Spells
 enum Creatures
 {
     MOB_FELMYST         = 25038, //undead felmyst
+    MOB_DEAD            = 25268, //undead scelet
  
     MOB_MADRIGOSA       = 25160, //madrigosa
     MOB_FELMYST_VISUAL  = 25041, //felmyst visual (friendly)
     MOB_FLIGHT_LEFT     = 25357, 
     MOB_FLIGHT_RIGHT    = 25358, 
+ 
+    MOB_VAPOR           = 25265,
+    MOB_VAPOR_TRAIL     = 25267, 
 
     MOB_DEATH_CLOUD     = 25703, 
 
@@ -118,6 +120,18 @@ float WESTSTART[]	=	{1447.15f,699.65f,69.50f,4.97f};
 float WESTNORTH[]	=	{1486.18f,693.72f,60.07f,4.87f};
 float WESTSOUTH[]	=	{1414.79f,656.45f,60.07f,5.13f};
 float WESTMID[]		=	{1453.55f,673.67f,60.07f,4.97f};
+
+/*
+Felmyst way in fog of corruption phase
+
+			WESTNORTH - EASTNORTH \
+		  /
+WESTSTART - WESTMID   -   EASTMID - EASTSTART
+		  \
+		    WESTSOUTH - EASTSOUTH /
+
+starting from weststart, choosing random track (norh/mid/south) to eaststart (2x) and back (1x)
+*/
 
 //Felmyst
 struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
@@ -282,13 +296,15 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 
 				//FlyPhase Timers Start
 				m_uiLandPhaseTimer			= 80000;
-                m_uiDemonicVaporTimer       = 2000;
+                m_uiDemonicVaporInitTimer   = 2000;
+				m_uiBeamTargetTimer			= 0;
                 m_uiFogOfCorruptionTimer    = 20000;
 				m_uiFogTimer				= 500;
                 m_uiMaxBreathCount			= 0;
                 m_uiFogCount				= 0;
 				m_uiCycle					= 0;
                 m_bIsFlyPhase				= true;
+				m_bDemonicVapor				= false;
 				m_bToStartPos				= false;
 				m_bToLineStartPos			= false;
 				m_bFlyOver					= false;
@@ -355,29 +371,79 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 
 			}else m_uiLandPhaseTimer -= diff;
 
-			//start demonic vapor
-			if(m_uiDemonicVaporTimer < diff && m_uiMaxBreathCount < 2)
+			//create beam target
+			if(m_uiBeamTargetTimer < diff)
 			{
-                DoCast(m_creature, SPELL_DEMONIC_VAPOR);
-
-                if (++m_uiMaxBreathCount == 2)
-                {
-                    m_bIsFogOfCorruption = true;
-					m_bToStartPos		 = true;
-                }
-                else
-				    m_uiDemonicVaporTimer=12000;
+				if(m_uiMaxBreathCount <2)
+				{
+					cTarget=SelectUnit(SELECT_TARGET_RANDOM, 0);
+					cBeamTarget=m_creature->SummonCreature(MOB_VAPOR_TRAIL, cTarget->GetPositionX()+urand(5,10), cTarget->GetPositionY()+urand(5,10), cTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 12000);
+					if(cTarget)
+						if(cBeamTarget)
+						{
+							m_creature->CastSpell(cBeamTarget,40227,true);
+							cBeamTarget->SetSpeedRate(MOVE_WALK,3.3f,true);
+							//cBeamTarget->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.40f);
+							cBeamTarget->GetMotionMaster()->MoveFollow(cTarget,0,0);
+						}
+				}
+				m_uiBeamTargetTimer=12000;
 			}
-			else
-                m_uiDemonicVaporTimer -=diff;
+			else m_uiBeamTargetTimer -=diff;
 
-            // fog of corruption phase
+			if(m_uiDemonicVaporInitTimer < diff)
+			{
+				if(m_uiMaxBreathCount < 2)
+				{
+					if(cTarget)
+						if(cBeamTarget)
+						{
+							DoCastSpellIfCan(cTarget, SPELL_VAPOR_DAMAGE, true);
+							
+							for(uint8 i=0; i<2; ++i) 
+							{
+								if(urand(0,4)>1)
+								{
+									if(Creature *Undead = m_creature->SummonCreature(MOB_DEAD, cBeamTarget->GetPositionX(), cBeamTarget->GetPositionY(), cBeamTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000))
+									{
+										Undead->SetSpeedRate(MOVE_RUN,0.8f,true);
+										Undead->AI()->AttackStart(cTarget);
+									}
+								}
+							}
+						}
+					++m_uiMaxBreathCount;
+					m_uiBreathCount = 0;
+					m_uiDemonicVaporTimer = 1000;
+					m_bDemonicVapor = true;
+				}
+				else if(m_uiMaxBreathCount==2)	//MaxBreathCount=2 -> demonic vapor finished -> go prepare for Fog Of Corruption phase
+				{
+					++m_uiMaxBreathCount;
+					m_bIsFogOfCorruption = true;
+					m_bToStartPos		 = true;
+				}
+				m_uiDemonicVaporInitTimer = 12000;
+			}else m_uiDemonicVaporInitTimer -= diff;
+
+			if(m_bDemonicVapor)
+				if(m_uiDemonicVaporTimer < diff)
+				{
+					if(m_uiBreathCount < 8)
+					{
+						m_creature->SummonCreature(MOB_VAPOR, cBeamTarget->GetPositionX(), cBeamTarget->GetPositionY(), cBeamTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
+						m_uiDemonicVaporTimer = 1000;
+						++m_uiBreathCount;
+					}
+					else m_bDemonicVapor=false;
+				}else m_uiDemonicVaporTimer -= diff;
+            
+             // fog of corruption phase
 			if(m_bIsFogOfCorruption)
             {
 				if(m_bToStartPos) // move felmyst to fog of corruption start position
 				{
 					++m_uiCycle;
-					//m_creature->MonsterYell("Going to Start Position",LANG_UNIVERSAL,0);
 					m_bToStartPos = false;
 					// go to Line Start Position
 					m_uiOnStartPosTimer = 8000;
@@ -396,7 +462,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 				if(m_bToLineStartPos)
 					if(m_uiOnStartPosTimer < diff) 
 					{
-						//m_creature->MonsterYell("DEBUG Going to Line Start Position",LANG_UNIVERSAL,0);
 						m_creature->GetMotionMaster()->Clear();
 						//go to random Line startposition
 
@@ -457,7 +522,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 					if(m_uiNextCycleTimer < diff)
 					{
 						m_creature->SetSpeedRate(MOVE_FLIGHT,1.0,true);
-						//m_creature->MonsterYell("DEBUG Next Cycle Timer",LANG_UNIVERSAL,0);
 						m_bNextCycle = false;
 						//next cycle
 						m_bToStartPos = true;
@@ -468,7 +532,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 					{
 						if(m_uiLine==NORTH)
 						{
-							//m_creature->MonsterYell("north",LANG_UNIVERSAL,0);
 							// north breath
 							if(m_uiCycle==1||m_uiCycle==3)
 								switch(m_uiFogCount)	
@@ -500,7 +563,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 						}
 						else if(m_uiLine==MIDDLE)
 						{
-							//m_creature->MonsterYell("middle",LANG_UNIVERSAL,0);
 							// middle breath
 							if(m_uiCycle==1||m_uiCycle==3)
 								switch(m_uiFogCount)
@@ -528,7 +590,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 						}
 						else if(m_uiLine=SOUTH)
 						{
-							//m_creature->MonsterYell("south",LANG_UNIVERSAL,0);
 							// south breath
 							if(m_uiCycle==1||m_uiCycle==3)
 								switch(m_uiFogCount)
@@ -665,85 +726,54 @@ struct MANGOS_DLL_DECL mob_deathcloudAI : public Scripted_NoMovementAI
         }else m_uiCheckTimer -= diff;  
     }
 }; 
-
-struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
+//Chmura AOE + sumon skeleton in range
+struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public Scripted_NoMovementAI
 {
-    mob_felmyst_vaporAI(Creature *c) : ScriptedAI(c){Reset();}
-
+    mob_felmyst_vaporAI(Creature *c) : Scripted_NoMovementAI(c)
+    {
+        m_pInstance = (ScriptedInstance*)c->GetInstanceData();
+        Reset();
+    }
+ 
+    ScriptedInstance* m_pInstance;
+    uint32 m_uiCheckTimer;
+ 
     void Reset()
     {
-        // workaround for better movement
-        m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 0.0f);
-        m_creature->SetFloatValue(UNIT_FIELD_COMBATREACH, 0.0f );
-
-        // workaround, to select a close victim (== summoner in this case)
-        if (m_creature->isTemporarySummon())
-            AttackStart(m_creature->GetUnit(*m_creature, ((TemporarySummon*)m_creature)->GetSummonerGuid().GetRawValue()));
-
-        // force felmyst to cast visual beam
-        DoCast(m_creature, SPELL_FELMYST_FORCE_BEAM, true);
+        m_creature->setFaction(14);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->SetVisibility(VISIBILITY_ON);
+ 
+        m_uiCheckTimer = 1000;
+ 
+		DoCastSpellIfCan(m_creature,SPELL_TRAIL_TRIGGER, true);
+    }
+ 
+    void Aggro(Unit* who)
+    {
+        m_creature->SetInCombatWithZone();           
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
-
-        // no melee attack
-    }
-};
-
-struct MANGOS_DLL_DECL mob_felmyst_vapor_trailAI : public ScriptedAI
-{
-    mob_felmyst_vapor_trailAI(Creature *c) : ScriptedAI(c){Reset();}
-
-    int32 m_summonTimer;
-    int32 m_createSummonTimer;
-
-    void Reset()
-    {
-        // some delay for the obligatoric spawn to give a chance to flee from the sceletons
-        m_createSummonTimer = 4000;
-        m_summonTimer = 1000;
-    }
-
-    // CreatureNullAI
-    void AttackStart(Unit *) {}
-    void AttackedBy( Unit *) {}
-    void EnterEvadeMode() {}
-
-    void MoveInLineOfSight(Unit* pWho)
-    {
-        // summon skelton if unit is close
-        if ( !m_summonTimer && m_creature->IsHostileTo(pWho) && m_creature->IsWithinDistInMap(pWho, 3))
+        //Summon Skeletons if Someone is near m_creature.
+        if (m_uiCheckTimer < diff)
         {
-            // 50% chance - to make not spawn to much as there are many of this mobs in a trail
-            if(!urand(0,1))
-                DoCast(pWho, SPELL_SUMMON_DEATH, true);
-            m_summonTimer = 1000;
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        // on-create summon
-        if (m_createSummonTimer)
-        {
-            m_createSummonTimer -= diff;
-            if (m_createSummonTimer <= 0)
+            std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
+            for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
             {
-                 DoCast(m_creature, SPELL_SUMMON_DEATH, true);
-                 m_createSummonTimer = 0;
+                if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid()))
+                    if(target->GetTypeId() == TYPEID_PLAYER && m_creature->IsWithinDistInMap(target, 3))
+                    {
+                        Creature *Undead = m_creature->SummonCreature(MOB_DEAD, m_creature->GetPositionX()+urand(1,4), target->GetPositionY()+urand(1,4), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 20000);
+                        if(Undead)
+						{
+                            Undead->AI()->AttackStart(target);
+						}
+                    }
             }
-        }
-
-        // movement cooldown
-        if (m_summonTimer)
-        {
-            m_summonTimer -= diff;
-            if (m_summonTimer <= 0)
-                m_summonTimer = 0;
-        }
+            m_uiCheckTimer = 3000;
+        }m_uiCheckTimer -= diff;
     }
 };
  
@@ -755,11 +785,6 @@ CreatureAI* GetAI_mob_deathcloud(Creature* pCreature)
 CreatureAI* GetAI_mob_felmyst_vapor(Creature* pCreature)
 {
     return new mob_felmyst_vaporAI(pCreature);
-}
-
-CreatureAI* GetAI_mob_felmyst_vapor_trail(Creature* pCreature)
-{
-    return new mob_felmyst_vapor_trailAI(pCreature);
 }
  
 CreatureAI* GetAI_boss_felmyst(Creature *pCreature)
@@ -779,11 +804,6 @@ void AddSC_boss_felmyst()
     newscript = new Script;
     newscript->Name="mob_felmyst_vapor";
     newscript->GetAI = &GetAI_mob_felmyst_vapor;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="mob_felmyst_vapor_trail";
-    newscript->GetAI = &GetAI_mob_felmyst_vapor_trail;
     newscript->RegisterSelf();
  
     newscript = new Script;

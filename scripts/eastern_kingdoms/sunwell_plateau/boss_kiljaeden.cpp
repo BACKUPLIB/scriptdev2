@@ -89,7 +89,7 @@ enum spells
     AURA_SUNWELL_RADIANCE       = 45769, // NOT WORKING
     SPELL_REBIRTH               = 44200, // Emerge from the Sunwell
 
-    SPELL_SOULFLY               = 45442, // 100%
+    SPELL_SOULFLAY               = 45442, // 100%
     SPELL_DARKNESS_OF_SOULS     = 46605, // 100% Visual Effect
     SPELL_DARKNESS_EXPLOSION    = 45657, // 100% Damage
     SPELL_DESTROY_DRAKES        = 46707, // ?
@@ -189,11 +189,12 @@ float DeceiverPos[3][2] =
     (1682.442f, 638.069f),
 };
 
-int8 m_uiDeceiverDead = 0;
+int8 m_uiDeceiverDead;
+bool m_bSummonedKilJaeden;
 
 #define GAMEOBJECT_ORB_OF_THE_BLUE_DRAGONFLIGHT 188415
 
-#define GOSSIP_ITEM_1 "cast on me Shield of the Blue Dragon Flight ! Quikly !"
+#define GOSSIP_ITEM_1 "cast on me Shield of the Blue Dragon Flight ! Quickly !"
 #define GOSSIP_ITEM_2 "cast on me Dragon Breath: Revitalize !"
 #define GOSSIP_ITEM_3 "cast on me Dragon Breath: Haste !"
 #define GOSSIP_ITEM_4 "cast on me Blink !"
@@ -235,7 +236,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
     uint64 m_uiFireBloomTarget[5];
 
     //Phase2
-    uint32 m_uiSoulFlyTimer;
+    uint32 m_uiSoulFlayTimer;
     uint32 m_uiLegionLightingTimer;
     uint32 m_uiFireBloomCheck;
     uint32 m_uiFireBloomTimer;
@@ -286,7 +287,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
         m_bBoolOrb = true;
 
         //Phase2
-        m_uiSoulFlyTimer        = 1000;
+        m_uiSoulFlayTimer        = 1000;
         m_uiLegionLightingTimer = 15000;
         m_uiFireBloomCheck      = 2000;
         m_uiFireBloomTimer      = 30000;
@@ -307,8 +308,8 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
         m_creature->SetVisibility(VISIBILITY_OFF);
         m_creature->setFaction(35);
 
-        if(!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        //if(!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+            //m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         if(!m_creature->HasAura(AURA_SUNWELL_RADIANCE,  EFFECT_INDEX_0))
             m_creature->CastSpell(m_creature, AURA_SUNWELL_RADIANCE, true);
@@ -316,11 +317,14 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
         if(m_creature->HasAura(SPELL_SACRIFICE_OF_ANVEENA,  EFFECT_INDEX_0))
             m_creature->RemoveAurasDueToSpell(SPELL_SACRIFICE_OF_ANVEENA,0);
 
-        if(pInstance)
+		// done in hand of the deceiver AI
+        /*if(pInstance)
         {
             //pInstance->SetData(DATA_DECIVER, NOT_STARTED); 
             pInstance->SetData(DATA_KILJAEDEN, NOT_STARTED);
-        }
+        }*/
+
+		m_uiDeceiverDead = 0;
 
         for(uint8 i=0; i<4; ++i)
             DragonGUID[i] = 0;
@@ -329,7 +333,6 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
     void Aggro(Unit *who) 
     {
         DoPlaySoundToSet(m_creature, SAY_KJ_EMERGE);
-        m_creature->SetVisibility(VISIBILITY_ON);
         m_creature->CastSpell(m_creature, SPELL_REBIRTH, false);
     }
 
@@ -481,25 +484,25 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             ++m_uiKalecgosAnvenaCount;
         } m_uiKalecgosAnvenaTimer -= diff;
 
-        //Kalecgos Event
+        //Kalecgos Event working
         if((m_uiKalecgosTimer < diff) && !m_bIsKalecgosSpawned)
         {
             DoPlaySoundToSet(m_creature, SAY_KALECGOS_JOIN);
-            Kalecgos = m_creature->SummonCreature(ID_KALECGOS, m_creature->GetPositionX()-25, m_creature->GetPositionY()-25, m_creature->GetPositionZ(), 0.686f, TEMPSUMMON_TIMED_DESPAWN, 600000);
+            Kalecgos = m_creature->SummonCreature(ID_KALECGOS, m_creature->GetPositionX()-25, m_creature->GetPositionY()-25, m_creature->GetPositionZ()+10, 0.686f, TEMPSUMMON_TIMED_DESPAWN, 600000);
             Kalecgos->setFaction(35);
             //Kalecgos need to start shhooting arcane bolt into Kiljaeden
             //Dragon->AI()->AttackStart(m_creature);
             m_bIsKalecgosSpawned = true;
         }m_uiKalecgosTimer -= diff;
 
-        //Shield Orb At Start each phases
-        if(m_uiShieldOrbTimer < diff && !m_bPhase5)
+        //Shield Orb At Start each phases working
+       /* if(m_uiShieldOrbTimer < diff && !m_bPhase5)
         {
             uint8 l=1;
             if(m_bPhase3)
                 l=2;
             if(m_bPhase4)
-                l=4;
+                l=3;
             for(uint8 k=0; k<l; ++k)
             {
                 Creature* ShieldOrb = m_creature->SummonCreature(ID_SHIELDORB, m_creature->GetPositionX()+urand(1,15), m_creature->GetPositionY()+urand(1,15), m_creature->GetPositionZ()+15, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
@@ -508,7 +511,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             }
             
             m_uiShieldOrbTimer = 50000; 
-        }else m_uiShieldOrbTimer -= diff;
+        }else m_uiShieldOrbTimer -= diff;*/
 
         //Sinister Reflects Attack Spell Timer
         if(m_uiSinnisterCastTimer < diff)
@@ -581,6 +584,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
         if(m_bDarknessOfSoulsCasting)
             return;
 
+		// darkness of a thousand souls from phase 3 on
         if(m_uiDarknessOfSoulsTimer < diff && m_bPhase3)
         {
             switch (rand()%3)
@@ -638,6 +642,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM,0)) 
                 if (victim && (victim->GetTypeId() == TYPEID_PLAYER))
                     Sinister(((Player*)victim),0,4);
+			m_creature->MonsterYell("entering phase 3",LANG_UNIVERSAL,0);
 
             m_uiSinnisterCastTimer     = 10000;
             m_uiShadowSpikeTimer       = 30000;
@@ -658,6 +663,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM,0)) 
                 if (victim && (victim->GetTypeId() == TYPEID_PLAYER))
                     Sinister(((Player*)victim),4,8);
+			m_creature->MonsterYell("entering phase 4",LANG_UNIVERSAL,0);
 
             m_uiAramageddonTimer       = 2000;  //100% ok
             m_bPhase4 = true;
@@ -674,6 +680,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             if(Unit* victim = SelectUnit(SELECT_TARGET_RANDOM,0)) 
                 if (victim && (victim->GetTypeId() == TYPEID_PLAYER))
                     Sinister(((Player*)victim),8,12);
+			m_creature->MonsterYell("entering phase 5",LANG_UNIVERSAL,0);
             m_uiShadowSpikeTimer = 1000;
             m_uiDarknessOfSoulsTimer   = 45000;
             m_bPhase5 = true;
@@ -690,10 +697,10 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             Anveena->setFaction(35);
         }
 
-        //Phase3
+        //spells used from phase 3 on
         if(m_bPhase3)
         {
-            if(m_uiShadowSpikeTimer < diff)
+			if(m_uiShadowSpikeTimer < diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_SHADOWSPIKE);
 
@@ -703,7 +710,8 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
                 m_uiShadowSpikeTimer        = 90000;
             }else m_uiShadowSpikeTimer -= diff;
 
-            if(m_uiFlameDartTimer < diff)
+			//flame dart
+            if(m_uiFlameDartTimer < diff )
             {
                 DoCast(m_creature->getVictim(), SPELL_FLAMEDARTS);
                 m_uiFlameDartTimer = 33000;
@@ -711,12 +719,14 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
         }
 
         //Phase2
+		// legion lightning all phases
         if(m_uiLegionLightingTimer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_LEGION_LIGHTING);
             m_uiLegionLightingTimer = 11000;
         }else m_uiLegionLightingTimer -= diff;
 
+		// fire bloom all phases
         if(m_uiFireBloomTimer < diff)
         {
             for(uint8 i=0; i<5; ++i)
@@ -729,11 +739,12 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             m_uiFireBloomTimer = 25000;
         }else m_uiFireBloomTimer -= diff;
 
-        if(m_uiSoulFlyTimer < diff)
+		// soul flay all phases
+        if(m_uiSoulFlayTimer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_SOULFLY);
-            m_uiSoulFlyTimer = 7000;
-        }else m_uiSoulFlyTimer -= diff;
+            DoCast(m_creature->getVictim(), SPELL_SOULFLAY);
+            m_uiSoulFlayTimer = 7000;
+        }else m_uiSoulFlayTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -767,6 +778,10 @@ struct MANGOS_DLL_DECL mob_deceiverAI : public ScriptedAI
         m_fxx = 0;
         m_fyy = 0;
 
+		bool m_bSummonedKilJaeden = false;
+
+		if(pInstance)
+			pInstance->SetData(DATA_KILJAEDEN, NOT_STARTED);
         //if(pInstance)
         //    pInstance->SetData(DATA_DECIVER, NOT_STARTED);
 
@@ -777,23 +792,32 @@ struct MANGOS_DLL_DECL mob_deceiverAI : public ScriptedAI
 		//if (pInstance)
         //    pInstance->SetData(DATA_KILJAEDEN_EVENT, IN_PROGRESS);
 
+		if(!m_bSummonedKilJaeden)
+		{
+			m_creature->SummonCreature(ID_KILJADEN,1682.95f,637.75f,27.92f,5.72f,TEMPSUMMON_TIMED_DESPAWN,3600000);
+			m_bSummonedKilJaeden = true;
+		}
+
         if(!m_creature->getVictim())
 			m_creature->AI()->AttackStart(who);
     }
 
     void JustDied(Unit* Killer) 
     {
+		//all 3 dead
 		if(++m_uiDeceiverDead==3)
+		{
 			if(pInstance)
 			{
 				pInstance->SetData(DATA_KILJAEDEN, IN_PROGRESS);
-				m_creature->SummonCreature(ID_KILJADEN,1682.95f,637.75f,27.92f,5.72f,TEMPSUMMON_TIMED_DESPAWN,3600000);
 				if(Unit* pKilJaeden = Unit::GetUnit(*m_creature,pInstance->GetData64(DATA_KILJAEDEN)))
 				{
 					pKilJaeden->setFaction(14);
-					m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+					pKilJaeden->SetVisibility(VISIBILITY_ON);
+					//m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 				}
 			}
+		}			
 
         /*if(pInstance && pInstance->GetData(DATA_DECIVER) == NOT_STARTED)
             pInstance->SetData(DATA_DECIVER, IN_PROGRESS);

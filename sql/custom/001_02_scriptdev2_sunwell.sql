@@ -1,6 +1,7 @@
 # sunwell plateau scriptdev2 db update
 
 # boss_felmyst
+DELETE FROM `script_texts` WHERE `entry` BETWEEN -1930007 AND -1930000;
 INSERT INTO `script_texts` VALUES(-1930000,"Glory to Kil'jaeden! Death to all who oppose!",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,7,"felmyst YELL_AGGRO");
 INSERT INTO `script_texts` VALUES(-1930001,"I am stronger than ever before!",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,7,"felmyst YELL_TAKEOFF");
 INSERT INTO `script_texts` VALUES(-1930002,"Choke on your final breath!",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,7,"felmyst YELL_BREATH");
@@ -11,6 +12,7 @@ INSERT INTO `script_texts` VALUES(-1930006,"No more hesitation! Your fates are w
 INSERT INTO `script_texts` VALUES(-1930007,"Madrigosa deserved a far better fate. You did what had to be done, but this battle is far from over.",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,7,"felmyst YELL_OUTRO (kalecgos)");
 
 # boss_eredar_twins
+DELETE FROM `script_texts` WHERE `entry` BETWEEN -1940019 AND -1940000;
 INSERT INTO `script_texts` VALUES(-1940000,"Misery...",NULL,NULL,"Elend...",NULL,NULL,NULL,NULL,NULL,0,1,0,7,"YELL_SACROLASH_AGGRO_1");
 INSERT INTO `script_texts` VALUES(-1940001,"Confusion...",NULL,NULL,"Verwirrung...",NULL,NULL,NULL,NULL,NULL,0,1,0,7,"YELL_SACROLASH_AGGRO_2");
 INSERT INTO `script_texts` VALUES(-1940002,"Mistrust...",NULL,NULL,"Misstrauen...",NULL,NULL,NULL,NULL,NULL,0,1,0,7,"YELL_SACROLASH_AGGRO_3");

@@ -105,8 +105,9 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
             {
                 if (m_creature->HasAura(SPELL_TIDAL_SHIELD, EFFECT_INDEX_0))
                     m_creature->RemoveAurasDueToSpell(SPELL_TIDAL_SHIELD);
-
-                DoCastSpellIfCan(m_creature->getVictim(), SPELL_TIDAL_BURST);
+				
+				m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(),0,0);
+				DoCastSpellIfCan(m_creature->getVictim(), SPELL_TIDAL_BURST, CAST_FORCE_CAST);
                 m_bIsShielded = false;
             }
         }
@@ -134,7 +135,7 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
 				if (m_creature->HasAura(SPELL_TIDAL_SHIELD, EFFECT_INDEX_0))
 					m_creature->RemoveAurasDueToSpell(SPELL_TIDAL_SHIELD);
 
-				DoCastSpellIfCan(m_creature->getVictim(), SPELL_TIDAL_BURST);
+				DoCastSpellIfCan(m_creature->getVictim(), SPELL_TIDAL_BURST, CAST_FORCE_CAST);
 				m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim(),0,0);
 				m_bIsShielded = false;
 			}

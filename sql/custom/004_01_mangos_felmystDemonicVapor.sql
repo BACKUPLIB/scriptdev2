@@ -32,7 +32,7 @@ DELETE FROM `creature_template_addon` WHERE `entry` = '25268';
 INSERT INTO `creature_template_addon` (`entry`, `mount`, `bytes1`, `bytes2`, `emote`, `moveflags`, `auras`) VALUES
 ('25268', '0', '0', '0', '0', '0', '45415 0');
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
-(NULL, '25268', '1', '0', '100', '2', '500', '500', '10000', '10000', '38', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Unyielding Death - zone combat pulse if ooc');
+('2526801', '25268', '1', '0', '100', '2', '500', '500', '10000', '10000', '38', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Unyielding Death - zone combat pulse if ooc');
 
 
 /* scipt targets für ein paar spells */

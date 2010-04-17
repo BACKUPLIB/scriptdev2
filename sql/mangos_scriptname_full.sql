@@ -423,7 +423,7 @@ UPDATE creature_template SET ScriptName='boss_gormok' WHERE entry=34796;
 UPDATE creature_template SET ScriptName='boss_acidmaw' WHERE entry=35144;
 UPDATE creature_template SET ScriptName='boss_dreadscale' WHERE entry=34799;
 UPDATE creature_template SET ScriptName='boss_icehowl' WHERE entry=34797;
-UPDATE creature_template SET ScriptName='boss_jaraxxis' WHERE entry=34780;
+UPDATE creature_template SET ScriptName='boss_jaraxxus' WHERE entry=34780;
 UPDATE creature_template SET ScriptName='boss_anubarak_trial' WHERE entry=34564;
 UPDATE creature_template SET ScriptName='boss_fjola' WHERE entry=34497;
 UPDATE creature_template SET ScriptName='boss_eydis' WHERE entry=34496;
@@ -513,6 +513,7 @@ UPDATE creature_template SET ScriptName='npc_apprentice_mirveda' WHERE entry=154
 UPDATE creature_template SET ScriptName='npc_kitten' WHERE entry=9937;
 UPDATE creature_template SET ScriptName='npc_corrupt_saber' WHERE entry=10042;
 UPDATE creature_template SET ScriptName='npcs_riverbreeze_and_silversky' WHERE entry IN (9528,9529);
+UPDATE creature_template SET ScriptName='npc_niby_the_almighty' WHERE entry=14469;
 
 /* FERALAS */
 UPDATE creature_template SET ScriptName='npc_gregan_brewspewer' WHERE entry=7775;
@@ -666,6 +667,7 @@ UPDATE creature_template SET ScriptName='npc_grandmother' WHERE entry=17603;
 
 /* LOCH MODAN */
 UPDATE creature_template SET ScriptName='npc_mountaineer_pebblebitty' WHERE entry=3836;
+UPDATE creature_template SET ScriptName='npc_miran' WHERE entry=1379;
 
 /* MAGISTER'S TERRACE */
 UPDATE instance_template SET script='instance_magisters_terrace' WHERE map=585;
@@ -815,6 +817,9 @@ UPDATE creature_template SET ScriptName='npc_corporal_keeshan' WHERE entry=349;
 /* RUINS OF AHN'QIRAJ */
 UPDATE instance_template SET script='instance_ruins_of_ahnqiraj' WHERE map=509;
 UPDATE creature_template SET ScriptName='mob_anubisath_guardian' WHERE entry=15355;
+UPDATE creature_template SET ScriptName='boss_kurinnaxx' WHERE entry=15348;
+UPDATE creature_template SET ScriptName='boss_ayamiss' WHERE entry=15369;
+UPDATE creature_template SET ScriptName='boss_moam' WHERE entry=15340;
 
 /* SCARLET MONASTERY */
 UPDATE instance_template SET script='instance_scarlet_monastery' WHERE map=189;

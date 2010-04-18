@@ -7,8 +7,8 @@
 
 DELETE FROM gameobject_template WHERE entry IN (950000, 950001);
 INSERT INTO gameobject_template VALUES 
-	(950000, 10, 7183, 'Nexus-Prinz Shaffars Stasiskammer', '', '', '', 0, 32, 3, 0, 0, 0, 0, 0, 0, 1731, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_shaffars_stasis'), 
-	(950001, 10, 7183, 'Stasiskammer der Managruft', '', '', '', 0, 32, 3, 0, 0, 0, 0, 0, 0, 1730, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_mana_tomb_stasis');
+	(950000, 10, 7183, 'Nexus-Prinz Shaffars Stasiskammer', '', '', '', 0, 32, 3, 0, 0, 0, 0, 0, 0, 1731, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_shaffars_stasis'), 
+	(950001, 10, 7183, 'Stasiskammer der Managruft', '', '', '', 0, 32, 3, 0, 0, 0, 0, 0, 0, 1730, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_mana_tomb_stasis');
 
 # Setzt die Fraktion auf Feindlich (Horde und Allianz)
 

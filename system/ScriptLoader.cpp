@@ -8,6 +8,7 @@
 extern void AddSC_battleground();
 
 //custom
+extern void AddSC_ov_master();
 
 //examples
 extern void AddSC_example_creature();
@@ -416,6 +417,7 @@ void AddScripts()
     AddSC_battleground();
 
     //custom
+    AddSC_ov_master();
 
     //examples
     AddSC_example_creature();

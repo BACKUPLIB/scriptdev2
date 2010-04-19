@@ -102,7 +102,8 @@ bool GossipSelect_npc_jaina_proudmoore(Player* pPlayer, Creature* pCreature, uin
                 pJainaAI->StartEvent();
                 break;
             case GOSSIP_ACTION_INFO_DEF + 3:
-                pJainaAI->Retreat();
+                pPlayer->TeleportTo(534, 5495.071289f, -2970.372070f, 1537.687744f, 2.858703f, 0);
+				//pJainaAI->Retreat();
                 break;
             case GOSSIP_ACTION_INFO_DEF:
                 pJainaAI->m_bDebugMode = !pJainaAI->m_bDebugMode;

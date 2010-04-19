@@ -44,6 +44,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     uint64 m_uiAnveenaGUID;
     uint64 m_uiKalecgosGUID;
 	uint64 m_uiMuruPortalTargetGUID;
+	uint64 m_uiMadrigosaGUID;
 
     // GameObjects
     uint64 m_uiForceFieldGUID;                                      // Kalecgos Encounter
@@ -82,6 +83,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         m_uiAnveenaGUID                 = 0;
         m_uiKalecgosGUID                = 0;
 		m_uiMuruPortalTargetGUID		= 0;
+		m_uiMadrigosaGUID				= 0;
 
         // GameObjects
         m_uiForceFieldGUID              = 0;
@@ -130,6 +132,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case 26046: m_uiAnveenaGUID             = pCreature->GetGUID(); break;
             case 25319: m_uiKalecgosGUID            = pCreature->GetGUID(); break;
 			case 25770: m_uiShadowPortalGUID[m_uiPortalTargetCount++] = pCreature->GetGUID(); break;
+			case 24895: m_uiMadrigosaGUID			= pCreature->GetGUID(); break;
         }
     }
 
@@ -213,7 +216,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case DATA_KALECGOS:             return m_uiKalecgosGUID;
             case DATA_GO_FORCEFIELD:        return m_uiForceFieldGUID;
 			case DATA_SHADOW_PORTAL:		return m_uiShadowPortalGUID[rand()%10];
-			
+			case DATA_MADRIGOSA:			return m_uiMadrigosaGUID;
         }
         return 0;
     }
@@ -248,7 +251,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
                 if (uiData == DONE)
                 {
                     DoUseDoorOrButton(m_uiDoorTheSecondGateGUID);
-                    DoUseDoorOrButton(m_uiDoorRaid_Gate_07GUID);
+                    //DoUseDoorOrButton(m_uiDoorRaid_Gate_07GUID);
                 }
                 break;
             case TYPE_MURU:

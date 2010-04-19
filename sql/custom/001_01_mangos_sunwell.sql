@@ -75,29 +75,26 @@ UPDATE `creature_template` SET `minhealth`=145000, `maxhealth`=145000, `minmana`
 DELETE FROM `creature` WHERE `GUID`=600000;
 INSERT INTO `creature` VALUES(600000,24891,580,1,1,0,0,1702.3,938.0,-74.55,4.93,30000,0,0,828555,169350,0,0);
 # update kalecgos, sathorvarr, kalecgos_humanoid
-UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287',`minmana`=1690000, `maxmana`=1690000  WHERE `entry` = 24850; 
-UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287'  WHERE `entry` = 24892;
-UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287'  WHERE `entry` = 24891;
+UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287',`minmana`=1690000, `maxmana`=1690000, `minhealth`=5300000, `maxhealth`=5300000  WHERE `entry` = 24850;
+UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287', `minhealth`=5300000, `maxhealth`=5300000  WHERE `entry` = 24892;
+UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287', `dmg_multiplier`=8  WHERE `entry` = 24891;
 # update gameobject 187055 (spectral rift)
 UPDATE gameobject_template SET `type`= '22', `data0`='0', `data3`='1', `data6`='0', `data10`='0' WHERE `entry`=187055;
 
 # fixes for boss_brutallus fight
 # update npc 24882 (Brutallus)
-UPDATE `creature_template` SET `minhealth`=7350000,`maxhealth`=7350000 WHERE `entry`=24882;
+UPDATE `creature_template` SET `minhealth`=11000000 ,`maxhealth`=11000000 WHERE `entry`=24882;
 
 # fixes for boss_felmyst fight
-# add npc 25038 (Felmyst)
-DELETE FROM `creature` WHERE `GUID`=700000;
-INSERT INTO `creature` VALUES(700000,25038,580,1,1,0,0,1459.34,636.8,19.56,19.95,30000,0,0,4900000,3390,0,0);
-UPDATE `creature_template` SET `ScriptName`="boss_felmyst" WHERE `entry` = 25038;
+UPDATE `creature_template` SET `ScriptName`="boss_felmyst", `minhealth`=7300000, `maxhealth`=7300000 WHERE `entry` = 25038;
 UPDATE `creature_template` SET `ScriptName`="mob_felmyst_vapor"WHERE `entry`= 25265;
 UPDATE `creature_template` SET `ScriptName`="mob_deathcloud" WHERE `entry`=25703;
 
 # fixes for boss_eredar_twins fight
-# update npc 25165 (Sacrolash)
-UPDATE `creature_template` SET `ScriptName` = "boss_sacrolash", `minhealth`=2018000, `maxhealth`=2018000 WHERE `entry` = 25165;
+# update npc 25165 (Sacrolash) 
+UPDATE `creature_template` SET `ScriptName` = "boss_sacrolash", `minhealth`=3500000, `maxhealth`=3500000 WHERE `entry` = 25165;
 # update npc 25166 (Alythess)
-UPDATE `creature_template` SET `ScriptName` = "boss_alythess", `minhealth`=2018000, `maxhealth`=2018000  WHERE `entry` = 25166;
+UPDATE `creature_template` SET `ScriptName` = "boss_alythess", `minhealth`=3500000, `maxhealth`=3500000  WHERE `entry` = 25166;
 # update npc 25214 (Shadow Image)
 UPDATE `creature_template` SET `ScriptName` = "npc_shadow_image" WHERE `entry` = 25214;
 # update go 50439 (The Second Gate)
@@ -105,7 +102,7 @@ UPDATE `gameobject` SET `position_x`=1832.81, `position_y`=671.08, `position_z`=
 
 # fixes for boss_muru_entropius fight
 # update npc 25741 (m'uru)
-UPDATE `creature_template` SET `ScriptName` = "boss_muru" WHERE `entry` = 25741;
+UPDATE `creature_template` SET `ScriptName` = "boss_muru", `maxhealth`=3500000, `minhealth`=3500000 WHERE `entry` = 25741;
 # update npc 25744 (dark fiend)
 UPDATE `creature_template` SET `ScriptName` = "dark_fiend" WHERE `entry` = 25744;
 # update npc 25772 (void sentinel)
@@ -113,7 +110,7 @@ UPDATE `creature_template` SET `ScriptName` = "mob_voidsentinel" WHERE `entry` =
 # update npc 25855 (singularity)
 UPDATE `creature_template` SET `ScriptName` = "mob_singularity" WHERE `entry` = 25855;
 # update npc 25770 (m'uru teleport target)
-UPDATE `creature_template` SET `flags_extra`=0, `modelid_A`=25206, `modelid_H`=25206, `InhabitType`=4 WHERE `entry`= 25770;
+UPDATE `creature_template` SET `flags_extra`= 0, `modelid_A`=25206, `modelid_H`=25206, `InhabitType`=4 WHERE `entry`= 25770;
 
 # fixes for boss_kiljaeden fight
 # update npc 25608 (kil'jaeden controller)
@@ -121,7 +118,7 @@ UPDATE `creature_template` SET `ScriptName` = "mob_kiljaeden_controller" WHERE `
 # update npc 25588 (hand of the deceiver)
 UPDATE `creature_template` SET `ScriptName` = "mob_deceiver" WHERE `entry`= 25588;
 # update npc 25315 (boss_kiljaeden)
-UPDATE `creature_template` SET `ScriptName` = "boss_kiljaden" WHERE `entry`= 25315;
+UPDATE `creature_template` SET `ScriptName` = "boss_kiljaeden", `minhealth`=13000000, `maxhealth`=13000000 WHERE `entry`= 25315;
 # update npc 25598 (volatile felfire fiend)
 UPDATE `creature_template` SET `ScriptName` = "mob_volatile_felfire_fiend" WHERE `entry` = 25598;
 # update npc 25735 (armageddon target)
@@ -132,3 +129,6 @@ UPDATE `creature_template` SET `ScriptName` = "mob_orb" WHERE `entry` = 25502;
 UPDATE `creature_template` SET `ScriptName` = "dragon" WHERE `entry` = 25653;
 # update npc 30598 (shadow spike target)
 UPDATE `creature_template` SET `ScriptName` = "mob_shadowspike" WHERE `entry` = 30598;
+
+#update damage output for swp bosses
+UPDATE `creature_template` SET `dmg_multiplier` = `dmg_multiplier` * 1.25 WHERE `entry` IN (24850, 24892, 24882, 25038, 25165, 25166, 25741, 25315);

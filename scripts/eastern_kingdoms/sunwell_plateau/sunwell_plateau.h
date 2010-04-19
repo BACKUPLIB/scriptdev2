@@ -43,6 +43,7 @@ enum InstanceSWP
     DATA_SET_SPECTRAL_CHECK     = 26,
 
 	DATA_SHADOW_PORTAL			= 27,
+	DATA_MADRIGOSA				= 28,
 
     SPELL_SPECTRAL_REALM                = 46021,	
     SPELL_TELEPORT_NORMAL_REALM         = 46020,	

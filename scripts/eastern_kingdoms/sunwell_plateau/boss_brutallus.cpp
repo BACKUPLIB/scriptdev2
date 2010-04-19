@@ -79,6 +79,9 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
         m_uiBerserkTimer = 360000;
         m_uiLoveTimer = urand(10000, 17000);
 
+		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_MADRIGOSA)))
+			pMadrigosa->SetVisibility(VISIBILITY_ON);
+
         //TODO: correct me when pre-event implemented
         if (m_pInstance)
             m_pInstance->SetData(TYPE_BRUTALLUS, NOT_STARTED);
@@ -105,7 +108,9 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(YELL_DEATH, m_creature);
-
+		m_creature->SummonCreature(25038,1459.34f,636.8f,19.56f,20.0f,TEMPSUMMON_CORPSE_TIMED_DESPAWN,60000);
+		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_MADRIGOSA)))
+			pMadrigosa->SetVisibility(VISIBILITY_OFF);
         if (m_pInstance)
             m_pInstance->SetData(TYPE_BRUTALLUS, DONE);
     }

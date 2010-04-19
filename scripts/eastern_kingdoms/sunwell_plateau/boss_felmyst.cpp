@@ -209,8 +209,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
         m_bIsFogOfCorruption    = false;
 
         //Event Resets
-        m_creature->SetVisibility(VISIBILITY_OFF);
-        m_creature->setFaction(35); 
 		m_creature->SetSplineFlags(SPLINEFLAG_FLYING);
 		if(m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
 			m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -220,9 +218,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 
         if(!m_creature->HasAura(SPELL_SUNWELLRADIANCE_AURA))
 			DoCast(m_creature, SPELL_SUNWELLRADIANCE_AURA);
-
-		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(54812))
-			pMadrigosa->SetVisibility(VISIBILITY_ON);
     }
  
     void Aggro(Unit *who)
@@ -261,18 +256,6 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
  
     void UpdateAI(const uint32 diff)
     {
-
-		
-		if(m_creature->GetVisibility()==VISIBILITY_OFF && m_pInstance && m_pInstance->GetData(TYPE_BRUTALLUS) == DONE && m_pInstance->GetData(TYPE_FELMYST) == NOT_STARTED)
-        {
-			//make Madrigosa invisible when Felmyst appears
-			if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(54812))
-				pMadrigosa->SetVisibility(VISIBILITY_OFF);		
-			//get visible&hostile when Brutallus dead
-            m_creature->SetVisibility(VISIBILITY_ON);
-            m_creature->setFaction(14);
-        }
-
 		if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -370,7 +353,8 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 			//start demonic vapor
 			if(m_uiDemonicVaporTimer < diff && m_uiMaxBreathCount <= 2)
 			{
-                DoCast(m_creature, SPELL_DEMONIC_VAPOR);
+				if (m_uiMaxBreathCount < 2)
+					DoCast(m_creature, SPELL_DEMONIC_VAPOR);
 
                 if (m_uiMaxBreathCount++ == 2)
                 {
@@ -439,6 +423,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 					{
 						m_creature->GetMotionMaster()->Clear();
 						m_creature->SetSpeedRate(MOVE_FLIGHT,4.0,true);
+						m_creature->SetSpeedRate(MOVE_RUN,4.0,true);
 						if(m_uiCycle==1||m_uiCycle==3)
 							switch(m_uiLine)
 							{
@@ -467,6 +452,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 					if(m_uiNextCycleTimer < diff)
 					{
 						m_creature->SetSpeedRate(MOVE_FLIGHT,1.0,true);
+						m_creature->SetSpeedRate(MOVE_RUN,1.0,true);
 						m_bNextCycle = false;
 						//next cycle
 						m_bToStartPos = true;

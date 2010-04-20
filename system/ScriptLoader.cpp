@@ -205,6 +205,7 @@ extern void AddSC_dark_portal();
 extern void AddSC_instance_dark_portal();
 extern void AddSC_hyjal();                                  //COT, hyjal
 extern void AddSC_boss_archimonde();
+extern void AddSC_boss_kazrogal();
 extern void AddSC_instance_mount_hyjal();
 extern void AddSC_boss_captain_skarloc();                   //COT, old_hillsbrad
 extern void AddSC_boss_epoch_hunter();
@@ -614,6 +615,7 @@ void AddScripts()
     AddSC_instance_dark_portal();
     AddSC_hyjal();                                          //COT, hyjal
     AddSC_boss_archimonde();
+	AddSC_boss_kazrogal();
     AddSC_instance_mount_hyjal();
     AddSC_boss_captain_skarloc();                           //COT, old_hillsbrad
     AddSC_boss_epoch_hunter();

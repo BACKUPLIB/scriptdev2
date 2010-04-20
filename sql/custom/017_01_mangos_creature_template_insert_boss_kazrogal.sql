@@ -1,0 +1,1 @@
+UPDATE creature_template SET AIName='', ScriptName='boss_kazrogal' WHERE entry=17888;

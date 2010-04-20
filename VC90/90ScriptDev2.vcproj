@@ -406,7 +406,7 @@
 				<File
 					RelativePath="..\scripts\custom\sc_ov_master.cpp"
 					>
-                </File>
+				</File>
 			</Filter>
 			<Filter
 				Name="eastern_kingdoms"
@@ -1363,6 +1363,10 @@
 						>
 						<File
 							RelativePath="..\scripts\kalimdor\caverns_of_time\hyjal\boss_archimonde.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\kalimdor\caverns_of_time\hyjal\boss_kazrogal.cpp"
 							>
 						</File>
 						<File

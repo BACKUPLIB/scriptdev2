@@ -105,16 +105,9 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
-			if (pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(31447) && pUnit->isAlive())
+			if (pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(31447) && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10)
 			{
-				if (!pUnit->isAlive())
-					pUnit->CastSpell(pUnit, SPELL_EXPLOSION_MARK, true);
-
-				if (pUnit->isAlive())
-				{
-					pUnit->SetHealth(0);
-					pUnit->setDeathState(DEAD);
-				}
+				pUnit->CastSpell(pUnit, SPELL_EXPLOSION_MARK, true);
 			}
         }
     }
@@ -124,7 +117,7 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-		IfOOM();
+		 // IfOOM();
 
 		if (MarkTimer < diff)
 		{

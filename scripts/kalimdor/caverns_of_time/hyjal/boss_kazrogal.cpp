@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Kazrogal
-SD%Complete: 50
-SDComment: Needs further testing
+SD%Complete: 90
+SDComment: miss SAY_DEATH, Just Yells no DBC Factors, needs further testing. 
 SDCategory: Caverns of Time, Mount Hyjal
 EndScriptData */
 
@@ -25,17 +25,20 @@ EndScriptData */
 #include "hyjal.h"
 #include "SpellAuras.h"
 
-#define SAY_AGGRO                   "Hallo"
-#define SAY_SLAY1                   "Blöd gelaufen"
-#define SAY_SLAY2                   "Gschissen grissn"
-#define SAY_SLAY3                   "Oje" 
-#define SAY_DEATH                   "Tschüss"
+#define SAY_AGGRO                   "Cry for mercy! Your meaningless lives will soon be forfeit!"
+#define SAY_MARK1                   "Your death will be a painful one."
+#define SAY_MARK2                   "You... are marked."
+#define SAY_SLAY1                   "You... are nothing!"
+#define SAY_SLAY2                   "Miserable nuisance!"
+#define SAY_SLAY3                   "Shaza-Kiel!" 
+#define SAY_DEATH                   "Tschüss mit Ü und Tschau mit AU"
 
 #define SPELL_MANA_MARK				31447
 #define SPELL_EXPLOSION_MARK		31463
 #define SPELL_CLEAVE				31436
 #define SPELL_CRIPPLE				31477
 #define SPELL_WAR_STOMP				31480
+#define SPELL_DARKNESS              15259
 
 struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
 {
@@ -53,13 +56,14 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
 	uint32 CrippleTimer;
 	uint32 WarStompTimer;
 	uint32 CleaveTimer;
+    uint32 RemoveDarknessTimer;
 
     void Reset()
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KAZROGAL, NOT_STARTED);
 
-		MarkTimer = 60000;
+        MarkTimer = 60000;
 		MarkCount = 0;
 		CrippleTimer = 6000;
 		WarStompTimer = 15000;
@@ -101,13 +105,15 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
             return;
 
         std::list<Unit*> targets;
-
+        /* Prüft ob ein Spieler 0 Mana hat und lässt ihn die Explosion wirken und wirkt auf ihn eine Aura, damit nicht wieder */
         for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
-			if (pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(31447) && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10)
+			if (pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(SPELL_MANA_MARK)
+                && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10 && !pUnit->HasAura(SPELL_DARKNESS))
 			{
 				pUnit->CastSpell(pUnit, SPELL_EXPLOSION_MARK, true);
+                pUnit->CastSpell(pUnit, SPELL_DARKNESS, true);
 			}
         }
     }
@@ -117,39 +123,58 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-		 // IfOOM();
+		IfOOM();
+
+        if (RemoveDarknessTimer < diff)
+        {
+            ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+            if (tList.empty())
+                return;
+
+            std::list<Unit*> targets;
+
+            for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
+            {
+                Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
+		        if (pUnit->HasAura(SPELL_DARKNESS))
+                    pUnit->RemoveAurasDueToSpell(SPELL_DARKNESS);
+            }
+        }
 
 		if (MarkTimer < diff)
 		{
+            switch(urand(1, 2))
+            {
+                case 1: m_creature->MonsterYell(SAY_MARK1, 0, 0); break;
+                case 2: m_creature->MonsterYell(SAY_MARK2, 0, 0); break;
+            }
+
 			switch (MarkCount)
 			{
 				case 0:
 					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
 					MarkTimer = 50000;
+                    RemoveDarknessTimer = 6000;
 					break;
 				case 1:
 					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
 					MarkTimer = 40000;
+                    RemoveDarknessTimer = 6000;
 					break;
 				case 2:
 					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
-					MarkTimer = 40000;
+					MarkTimer = 30000;
+                    RemoveDarknessTimer = 6000;
 					break;
 				case 3:
 					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
-					MarkTimer = 30000;
-					break;
-				case 4:
-					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
 					MarkTimer = 20000;
-					break;
-				case 5:
-					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
-					MarkTimer = 10000;
+                    RemoveDarknessTimer = 6000;
 					break;
 				default:
 					DoCastSpellIfCan(m_creature, SPELL_MANA_MARK, 0, 0);
-					MarkTimer = 7000;
+					MarkTimer = 10000;
+                    RemoveDarknessTimer = 6000;
 					break;
 			}
 

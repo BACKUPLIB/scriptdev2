@@ -244,15 +244,13 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
             case TYPE_FELMYST:
                 m_auiEncounter[2] = uiData;
                 if (uiData == DONE)
-                    DoUseDoorOrButton(m_uiDoorFireBarrierGUID);
+                    //instance only open up to felmyst
+                    //DoUseDoorOrButton(m_uiDoorFireBarrierGUID);
                 break;
             case TYPE_EREDAR_TWINS:
                 m_auiEncounter[3] = uiData;
                 if (uiData == DONE)
-                {
                     DoUseDoorOrButton(m_uiDoorTheSecondGateGUID);
-                    //DoUseDoorOrButton(m_uiDoorRaid_Gate_07GUID);
-                }
                 break;
             case TYPE_MURU:
                 m_auiEncounter[4] = uiData;

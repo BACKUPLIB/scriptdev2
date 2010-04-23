@@ -71,9 +71,6 @@ UPDATE `creature_template` SET `minhealth`=145000, `maxhealth`=145000, `minmana`
 # boss updates:
 
 # fixes for boss_Kalecgos fight
-# add npc 24891 (Kalecgos humanoid)
-DELETE FROM `creature` WHERE `GUID`=600000;
-INSERT INTO `creature` VALUES(600000,24891,580,1,1,0,0,1702.3,938.0,-74.55,4.93,30000,0,0,828555,169350,0,0);
 # update kalecgos, sathorvarr, kalecgos_humanoid
 UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287',`minmana`=1690000, `maxmana`=1690000, `minhealth`=5300000, `maxhealth`=5300000  WHERE `entry` = 24850;
 UPDATE `creature_template` SET `mechanic_immune_mask` = '1073463287', `minhealth`=5300000, `maxhealth`=5300000  WHERE `entry` = 24892;

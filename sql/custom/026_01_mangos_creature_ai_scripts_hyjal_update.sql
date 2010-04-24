@@ -1,0 +1,1 @@
+UPDATE creature_ai_scripts SET event_type=0, event_param1=500, event_param2=1000, event_param3=60000, event_param4=65000 WHERE id=1781802;

@@ -223,7 +223,6 @@ void hyjalAI::JustSummoned(Creature* pSummoned)
 
         pSummoned->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
         pSummoned->GetMotionMaster()->MovePoint(0, fX, fY, fZ);
-        pSummoned->ForcedDespawn(
     }
 
     // Check if creature is a boss.

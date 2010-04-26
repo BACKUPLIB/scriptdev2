@@ -122,11 +122,11 @@ float WESTMID[]		=	{1453.55f,673.67f,60.07f,4.97f};
 /*
 Felmyst way in fog of corruption phase
 
-			WESTNORTH - EASTNORTH \
-		  /
-WESTSTART - WESTMID   -   EASTMID - EASTSTART
-		  \
-		    WESTSOUTH - EASTSOUTH /
+			WESTNORTH - - - EASTNORTH 
+		  /                           \
+WESTSTART - WESTMID   - - -   EASTMID - EASTSTART
+		  \                           /
+		    WESTSOUTH - - - EASTSOUTH 
 
 starting from weststart, choosing random track (norh/mid/south) to eaststart (2x) and back (1x)
 */
@@ -290,7 +290,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 				m_bFog						= false;
 				m_bNextCycle				= false;
 
-				m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+				
 
 				return;
             }else m_uiFlyPhaseTimer -= diff;
@@ -353,19 +353,29 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 			//start demonic vapor
 			if(m_uiDemonicVaporTimer < diff && m_uiMaxBreathCount <= 2)
 			{
+                m_bDemonicVapor = true;
+
 				if (m_uiMaxBreathCount < 2)
 					DoCast(m_creature, SPELL_DEMONIC_VAPOR);
 
                 if (m_uiMaxBreathCount++ == 2)
                 {
+                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_bDemonicVapor      = false;
                     m_bIsFogOfCorruption = true;
 					m_bToStartPos		 = true;
+                    m_creature->GetMotionMaster()->Clear();
                 }
                 else
 				    m_uiDemonicVaporTimer=12000;
 			}
 			else
                 m_uiDemonicVaporTimer -=diff;
+
+            if(m_bDemonicVapor)
+            {
+                m_creature->StopMoving();
+            }
 
             // fog of corruption phase
 			if(m_bIsFogOfCorruption)
@@ -375,7 +385,7 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 					++m_uiCycle;
 					m_bToStartPos = false;
 					// go to Line Start Position
-					m_uiOnStartPosTimer = 8000;
+					m_uiOnStartPosTimer = 7000;
 					m_bToLineStartPos = true;
 					switch(m_uiCycle)
 					{
@@ -383,8 +393,8 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
 						case 1:	m_creature->GetMotionMaster()->MovePoint(0,WESTSTART[0],WESTSTART[1],WESTSTART[2]);break;
 						case 2: m_creature->GetMotionMaster()->MovePoint(0,EASTSTART[0],EASTSTART[1],EASTSTART[2]);break;
 						case 3: m_creature->GetMotionMaster()->MovePoint(0,WESTSTART[0],WESTSTART[1],WESTSTART[2]);break;
-						case 4:  m_bIsFogOfCorruption = false; m_bToLineStartPos = false;break;
-					}//m_uiLandPhaseTimer = 100;
+						case 4: m_bIsFogOfCorruption = false; m_bToLineStartPos = false;break;
+					}
 				}
 	
 				// felmyst should be on start position now.
@@ -691,12 +701,14 @@ struct MANGOS_DLL_DECL mob_felmyst_vapor_trailAI : public ScriptedAI
 
     int32 m_summonTimer;
     int32 m_createSummonTimer;
+    int32 m_liveTimer;
 
     void Reset()
     {
         // some delay for the obligatoric spawn to give a chance to flee from the sceletons
         m_createSummonTimer = 4000;
         m_summonTimer = 1000;
+        m_liveTimer = 25000;
     }
 
     // CreatureNullAI
@@ -736,6 +748,12 @@ struct MANGOS_DLL_DECL mob_felmyst_vapor_trailAI : public ScriptedAI
             if (m_summonTimer <= 0)
                 m_summonTimer = 0;
         }
+
+        //despawn after 25 seconds
+        if(m_liveTimer < diff)
+        {
+            m_creature->ForcedDespawn();
+        } else m_liveTimer -= diff;
     }
 };
  

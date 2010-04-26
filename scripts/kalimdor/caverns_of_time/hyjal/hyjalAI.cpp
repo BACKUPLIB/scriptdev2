@@ -191,7 +191,7 @@ void hyjalAI::SpawnCreatureForWave(uint32 uiMobEntry)
         if (uiMobEntry == 17808 || uiMobEntry == 17767 || uiMobEntry == 17888 || uiMobEntry == 17842)
             m_creature->SummonCreature(uiMobEntry, pSpawn->m_fX, pSpawn->m_fY, pSpawn->m_fZ, 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000000);
         else 
-            m_creature->SummonCreature(uiMobEntry, pSpawn->m_fX, pSpawn->m_fY, pSpawn->m_fZ, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000000);            
+            m_creature->SummonCreature(uiMobEntry, pSpawn->m_fX, pSpawn->m_fY, pSpawn->m_fZ, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 600000);            
 }
 
 void hyjalAI::JustSummoned(Creature* pSummoned)
@@ -223,6 +223,7 @@ void hyjalAI::JustSummoned(Creature* pSummoned)
 
         pSummoned->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
         pSummoned->GetMotionMaster()->MovePoint(0, fX, fY, fZ);
+        pSummoned->ForcedDespawn(
     }
 
     // Check if creature is a boss.

@@ -228,6 +228,9 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
  
         if (m_pInstance)
             m_pInstance->SetData(TYPE_FELMYST, IN_PROGRESS);
+
+        if(Creature* pBrutallus = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_BRUTALLUS)))
+            pBrutallus->SetVisibility(VISIBILITY_OFF);
     }
  
     void KilledUnit(Unit* victim)
@@ -722,8 +725,9 @@ struct MANGOS_DLL_DECL mob_felmyst_vapor_trailAI : public ScriptedAI
         if ( !m_summonTimer && m_creature->IsHostileTo(pWho) && m_creature->IsWithinDistInMap(pWho, 3))
         {
             // 50% chance - to make not spawn to much as there are many of this mobs in a trail
-            if(!urand(0,1))
-                DoCast(pWho, SPELL_SUMMON_DEATH, true);
+            if(!urand(0,2))
+                m_creature->SummonCreature(25268,m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),m_creature->GetOrientation(),TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
+                //DoCast(pWho, SPELL_SUMMON_DEATH, true);
             m_summonTimer = 1000;
         }
     }
@@ -736,8 +740,9 @@ struct MANGOS_DLL_DECL mob_felmyst_vapor_trailAI : public ScriptedAI
             m_createSummonTimer -= diff;
             if (m_createSummonTimer <= 0)
             {
-                 DoCast(m_creature, SPELL_SUMMON_DEATH, true);
-                 m_createSummonTimer = 0;
+                m_creature->SummonCreature(25268,m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),m_creature->GetOrientation(),TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,10000);
+                //DoCast(m_creature, SPELL_SUMMON_DEATH, true);
+                m_createSummonTimer = 0;
             }
         }
 

@@ -78,6 +78,7 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
         m_uiBurnTimer = 60000;
         m_uiBerserkTimer = 360000;
         m_uiLoveTimer = urand(10000, 17000);
+        m_creature->SetVisibility(VISIBILITY_OFF);
 
 		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_MADRIGOSA)))
 			pMadrigosa->SetVisibility(VISIBILITY_ON);
@@ -109,6 +110,11 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
     {
         DoScriptText(YELL_DEATH, m_creature);
 		m_creature->SummonCreature(25038,1459.34f,636.8f,19.56f,20.0f,TEMPSUMMON_CORPSE_TIMED_DESPAWN,60000);
+
+        if(Creature* pFelmyst = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_FELMYST)))
+            pFelmyst->GetMotionMaster()->MovePoint(0,1438.19f,607.41f,45.75f);
+
+
 		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_MADRIGOSA)))
 			pMadrigosa->SetVisibility(VISIBILITY_OFF);
         if (m_pInstance)
@@ -141,7 +147,8 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
         if (m_uiSlashTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature->getVictim(),SPELL_METEOR_SLASH);
-            m_uiSlashTimer = 11000;
+            //m_uiSlashTimer = 11000;
+            m_uiSlashTimer = 10000;
         }
         else m_uiSlashTimer -= uiDiff;
 
@@ -171,7 +178,9 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
 					//m_creature->CastSpell(pPlayer,46394,false);
             }
 
-            m_uiBurnTimer = 60000;
+            //m_uiBurnTimer = 60000; 
+            // more casts due to buggy spell
+            m_uiBurnTimer = 20000;
         } else m_uiBurnTimer -= uiDiff;
 
         if (m_uiBerserkTimer < uiDiff)

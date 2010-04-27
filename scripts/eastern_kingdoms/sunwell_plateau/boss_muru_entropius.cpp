@@ -202,7 +202,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             }
 
 			
-          /* //Spawns Shadow portal and Void Sentinel -> working
+           //Spawns Shadow portal and Void Sentinel -> working
             if(SummonVoidTimer < diff)
             {
 				m_creature->MonsterYell("try open portal",LANG_UNIVERSAL,0);
@@ -256,7 +256,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
                 }
                 NegativeEnergyTimer = 1000;
             }else NegativeEnergyTimer -= diff;
-*/
+
 		//Cast Darkness
         if(DarknessTimer < diff)
         {
@@ -280,7 +280,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
         else // else Entropius phase
         {
             
-          /*  // +1 target every 10 seconds
+            // +1 target every 10 seconds
             if(TargetsCountTimer < diff)
             {
                 ++TargetsCount;
@@ -298,7 +298,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
 
                 NegativeEnergyTimer = 1000;
             }else NegativeEnergyTimer -= diff;
-*/
+
             //Summon Singularity
             if(SingularityTimer < diff)
             {
@@ -316,7 +316,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
         }
 
 
-/*
+
         if(DarkFiendTimer < diff && Darkness)
         {
             // Phase2 1 dark fiend : Phase1 8 dark fiend
@@ -335,7 +335,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             }
             Darkness = false;
             DarkFiendTimer = 45000;
-        }else DarkFiendTimer -= diff;*/
+        }else DarkFiendTimer -= diff;
     }
 };
  

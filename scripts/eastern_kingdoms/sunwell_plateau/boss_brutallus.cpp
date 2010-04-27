@@ -121,12 +121,6 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_BRUTALLUS, DONE);
     }
 
-    void SpellHitTarget(Unit* pCaster, const SpellEntry* pSpell)
-    {
-        if (pSpell->Id == SPELL_BURN)
-            pCaster->CastSpell(pCaster, SPELL_BURN_AURA_EFFECT, true, NULL, NULL, m_creature->GetGUID());
-    }
-
     void UpdateAI(const uint32 uiDiff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
@@ -157,9 +151,6 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
             if (Unit* pTarget = m_creature->getVictim())
             {
                 DoCastSpellIfCan(pTarget,SPELL_STOMP);
-
-                if (pTarget->HasAura(SPELL_BURN_AURA_EFFECT, EFFECT_INDEX_0))
-                    pTarget->RemoveAurasDueToSpell(SPELL_BURN_AURA_EFFECT);
             }
 
             m_uiStompTimer = 30000;
@@ -174,8 +165,6 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
                 //so we get owner, in case unit was pet/totem/etc
                 if (Player* pPlayer = pTarget->GetCharmerOrOwnerPlayerOrPlayerItself())
 					DoCastSpellIfCan(pPlayer, SPELL_BURN);
-				//
-					//m_creature->CastSpell(pPlayer,46394,false);
             }
 
             //m_uiBurnTimer = 60000; 

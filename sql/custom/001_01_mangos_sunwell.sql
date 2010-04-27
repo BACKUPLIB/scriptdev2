@@ -126,6 +126,3 @@ UPDATE `creature_template` SET `ScriptName` = "mob_orb" WHERE `entry` = 25502;
 UPDATE `creature_template` SET `ScriptName` = "dragon" WHERE `entry` = 25653;
 # update npc 30598 (shadow spike target)
 UPDATE `creature_template` SET `ScriptName` = "mob_shadowspike" WHERE `entry` = 30598;
-
-#update damage output for swp bosses
-UPDATE `creature_template` SET `dmg_multiplier` = `dmg_multiplier` * 1.25 WHERE `entry` IN (24850, 24892, 24882, 25038, 25165, 25166, 25741, 25315);

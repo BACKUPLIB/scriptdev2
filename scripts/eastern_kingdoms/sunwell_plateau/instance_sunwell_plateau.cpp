@@ -351,7 +351,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     void Update(uint32 uiDiff)
     {
         // Only check for Spectral Realm if Kalecgos Encounter is running
-		if (m_auiEncounter[0] == IN_PROGRESS)
+		//if (m_auiEncounter[0] == IN_PROGRESS)
         {
             if (m_uiSpectralRealmTimer <= uiDiff)
             {

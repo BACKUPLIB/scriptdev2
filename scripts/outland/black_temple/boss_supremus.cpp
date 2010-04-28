@@ -31,7 +31,7 @@ EndScriptData */
 //Spells
 #define SPELL_HURTFUL_STRIKE        41926
 #define SPELL_DEMON_FIRE            40029
-#define SPELL_MOLTEN_FLAME          40253
+#define SPELL_MOLTEN_FLAME          36057
 #define SPELL_VOLCANIC_ERUPTION     40276
 #define SPELL_VOLCANIC_FIREBALL     40118
 #define SPELL_VOLCANIC_GEYSER       42055
@@ -81,7 +81,7 @@ struct MANGOS_DLL_DECL molten_flameAI : public ScriptedAI
         m_creature->AddThreat(target, 50000000.0f);
         m_creature->GetMotionMaster()->MoveChase(target);
         DoCastSpellIfCan(m_creature, SPELL_DEMON_FIRE, CAST_TRIGGERED);
-        // DoCastSpellIfCan(m_creature, SPELL_MOLTEN_FLAME, CAST_TRIGGERED); // This spell damages self, so disabled for now
+        DoCastSpellIfCan(m_creature, SPELL_MOLTEN_FLAME, CAST_TRIGGERED);
         TargetLocked = true;
     }
 
@@ -201,28 +201,17 @@ struct MANGOS_DLL_DECL boss_supremusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_SUPREMUS, DONE);
     }
 
-    float CalculateRandomCoord(float initial)
-    {
-        float coord = 0;
-
-        switch(urand(0, 1))
-        {
-            case 0: coord = initial + 20 + rand()%20; break;
-            case 1: coord = initial - 20 - rand()%20; break;
-        }
-
-        return coord;
-    }
-
     Creature* SummonCreature(uint32 entry, Unit* target)
     {
         if (target && entry)
         {
-            Creature* Summon = m_creature->SummonCreature(entry, CalculateRandomCoord(target->GetPositionX()), CalculateRandomCoord(target->GetPositionY()), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
+            Creature* Summon = m_creature->SummonCreature(entry, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
             if (Summon)
             {
                 Summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 Summon->setFaction(m_creature->getFaction());
+                Summon->SetSpeedRate(MOVE_WALK, 0.7f);
+                Summon->SetSpeedRate(MOVE_RUN, 0.7f);
                 return Summon;
             }
         }

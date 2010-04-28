@@ -830,7 +830,7 @@ struct MANGOS_DLL_DECL boss_kaelthasAI : public ScriptedAI
                  {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     {
-                        DoCastSpellIfCan(pTarget, SPELL_PHOENIX_ANIMATION);
+                        DoCastSpellIfCan(m_creature, SPELL_PHOENIX_ANIMATION);
                         DoScriptText(urand(0, 1) ? SAY_SUMMON_PHOENIX1 : SAY_SUMMON_PHOENIX2, pTarget);
                     }
 

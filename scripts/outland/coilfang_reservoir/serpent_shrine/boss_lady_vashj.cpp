@@ -613,7 +613,7 @@ struct MANGOS_DLL_DECL mob_toxic_sporebatAI : public ScriptedAI
                 if (!pVashj || !pVashj->isAlive())
                 {
                     //remove
-                    m_creature->SetVisibility(VISIBILITY_ON);
+                    m_creature->SetVisibility(VISIBILITY_OFF);
                     m_creature->setDeathState(DEAD);
                     m_creature->RemoveCorpse();
                     m_creature->setFaction(35);

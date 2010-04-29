@@ -161,7 +161,7 @@ struct MANGOS_DLL_DECL boss_lady_vashjAI : public ScriptedAI
         m_uiCoilfangStrider_Timer      = 60000;
 
         m_uiSummonSporebat_Timer       = 10000;
-        m_uiSummonSporebat_StaticTimer = 30000;
+        m_uiSummonSporebat_StaticTimer = 18000;
         m_uiEnchantedElemental_Pos     = 0;
         m_uiPhase                      = PHASE_1;
 
@@ -497,6 +497,7 @@ struct MANGOS_DLL_DECL mob_enchanted_elementalAI : public ScriptedAI
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         SetCombatMovement(false);
+        m_creature->SetSpeedRate(MOVE_WALK, 2.5f);
         Reset();
     }
 
@@ -612,6 +613,7 @@ struct MANGOS_DLL_DECL mob_toxic_sporebatAI : public ScriptedAI
                 if (!pVashj || !pVashj->isAlive())
                 {
                     //remove
+                    m_creature->SetVisibility(VISIBILITY_ON);
                     m_creature->setDeathState(DEAD);
                     m_creature->RemoveCorpse();
                     m_creature->setFaction(35);

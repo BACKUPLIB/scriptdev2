@@ -78,7 +78,6 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
         m_uiBurnTimer = 60000;
         m_uiBerserkTimer = 360000;
         m_uiLoveTimer = urand(10000, 17000);
-        m_creature->SetVisibility(VISIBILITY_OFF);
 
 		if(Creature* pMadrigosa = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_MADRIGOSA)))
 			pMadrigosa->SetVisibility(VISIBILITY_ON);

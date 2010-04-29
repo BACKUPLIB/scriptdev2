@@ -162,7 +162,7 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
         // Needle
         if (m_uiNeedleSpineTimer < diff)
         {
-            for(uint8 i = 0; i < 3; ++i)
+            for(uint8 i = 0; i < 5; ++i)
             {
                 Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1);
 
@@ -173,7 +173,7 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
                 target->CastSpell(target, SPELL_NEEDLE_AOE, false);
             }
 
-            m_uiNeedleSpineTimer = 3000;
+            m_uiNeedleSpineTimer = 2500;
         }else m_uiNeedleSpineTimer -= diff;
 
         if (m_uiSpecialYellTimer < diff)

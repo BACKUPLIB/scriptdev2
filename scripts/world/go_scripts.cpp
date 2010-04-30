@@ -460,7 +460,7 @@ bool GOHello_go_mana_tomb_stasis(Player* pPlayer, GameObject* pGo)
 
 bool GOHello_go_zuluheds_chain(Player* pPlayer, GameObject* pGo)
 {
-    pPlayer->SetQuestStatus(10866, QUEST_STATUS_COMPLETE);
+    pPlayer->SetQuestStatus(10866, QUEST_STATUS_COMPLETE); 
 		
     return false;
 }

@@ -4,6 +4,10 @@
 UPDATE `creature_template` SET `dmg_multiplier` = 45 WHERE `entry` IN (24850, 24892, 24882, 25038, 25165, 25166, 25741, 25315);
 #update brutallus hp
 UPDATE `creature_template` SET `minhealth`=12300000 ,`maxhealth`=12300000 WHERE `entry`=24882;
+# update sacrolash hp
+UPDATE `creature_template` SET `minhealth`=5000000, `maxhealth`=5000000 WHERE `entry` = 25165;
+# update alythess hp
+UPDATE `creature_template` SET `minhealth`=5000000, `maxhealth`=5000000 WHERE `entry` = 25166;
 
 # npc 25507, 25486 (sunblade protector, shadowsword vanquisher)
 UPDATE `creature_template` SET `minhealth`=650000, `maxhealth`=650000, `dmg_multiplier` = 3.5 WHERE `entry` IN(25507, 25486);

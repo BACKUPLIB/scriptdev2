@@ -40,6 +40,7 @@ go_tele_to_dalaran_crystal
 go_tele_to_violet_stand
 go_shaffars_stasis
 go_mana_tomb_stasis
+go_zuluheds_chain
 EndContentData */
 
 #include "precompiled.h"
@@ -453,6 +454,17 @@ bool GOHello_go_mana_tomb_stasis(Player* pPlayer, GameObject* pGo)
     return false;
 }
 
+/*######
+## go_zuluheds_chain
+######*/
+
+bool GOHello_go_zuluheds_chain(Player* pPlayer, GameObject* pGo)
+{
+    pPlayer->SetQuestStatus(10866, QUEST_STATUS_COMPLETE);
+		
+    return false;
+}
+
 void AddSC_go_scripts()
 {
     Script *newscript;
@@ -560,5 +572,10 @@ void AddSC_go_scripts()
 	newscript = new Script;
     newscript->Name = "go_mana_tomb_stasis";
     newscript->pGOHello =           &GOHello_go_mana_tomb_stasis;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_zuluheds_chain";
+    newscript->pGOHello =           &GOHello_go_zuluheds_chain;
     newscript->RegisterSelf();
 }

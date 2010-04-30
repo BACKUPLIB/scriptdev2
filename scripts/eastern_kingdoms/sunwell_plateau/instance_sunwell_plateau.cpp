@@ -392,11 +392,152 @@ InstanceData* GetInstanceData_instance_sunwell_plateau(Map* pMap)
     return new instance_sunwell_plateau(pMap);
 }
 
+struct MANGOS_DLL_DECL mob_sunblade_scoutAI : public ScriptedAI
+{
+    mob_sunblade_scoutAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+
+    int j;
+    Creature *nearby[3];
+    bool gatherOthersWhenAggro;
+
+    void Reset() { }
+
+    void AddBuddyToList(Creature *c)
+    {
+        if (c==m_creature)
+            return;
+        for (int i=0; i<3; ++i)
+        {
+            if (nearby[i] == c)
+                return;
+            if (!nearby[i])
+            {
+                nearby[i] = c;
+                return;
+            }
+        }
+    }
+
+    void AddDeceiverNear(Unit *nears)
+    {
+        std::list<Creature*> assistList;
+        switch (j)
+        {
+            case 0:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25507,40.0f);
+                break;
+            case 1:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25363,40.0f);
+                break;
+            case 2:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25369,40.0f);
+                break;
+            case 3:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25371,40.0f);
+                break;
+            case 4:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25370,40.0f);
+                break;
+            case 5:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25367,40.0f);
+                break;
+            case 6:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25368,40.0f);
+                break;
+            case 7:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,26101,40.0f);
+                break;
+            case 8:
+                GetCreatureListWithEntryInGrid(assistList,m_creature,25867,40.0f);
+                break;
+            default:
+                break;
+        }
+
+        if (assistList.empty())
+            return;
+
+        for(std::list<Creature*>::iterator iter = assistList.begin(); iter != assistList.end(); ++iter)
+           AddBuddyToList((*iter));
+    }
+
+    void GiveBuddyMyList(Creature *c)
+    {
+        mob_sunblade_scoutAI *cai = (mob_sunblade_scoutAI *)(c->AI());
+        for (int i=0; i<3; ++i)
+            if (nearby[i] && nearby[i]!=c)
+                cai->AddBuddyToList(nearby[i]);
+        cai->AddBuddyToList(m_creature);
+    }
+
+    void CallBuddiesToAttack(Unit *who)
+    {
+        for (int i=0; i<3; ++i)
+        {
+            Creature *c = nearby[i];
+            if (c)
+            {
+                if (c->GetPositionZ() - 10 < m_creature->GetPositionZ())
+                {
+                    if (!c->isInCombat())
+                    {
+                        c->SetNoCallAssistance(true);
+                        if (c->AI())
+                            c->AI()->AttackStart(who);
+                    }
+                }
+            }
+        }
+	} 
+
+    void Aggro(Unit* who)
+    {
+        m_creature->MonsterYell("Kommt mir zu Hilfe!", 0, 0); 
+        
+        for(j=0; j < 10; ++j)
+        {
+            nearby[0] = nearby[1] = nearby[2] = nearby[3] /*= nearby[4] = nearby[5] = nearby[6] = nearby[7] = nearby[8] = nearby[9] = nearby[10] */= NULL;
+	        AddDeceiverNear(m_creature);
+            for (int bli = 0; bli < 3; ++bli)
+            {
+                if (!nearby[bli])
+                    break;
+                AddDeceiverNear(nearby[bli]);
+                ((mob_sunblade_scoutAI *)nearby[bli]->AI())->gatherOthersWhenAggro = false;
+	        }
+	        for (int i=0; i<3; ++i)
+                if (nearby[i])
+                    GiveBuddyMyList(nearby[i]);
+
+            CallBuddiesToAttack(who);
+        }
+
+
+    }
+
+};
+
+CreatureAI* GetAI_mob_sunblade_scout(Creature* pCreature)
+{
+    return new mob_sunblade_scoutAI(pCreature);
+}
+
 void AddSC_instance_sunwell_plateau()
 {
     Script *newscript;
     newscript = new Script;
     newscript->Name = "instance_sunwell_plateau";
     newscript->GetInstanceData = &GetInstanceData_instance_sunwell_plateau;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_sunblade_scout";
+    newscript->GetAI = &GetAI_mob_sunblade_scout;
     newscript->RegisterSelf();
 }

@@ -489,7 +489,11 @@ struct MANGOS_DLL_DECL mob_sunblade_scoutAI : public ScriptedAI
                     {
                         c->SetNoCallAssistance(true);
                         if (c->AI())
+                        {
                             c->AI()->AttackStart(who);
+                            c->GetMotionMaster()->MoveChase(m_creature->getVictim(), 0, 0);
+                        }
+                            
                     }
                 }
             }
@@ -502,7 +506,7 @@ struct MANGOS_DLL_DECL mob_sunblade_scoutAI : public ScriptedAI
         
         for(j=0; j < 10; ++j)
         {
-            nearby[0] = nearby[1] = nearby[2] = nearby[3] /*= nearby[4] = nearby[5] = nearby[6] = nearby[7] = nearby[8] = nearby[9] = nearby[10] */= NULL;
+            nearby[0] = nearby[1] = nearby[2] = NULL;
 	        AddDeceiverNear(m_creature);
             for (int bli = 0; bli < 3; ++bli)
             {
@@ -516,11 +520,8 @@ struct MANGOS_DLL_DECL mob_sunblade_scoutAI : public ScriptedAI
                     GiveBuddyMyList(nearby[i]);
 
             CallBuddiesToAttack(who);
-        }
-
-
+        } 
     }
-
 };
 
 CreatureAI* GetAI_mob_sunblade_scout(Creature* pCreature)

@@ -204,6 +204,9 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
 
                 AppearDelay_Timer = 2000;
             }else AppearDelay_Timer -= diff;
+
+            // do not handle phases if we are on delay
+            return;
         }
 
         if (Phase == 1)
@@ -229,17 +232,17 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
             {
                 m_creature->InterruptNonMeleeSpells(false);
 
-                //Target the tank ?
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+                // random target
+                do
                 {
-                    if (pTarget->GetTypeId() == TYPEID_PLAYER)
-                    {
-                        DoCastSpellIfCan(pTarget, SPELL_WRATH_OF_THE_ASTROMANCER);
-                        m_uiWrathOfTheAstromancer_Timer = 25000;
-                    }
-                    else
-                        m_uiWrathOfTheAstromancer_Timer = 1000;
-                }
+                    Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                    if (pTarget->GetTypeId() != TYPEID_PLAYER)
+                        continue;
+                    DoCastSpellIfCan(pTarget, SPELL_WRATH_OF_THE_ASTROMANCER);
+                    m_uiWrathOfTheAstromancer_Timer = urand(20000, 30000);
+                    break;
+                }while (1);
+
             }else m_uiWrathOfTheAstromancer_Timer -= diff;
 
             //BlindingLight_Timer
@@ -318,6 +321,8 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
 
                 Phase2_Timer = 10000;
             } else Phase2_Timer -= diff;
+
+            return;
         }
         else if (Phase == 3)
         {
@@ -346,6 +351,8 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
                 AppearDelay = true;
                 Phase3_Timer = 15000;
             }else Phase3_Timer -= diff;
+
+            return;
         }
         else if (Phase == 4)
         {

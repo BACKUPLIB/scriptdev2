@@ -138,7 +138,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
         SummonVoidTimer = 30000; 
         DarknessTimer = 45000; 
         EnrageTimer = 600000;
-        Phase1 = false;
+        Phase1 = true;
         Darkness = false;
 		VoidSentinel = false;
 
@@ -205,15 +205,15 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
            //Spawns Shadow portal and Void Sentinel -> working
             if(SummonVoidTimer < diff)
             {
-				m_creature->MonsterYell("try open portal",LANG_UNIVERSAL,0);
+				//m_creature->MonsterYell("try open portal",LANG_UNIVERSAL,0);
 				if(pPortalTarget = Unit::GetUnit(*m_creature,pInstance->GetData64(DATA_SHADOW_PORTAL)))
 				{
-					pPortalTarget->MonsterYell("portal opened",LANG_UNIVERSAL,0);
+					//pPortalTarget->MonsterYell("portal opened",LANG_UNIVERSAL,0);
 					pPortalTarget->CastSpell(pPortalTarget,SUMMON_VOID_SENTINEL_PORTAL,false);
 					VoidSentinel = true;
 					VoidSentinelTimer = 3000;
 				} 
-				else m_creature->MonsterYell("failed",LANG_UNIVERSAL,0);
+				//else m_creature->MonsterYell("failed",LANG_UNIVERSAL,0);
                 SummonVoidTimer = 30000; 
             }else SummonVoidTimer -= diff;
 
@@ -304,7 +304,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             {
                 if(Unit* sTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
-					m_creature->MonsterYell("Singularity!",LANG_UNIVERSAL,0);
+					//m_creature->MonsterYell("Singularity!",LANG_UNIVERSAL,0);
                     Creature* Singularity = m_creature->SummonCreature(ID_SINGULARITY, sTarget->GetPositionX(), sTarget->GetPositionY(), sTarget->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 20000);
                     if(Singularity)
                         Singularity->AI()->AttackStart(sTarget);

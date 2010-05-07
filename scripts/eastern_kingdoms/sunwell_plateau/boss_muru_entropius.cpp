@@ -409,8 +409,6 @@ struct MANGOS_DLL_DECL mob_voidsentinelAI : public ScriptedAI
         m_creature->getVictim();
     }
     
-    void Aggro(Unit *who){m_creature->Attack(who);}
-    
     void JustDied(Unit* Killer) 
     {
         for(uint8 i=0; i<8; ++i)

@@ -147,7 +147,7 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
         {
             //second top aggro target in normal, random target in heroic correct?
             Unit *target = NULL;
-            if (m_bIsRegularMode ? target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1) : target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+            if (m_bIsRegularMode ? target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 1) : target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCastSpellIfCan(target, m_bIsRegularMode ? SPELL_POLYMORPH : H_SPELL_POLYMORPH);
             Sheep_Timer = urand(15000, 17500);
         }else Sheep_Timer -= diff;

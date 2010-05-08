@@ -164,7 +164,7 @@ class MANGOS_DLL_DECL BossSpellWorker
              return _BSWDoCast(FindSpellIDX(SpellID), pTarget);
              };
 
-        Unit*  SelectUnit(SelectAggroTarget target = SELECT_TARGET_RANDOM, uint32 uiPosition = 0)
+        Unit*  SelectUnit(AttackingTarget target = ATTACKING_TARGET_RANDOM, uint32 uiPosition = 0)
              {
              return  _SelectUnit(target, uiPosition);
              };
@@ -204,7 +204,7 @@ class MANGOS_DLL_DECL BossSpellWorker
 
         CanCastResult _CanCastSpell(Unit* pTarget, const SpellEntry *pSpell, bool isTriggered = false);
 
-        Unit*         _SelectUnit(SelectAggroTarget target, uint32 uiPosition);
+        Unit*         _SelectUnit(AttackingTarget target, uint32 uiPosition);
 
         bool          _doRemove(uint8 m_uiSpellIdx, Unit* pTarget = NULL);
 

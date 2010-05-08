@@ -80,7 +80,7 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
         //Sleep_Timer
         if (Sleep_Timer < diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO,0))
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO,0))
                 DoCastSpellIfCan(target,SPELL_SLEEP);
 
             Sleep_Timer = 30000;

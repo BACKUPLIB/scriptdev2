@@ -298,7 +298,7 @@ struct MANGOS_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
                 {
                     DoScriptText(SUFF_SAY_FREED, EssenceSuffering);
 
-                    if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
+                    if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 0))
                     {
                         EssenceSuffering->AddThreat(target);
                         EssenceSuffering->AI()->AttackStart(target);
@@ -508,7 +508,7 @@ struct MANGOS_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
 
                     if (EssenceAnger)
                     {
-                        if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0))
+                        if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 0))
                         {
                             EssenceAnger->AddThreat(target);
                             EssenceAnger->AI()->AttackStart(target);

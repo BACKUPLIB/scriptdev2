@@ -61,7 +61,7 @@ struct MANGOS_DLL_DECL mob_jadespine_basiliskAI : public ScriptedAI
             //Stop attacking target thast asleep and pick new target
             Cslumber_Timer = 28000;
 
-            Unit* Target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+            Unit* Target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 0);
 
             if (!Target || Target == m_creature->getVictim())
                 Target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);

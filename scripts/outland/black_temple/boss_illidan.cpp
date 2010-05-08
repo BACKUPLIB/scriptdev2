@@ -1833,7 +1833,7 @@ struct MANGOS_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
             {
                 if (ShadowBlastTimer < diff)
                 {
-                    Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                    Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 0);
                     if (target && target->isAlive())
                     {
                         m_creature->SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());

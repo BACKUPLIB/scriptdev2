@@ -133,7 +133,7 @@ struct MANGOS_DLL_DECL boss_s_and_d_dummyAI : public ScriptedAI
         if (pSummoned->GetEntry() == NPC_DAL_GHOST || pSummoned->GetEntry() == NPC_SKA_GHOST)
             m_uiGhostGUID = pSummoned->GetGUID();
 
-        Unit* pTarget = SelectUnit(SELECT_TARGET_TOPAGGRO,1);
+        Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO,1);
 
         if (m_creature->getVictim())
             pSummoned->AI()->AttackStart(pTarget ? pTarget : m_creature->getVictim());

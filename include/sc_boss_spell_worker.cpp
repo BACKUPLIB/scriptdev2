@@ -166,7 +166,7 @@ CanCastResult BossSpellWorker::_BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarg
                    break;
 
             case CAST_ON_BOTTOMAGGRO:
-                   pTarget = boss->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+                   pTarget = boss->SelectAttackingTarget(ATTACKING_TARGET_BOTTOMAGGRO, 0);
                    return _BSWCastOnTarget(pTarget, m_uiSpellIdx);
                    break;
 

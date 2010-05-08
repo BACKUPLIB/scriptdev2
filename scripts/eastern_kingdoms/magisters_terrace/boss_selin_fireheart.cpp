@@ -262,11 +262,11 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
 					{
 						if(randomDrain == 0) 
 						{
-							DoCast(SelectUnit(SELECT_TARGET_RANDOM, 1), SPELL_DRAIN_MANA);
+							DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1), SPELL_DRAIN_MANA);
 						}
 						else
 						{
-							DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DRAIN_LIFE);
+							DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), SPELL_DRAIN_LIFE);
 						}
 
 						DrainManaTimer = 10000;
@@ -276,7 +276,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
 				{				
 					if (DrainLifeTimer < diff)
 					{
-						DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_DRAIN_LIFE);
+						DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), SPELL_DRAIN_LIFE);
 						DrainLifeTimer = 10000;
 					}else DrainLifeTimer -= diff;
 				}

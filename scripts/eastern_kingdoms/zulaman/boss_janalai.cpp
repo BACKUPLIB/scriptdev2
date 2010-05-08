@@ -433,7 +433,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
 
         if(FireBreathTimer < diff)
         {
-            if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
             {
                 m_creature->AttackStop();
                 m_creature->GetMotionMaster()->Clear();

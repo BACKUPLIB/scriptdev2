@@ -199,7 +199,7 @@ struct MANGOS_DLL_DECL boss_venoxisAI : public ScriptedAI
 
             if (m_uiHolyFire_Timer < uiDiff && m_uiTargetsInRangeCount < 3)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                     DoCastSpellIfCan(pTarget, SPELL_HOLY_FIRE);
 
                 m_uiHolyFire_Timer = 8000;
@@ -219,7 +219,7 @@ struct MANGOS_DLL_DECL boss_venoxisAI : public ScriptedAI
 
             if (m_uiVenomSpit_Timer < uiDiff)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                     DoCastSpellIfCan(pTarget, SPELL_VENOMSPIT);
 
                 m_uiVenomSpit_Timer = urand(15000, 20000);
@@ -229,7 +229,7 @@ struct MANGOS_DLL_DECL boss_venoxisAI : public ScriptedAI
 
             if (m_uiParasitic_Timer < uiDiff)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                     DoCastSpellIfCan(pTarget, SPELL_PARASITIC);
 
                 m_uiParasitic_Timer = 10000;

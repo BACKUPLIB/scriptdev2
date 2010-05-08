@@ -257,7 +257,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
 
             if(ShockTimer < diff)
             {
-                if(Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                 {
                     if(target->IsNonMeleeSpellCasted(false))
                         DoCast(target,SPELL_EARTHSHOCK);

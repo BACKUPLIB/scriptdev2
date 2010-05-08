@@ -275,7 +275,7 @@ struct MANGOS_DLL_DECL boss_gurtogg_bloodboilAI : public ScriptedAI
         {
             if (Phase1)
             {
-                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
                 if (target && target->isAlive())
                 {
                     Phase1 = false;

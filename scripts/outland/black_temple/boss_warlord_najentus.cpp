@@ -164,7 +164,7 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
         {
             for(uint8 i = 0; i < 5; ++i)
             {
-                Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1);
+                Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1);
 
                 if (!target)
                     target = m_creature->getVictim();
@@ -184,7 +184,7 @@ struct MANGOS_DLL_DECL boss_najentusAI : public ScriptedAI
 
         if (m_uiImpalingSpineTimer < diff)
         {
-            Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1);
+            Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1);
 
             if (!target)
                 target = m_creature->getVictim();

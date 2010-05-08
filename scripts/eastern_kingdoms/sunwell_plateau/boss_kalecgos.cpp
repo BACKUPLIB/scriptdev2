@@ -323,7 +323,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
 
         if (m_uiWildMagicTimer < diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCastSpellIfCan(target, WildMagic[rand()%6]);
 
             m_uiWildMagicTimer = 19000;
@@ -459,7 +459,7 @@ struct MANGOS_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
         if (CurseOfBoundlessAgonyTimer < diff)
         {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCastSpellIfCan(pTarget, SPELL_CURSE_OF_BOUNDLESS_AGONY);
 
             CurseOfBoundlessAgonyTimer = 27000;		

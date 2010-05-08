@@ -92,7 +92,7 @@ struct MANGOS_DLL_DECL boss_curatorAI : public ScriptedAI
 
             if (m_creature->getVictim())
             {
-                Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1);
 
                 pSummoned->AddThreat(pTarget ? pTarget : m_creature->getVictim(), 1000.0f);
             }

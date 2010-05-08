@@ -64,7 +64,7 @@ struct MANGOS_DLL_DECL mob_jadespine_basiliskAI : public ScriptedAI
             Unit* Target = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
 
             if (!Target || Target == m_creature->getVictim())
-                Target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                Target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
 
             if (Target)
                 m_creature->TauntApply(Target);

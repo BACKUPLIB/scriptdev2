@@ -63,7 +63,7 @@ struct MANGOS_DLL_DECL boss_shazzrahAI : public ScriptedAI
         if (ShazzrahCurse_Timer < diff)
         {
             Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM,0);
+            target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
             if (target) DoCast(target,SPELL_SHAZZRAHCURSE);
 
             ShazzrahCurse_Timer = urand(25000, 30000);
@@ -89,7 +89,7 @@ struct MANGOS_DLL_DECL boss_shazzrahAI : public ScriptedAI
             // Teleporting him to a random gamer and casting Arcane Explosion after that.
             // Blink is not working cause of LoS System we need to do this hardcoded.
             Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM,0);
+            target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
 
             m_creature->GetMap()->CreatureRelocation(m_creature, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0.0f);
             m_creature->SendMonsterMove(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), SPLINETYPE_NORMAL, SPLINEFLAG_WALKMODE, 1);

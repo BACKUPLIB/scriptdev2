@@ -193,7 +193,7 @@ struct MANGOS_DLL_DECL boss_harbinger_skyrissAI : public ScriptedAI
 
         if (MindRend_Timer < diff)
         {
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
                 DoCast(target, m_bIsRegularMode ? SPELL_MIND_REND : H_SPELL_MIND_REND);
             else
                 DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_MIND_REND : H_SPELL_MIND_REND);
@@ -208,7 +208,7 @@ struct MANGOS_DLL_DECL boss_harbinger_skyrissAI : public ScriptedAI
 
             DoScriptText(urand(0, 1) ? SAY_FEAR_1 : SAY_FEAR_2, m_creature);
 
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
                 DoCast(target,SPELL_FEAR);
             else
                 DoCast(m_creature->getVictim(),SPELL_FEAR);
@@ -223,7 +223,7 @@ struct MANGOS_DLL_DECL boss_harbinger_skyrissAI : public ScriptedAI
 
             DoScriptText(urand(0, 1) ? SAY_MIND_1 : SAY_MIND_2, m_creature);
 
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
                 DoCast(target, m_bIsRegularMode ? SPELL_DOMINATION : H_SPELL_DOMINATION);
             else
                 DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_DOMINATION : H_SPELL_DOMINATION);
@@ -238,7 +238,7 @@ struct MANGOS_DLL_DECL boss_harbinger_skyrissAI : public ScriptedAI
                 if (m_creature->IsNonMeleeSpellCasted(false))
                     return;
 
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
+                if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
                     DoCast(target,H_SPELL_MANA_BURN);
 
                 ManaBurn_Timer = urand(16000, 32000);
@@ -279,7 +279,7 @@ struct MANGOS_DLL_DECL boss_harbinger_skyriss_illusionAI : public ScriptedAI
 	{
 		if (MindRend_Illusion_Timer < diff)
 		{
-			if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1))
+			if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
 				DoCast(target, m_bIsRegluarMode ? SPELL_MIND_REND_IMAGE : H_SPELL_MIND_REND_IMAGE);
 			else
 				DoCast(m_creature->getVictim(), m_bIsRegluarMode ? SPELL_MIND_REND_IMAGE : H_SPELL_MIND_REND_IMAGE);

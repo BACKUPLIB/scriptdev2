@@ -314,11 +314,11 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 return false;
             }
             case EVENT_VOID_ZONE:
-                DoCast(SelectUnit(SELECT_TARGET_RANDOM,0),SPELL_VOID_ZONE,true);
+                DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0),SPELL_VOID_ZONE,true);
                 timers[EVENT_VOID_ZONE] = urand(10000,20000);
                 return false;
             case EVENT_NETHERBREATH:
-                DoCast(SelectUnit(SELECT_TARGET_RANDOM,0),SPELL_NETHERBREATH);
+                DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0),SPELL_NETHERBREATH);
                 timers[EVENT_NETHERBREATH] = 5000;
                 return false;
             case EVENT_RECAST_BEAM_1:

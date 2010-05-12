@@ -511,7 +511,8 @@ enum
     SPELL_DUEL_FLAG             = 52991,
 
     QUEST_DEATH_CHALLENGE       = 12733,
-    FACTION_HOSTILE             = 2068
+    FACTION_HOSTILE             = 2068,
+    NPC_EBON_HOLD_DUEL          = 29025
 };
 
 int32 m_auiRandomSay[] =
@@ -520,12 +521,12 @@ int32 m_auiRandomSay[] =
 };
 
 #define GOSSIP_ACCEPT_DUEL      "I challenge you, death knight!"
+ uint64 m_uiDuelerGUID;
 
 struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 {
     npc_death_knight_initiateAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
 
-    uint64 m_uiDuelerGUID;
     uint32 m_uiDuelTimer;
     bool m_bIsDuelInProgress;
 
@@ -535,9 +536,11 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
             m_creature->setFaction(m_creature->GetCreatureInfo()->faction_A);
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
 
         m_uiDuelerGUID = 0;
-        m_uiDuelTimer = 5000;
+        m_uiDuelTimer = 3000;
         m_bIsDuelInProgress = false;
     }
 
@@ -554,9 +557,8 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_TRIGGERED)
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
         {
-            m_uiDuelerGUID = pCaster->GetGUID();
             m_bIsDuelInProgress = true;
         }
     }
@@ -566,10 +568,10 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
         if (m_bIsDuelInProgress && uiDamage > m_creature->GetHealth())
         {
             uiDamage = 0;
-
-            if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
-                m_creature->CastSpell(pUnit, SPELL_DUEL_VICTORY, true);
-
+            if (Player* pPlyr = (Player*) Unit::GetUnit(*m_creature, m_uiDuelerGUID))
+            {
+                m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
+            }
             //possibly not evade, but instead have end sequenze
             EnterEvadeMode();
         }
@@ -584,7 +586,6 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
                 if (m_uiDuelTimer < uiDiff)
                 {
                     m_creature->setFaction(FACTION_HOSTILE);
-
                     if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
                         AttackStart(pUnit);
                 }
@@ -629,12 +630,15 @@ bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature
         }
 
         pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
+        pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
 
         int32 uiSayId = rand()% (sizeof(m_auiRandomSay)/sizeof(int32));
         DoScriptText(m_auiRandomSay[uiSayId], pCreature, pPlayer);
 
-        pCreature->CastSpell(pPlayer, SPELL_DUEL, false);
+        //pCreature->CastSpell(pPlayer, SPELL_DUEL, false); //spell buggy? doesn't work
         pCreature->CastSpell(pPlayer, SPELL_DUEL_FLAG, true);
+        m_uiDuelerGUID = pPlayer->GetGUID();
     }
     return true;
 }
@@ -3075,7 +3079,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
     {
         if (Creature* pTemp = ((Creature*)Unit::GetUnit((*m_creature), ui_GUID)))
             if (pTemp->isAlive())
-                if (Unit* pTarger = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                if (Unit* pTarger = SelectUnit(SELECT_TARGET_RANDOM,0))
                     if (pTarger->isAlive())
                     {
                         ((Creature*)pTemp)->AddThreat(pTarger, 0.0f);

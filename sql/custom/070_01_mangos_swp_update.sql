@@ -2,6 +2,10 @@
 
 #update damage for swp bosses
 UPDATE `creature_template` SET `dmg_multiplier` = 45 WHERE `entry` IN (24850, 24892, 24882, 25038, 25165, 25166, 25741, 25315);
+#update kalecgos hp & dmg
+UPDATE `creature_template` SET `minhealth`=6500000, `maxhealth`=6500000, `dmg_multiplier` = 50 WHERE `entry`=24850;
+#update sathrovarr hp & dmg
+UPDATE `creature_template` SET `minhealth`=6500000, `maxhealth`=6500000, `dmg_multiplier` = 50 WHERE `entry`=24892;
 #update brutallus hp
 UPDATE `creature_template` SET `minhealth`=12300000 ,`maxhealth`=12300000 WHERE `entry`=24882;
 # update sacrolash hp

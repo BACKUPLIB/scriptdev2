@@ -349,6 +349,12 @@ struct MANGOS_DLL_DECL boss_felmystAI : public ScriptedAI
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                 m_uiFlyPhaseTimer       = 60000;
                 m_bIsFlyPhase           = false;
+
+                m_uiCorrosionTimer      = 20000;
+                m_uiCleaveTimer         = 10000;
+                m_uiEncapsulateTimer    = 10000;
+                m_uiGasNovaTimer        = 15000;
+
 				m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
 			}else m_uiLandPhaseTimer -= diff;

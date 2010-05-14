@@ -304,7 +304,8 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 if (!urand(0, 2))
                     DoScriptText(SAY_EVIL_SPELL1, m_creature);
 
-                m_uiArcaneBuffetTimer = 20000;
+                //m_uiArcaneBuffetTimer = 20000;
+                m_uiArcaneBuffetTimer = urand(15000, 20000);
             }
         }
         else m_uiArcaneBuffetTimer -= diff;
@@ -316,7 +317,8 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
                 if (!urand(0, 1))
                     DoScriptText(SAY_EVIL_SPELL2, m_creature);
 
-                m_uiFrostBreathTimer = 25000;
+                //m_uiFrostBreathTimer = 25000;
+                m_uiFrostBreathTimer = urand(15000, 25000);
             }
         }
         else m_uiFrostBreathTimer -= diff;
@@ -454,7 +456,8 @@ struct MANGOS_DLL_DECL boss_sathrovarrAI : public ScriptedAI
                 DoScriptText(SAY_SATH_SPELL2, m_creature);
 
             DoCastSpellIfCan(m_creature->getVictim(), SPELL_CORRUPTING_STRIKE);
-            CorruptingStrikeTimer = 15000;		
+            //CorruptingStrikeTimer = 15000;
+            CorruptingStrikeTimer = urand(10000, 15000);		
         }else CorruptingStrikeTimer -= diff;
 
         if (CurseOfBoundlessAgonyTimer < diff)

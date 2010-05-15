@@ -697,8 +697,15 @@ struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
+        // ignore threat list
+        if (!m_creature->getVictim())
+        {
+            Unit* pTarget =  GetClosestAttackableUnit(m_creature, 100.0f);  // maybe we need to exclude pets?
+            // unsummon if no unit is present
+            if (!pTarget && m_creature->isTemporarySummon())
+                ((TemporarySummon*)m_creature)->UnSummon();
+            AttackStart(pTarget);
+        }
 
         // no melee attack
     }

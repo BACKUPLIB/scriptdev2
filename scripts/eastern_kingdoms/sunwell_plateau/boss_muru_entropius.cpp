@@ -136,6 +136,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
         m_fDarkPosY = 0;
 
         m_creature->SetDisplayId(23404);
+        m_creature->SetName("M'uru");
 
         NegativeEnergyTimer = 1000;
         SummonTrashTimer = 10000;
@@ -196,6 +197,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             if((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) <= 42)
             {
                 m_creature->SetDisplayId(23428);
+                m_creature->SetName("Entropius");
                 m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                 DoPlaySoundToSet(m_creature, SOUND_CHANGE_PHASE);
                 DoCast(m_creature, ENTROPIUS_EFFECT, true);
@@ -310,7 +312,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
 
             if(BlackHoleTimer < diff)
             {   //summon black hole visual
-                pBlackHole = m_creature->SummonCreature(32953,1790+rand()%50,599+rand()%50,m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,1000);
+                pBlackHole = m_creature->SummonCreature(32953,1790+rand()%50,599+rand()%50,m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,2000);
                 Darkness = true;
                 DarkFiendTimer = 500;
                 BlackHoleTimer = 10000;
@@ -319,20 +321,17 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             DoMeleeAttackIfReady();
         }
 
-        if(Darkness)
-			if(DarkFiendTimer < diff)
+        if(Darkness && DarkFiendTimer < diff)
 			{
                 if(Phase1)// summon dark fiends
 				    for(int i=0;i<8;i++)
                     {
-					    if (Unit* fiend = m_creature->SummonCreature(ID_DARK_FIEND,DarkFiendSpawn[i][0],DarkFiendSpawn[i][1],DarkFiendSpawnZ,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000))
-                            fiend->getVictim();
+					    Unit* fiend = m_creature->SummonCreature(ID_DARK_FIEND,DarkFiendSpawn[i][0],DarkFiendSpawn[i][1],DarkFiendSpawnZ,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
                     }
                 else
                     if(pBlackHole)
                     {
-                        if (Unit* fiend = m_creature->SummonCreature(ID_DARK_FIEND,pBlackHole->GetPositionX(),pBlackHole->GetPositionY(),pBlackHole->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000))
-                            fiend->getVictim();
+                        Unit* fiend = m_creature->SummonCreature(ID_DARK_FIEND,pBlackHole->GetPositionX(),pBlackHole->GetPositionY(),pBlackHole->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
                     }
             Darkness = false;
 			} else DarkFiendTimer -= diff;
@@ -358,6 +357,9 @@ struct MANGOS_DLL_DECL dark_fiendAI : public ScriptedAI
 		if(!m_creature->HasAura(DARK_FIEND_AURA,EFFECT_INDEX_0))
             m_creature->CastSpell(m_creature, DARK_FIEND_AURA, true);
         Reached = false;
+
+        if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+            AttackStart(target);
     }
     
     void Aggro(Unit *who) {}
@@ -406,11 +408,13 @@ struct MANGOS_DLL_DECL mob_voidsentinelAI : public ScriptedAI
     {   
         AuraTimer   = 3000;
         BlastTimer  = 15000;
-        m_creature->getVictim();
+        if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+            AttackStart(target);
     }
     
     void JustDied(Unit* Killer) 
     {
+        m_creature->ForcedDespawn();
         for(uint8 i=0; i<8; ++i)
         {
 			// void spawn AI handled by EventAI
@@ -475,12 +479,13 @@ struct MANGOS_DLL_DECL mob_singularityAI : public ScriptedAI
         if(ChangeTargetTimer < diff)
         {
             if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                m_creature->Attack(target, true);
+                AttackStart(target);
             ChangeTargetTimer = 5000;
         }else ChangeTargetTimer -= diff;
 
         if(LifeTime < diff)
         {
+            m_creature->DealDamage(m_creature,m_creature->GetHealth(),NULL,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,NULL,false);
             m_creature->ForcedDespawn();
         }else LifeTime -= diff;
     }

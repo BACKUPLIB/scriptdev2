@@ -107,6 +107,8 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
     bool m_bEnraged;
     bool m_bHasSpectralTarget;
 
+    Unit* pKiller;
+
     void Reset()
     {
         m_uiArcaneBuffetTimer       = 8000;
@@ -123,7 +125,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
         m_bEnraged     = false;
         m_bHasSpectralTarget = false;
 
-
+        pKiller = 0;
     }
 
     void JustReachedHome()	
@@ -165,6 +167,7 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             }
             else
             {
+                pKiller = done_by;
                 damage = 0;
                 BeginOutro();
             }
@@ -217,7 +220,9 @@ struct MANGOS_DLL_DECL boss_kalecgosAI : public ScriptedAI
             if (pSathrovarr->isAlive())
             {
                 pSathrovarr->NearTeleportTo(KALECGOS_ARENA[0], KALECGOS_ARENA[1], KALECGOS_ARENA[2], 0.0f);
-                pSathrovarr->DealDamage(pSathrovarr, pSathrovarr->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                //pSathrovarr->DealDamage(pSathrovarr, pSathrovarr->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                if(pKiller)
+                    pKiller->DealDamage(pSathrovarr, pSathrovarr->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
         }
 
@@ -403,12 +408,14 @@ struct MANGOS_DLL_DECL boss_sathrovarrAI : public ScriptedAI
 
     void DamageTaken(Unit* done_by, uint32 &damage)
     {
-        if (damage > m_creature->GetHealth())
-        {
+        if(!m_pInstance)
+            return;
+
+            if (damage >= m_creature->GetHealth() && m_pInstance->GetData(TYPE_KALECGOS) != DONE)
+            {
             damage = 0;
             DoCastSpellIfCan(m_creature, SPELL_BANISH, true);
             m_bBanished = true;
-
             DoScriptText(SAY_SATH_DEATH, m_creature);
 
             if (!m_pInstance)

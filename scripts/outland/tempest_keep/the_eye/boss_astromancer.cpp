@@ -230,19 +230,30 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
             //Wrath of the Astromancer targets a random player which will explode after 6 secondes
             if (m_uiWrathOfTheAstromancer_Timer < diff)
             {
-                m_creature->InterruptNonMeleeSpells(false);
-
-                // random target
-                do
+                // TODO: move to core (ATTACKING_TARGET_RANDOM_PLAYER)
+                // extract player targets from threat list
+                ThreatList const& threatList = m_creature->getThreatManager().getThreatList();
+                std::list<Unit*> pThreatList;
+                for (ThreatList::const_iterator itr = threatList.begin(); itr != threatList.end(); ++itr)
                 {
-                    Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-                    if (pTarget->GetTypeId() != TYPEID_PLAYER)
-                        continue;
-                    DoCastSpellIfCan(pTarget, SPELL_WRATH_OF_THE_ASTROMANCER);
-                    m_uiWrathOfTheAstromancer_Timer = urand(20000, 30000);
-                    break;
-                }while (1);
+                    if (Unit* target = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+                        if (target->GetTypeId() ==TYPEID_PLAYER)
+                            pThreatList.push_back(target);
+                }
 
+                if (!pThreatList.empty())
+                {
+                    // find random target
+                    std::list<Unit*>::iterator itr = pThreatList.begin();
+                    advance(itr, rand() % pThreatList.size());
+
+                    m_creature->InterruptNonMeleeSpells(false);
+                    DoCastSpellIfCan((*itr), SPELL_WRATH_OF_THE_ASTROMANCER);
+                    m_uiWrathOfTheAstromancer_Timer = urand(20000, 30000);
+                }
+                else
+                    // try again in 5 seconds
+                    m_uiWrathOfTheAstromancer_Timer = 5000;
             }else m_uiWrathOfTheAstromancer_Timer -= diff;
 
             //BlindingLight_Timer

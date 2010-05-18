@@ -307,20 +307,12 @@ struct MANGOS_DLL_DECL boss_supremusAI : public ScriptedAI
                 if (!target)
                     target = m_creature->getVictim();
 
-                if (target)
+                if (target && !urand(0, 8))
                 {
-                    Creature* Volcano = NULL;
-                    Volcano = SummonCreature(CREATURE_VOLCANO, target);
-
-                    if (Volcano)
-                    {
-                        DoCastSpellIfCan(target, SPELL_VOLCANIC_ERUPTION);
-                        ((npc_volcanoAI*)Volcano->AI())->SetSupremusGUID(m_creature->GetGUID());
-                    }
-
+                    DoCastSpellIfCan(target, SPELL_VOLCANIC_ERUPTION);
                     DoScriptText(EMOTE_GROUND_CRACK, m_creature);
-                    SummonVolcanoTimer = 10000;
                 }
+                SummonVolcanoTimer = 1000;
             }else SummonVolcanoTimer -= diff;
         }
 

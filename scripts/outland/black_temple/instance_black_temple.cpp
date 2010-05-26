@@ -195,7 +195,26 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
             case TYPE_SHADE:
                 m_auiEncounter[2] = uiData;
                 if (uiData == DONE && CanPreMotherDoorOpen())
+                {
+                    if (instance->GetGameObject(m_uiShadeAkamaDoorGUID)->getLootState() == GO_ACTIVATED)
+                        instance->GetGameObject(m_uiShadeAkamaDoorGUID)->ResetDoorOrButton();
                     DoUseDoorOrButton(m_uiShahrazPreDoorGUID);
+                }
+                else if (uiData == DONE)
+                {
+                    if (instance->GetGameObject(m_uiShadeAkamaDoorGUID)->getLootState() == GO_ACTIVATED)
+                        instance->GetGameObject(m_uiShadeAkamaDoorGUID)->ResetDoorOrButton();
+                }
+                else if (uiData == IN_PROGRESS)
+                {
+                    if (instance->GetGameObject(m_uiShadeAkamaDoorGUID)->getLootState() == GO_READY)
+                        instance->GetGameObject(m_uiShadeAkamaDoorGUID)->UseDoorOrButton();
+                }
+                else if (uiData == NOT_STARTED)
+                {
+                    if (instance->GetGameObject(m_uiShadeAkamaDoorGUID)->getLootState() == GO_ACTIVATED)
+                        instance->GetGameObject(m_uiShadeAkamaDoorGUID)->ResetDoorOrButton();
+                }
                 break;
             case TYPE_GOREFIEND:
                 m_auiEncounter[3] = uiData;

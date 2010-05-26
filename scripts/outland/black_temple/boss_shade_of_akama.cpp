@@ -81,6 +81,13 @@ const float LOC_RAND_TO_CENTER_Z        = 112.783928f;
 const float LOC_PLATFORM_Z              = 118.537f;
 const float LOC_LOW_Z                   = 112.784f;
 
+const float LOC_LEFT_X                  = 499.434265f;
+const float LOC_LEFT_Y                  = 339.008057f;
+
+const float LOC_RIGHT_X                 = 499.434265f;
+const float LOC_RIGHT_Y                 = 465.455322f;
+
+
 struct Location
 {
     float m_fX, m_fY, m_fZ, m_fO;
@@ -115,6 +122,8 @@ Location m_afBrokenWP[]=
     {491.136353f, 427.868774f, LOC_LOW_Z, 3.519748f}
 };
 
+#define AKAMA_HEALTH                        1001550
+
 struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
 {
     boss_shade_of_akamaAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -129,6 +138,8 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
 
     std::list<uint64> m_lChannelersGUIDList;
     std::list<uint64> m_lSorcerersGUIDList;
+    std::list<uint64> m_lDefenderGUIDList;
+    std::list<uint64> m_lRandomAddGUIDList;
 
     uint64 m_uiAkamaGUID;
 
@@ -157,6 +168,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         m_bHasKilledAkama = false;
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_STUN);
     }
@@ -182,7 +194,14 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         if (m_pInstance)
             m_pInstance->SetData(TYPE_SHADE, NOT_STARTED);
 
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
         RespawnChannelersIfDeadOrEvade();
+        DespawnAdds();
+        
+        if (Unit* pAkama = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_AKAMA_SHADE)))
+            m_creature->DealDamage(pAkama, pAkama->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+
     }
 
     void IncrementDeathCount(uint64 uiGuid = 0)               // If guid is set, will remove it from list of sorcerer
@@ -208,10 +227,12 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         {
             if (Creature* pSorcerer = m_creature->SummonCreature(NPC_ASH_SORCERER,
                 m_afSpawnLoc[uiRand].m_fX, m_afSpawnLoc[uiRand].m_fY, m_afSpawnLoc[uiRand].m_fZ, m_afSpawnLoc[uiRand].m_fO,
-                TEMPSUMMON_DEAD_DESPAWN, 0))
+                TEMPSUMMON_MANUAL_DESPAWN, 0))
             {
                 pSorcerer->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
-                pSorcerer->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
+                float addXRand = urand(-6.0f, 6.0f) + 3.0f;
+                float addYRand = urand(-6.0f, 6.0f) + 3.0f;
+                pSorcerer->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX() + addXRand, m_creature->GetPositionY() + addYRand, m_creature->GetPositionZ());
                 pSorcerer->SetUInt64Value(UNIT_FIELD_TARGET, m_creature->GetGUID());
 
                 m_lSorcerersGUIDList.push_back(pSorcerer->GetGUID());
@@ -220,24 +241,37 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                 ++m_uiSorcererCount;
             }
         }
-        else
-        {
-            int iSize = (sizeof(m_auiRandSpawnEntry) / sizeof(uint32));
 
-            for(uint8 i = 0; i < iSize; ++i)
+        int iSize1 = (sizeof(m_auiRandSpawnEntry) / sizeof(uint32));
+
+        for(uint8 i = 0; i < iSize1; ++i)
+        {
+            if (Creature* pSpawn = m_creature->SummonCreature(m_auiRandSpawnEntry[i],
+                LOC_LEFT_X, LOC_LEFT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1200000))
             {
-                if (Creature* pSpawn = m_creature->SummonCreature(m_auiRandSpawnEntry[i],
-                    m_afSpawnLoc[uiRand].m_fX, m_afSpawnLoc[uiRand].m_fY, m_afSpawnLoc[uiRand].m_fZ, m_afSpawnLoc[uiRand].m_fO,
-                    TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 25000))
-                {
-                    pSpawn->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
-                    pSpawn->GetMotionMaster()->MovePoint(0, LOC_RAND_TO_CENTER_X, LOC_RAND_TO_CENTER_Y, LOC_RAND_TO_CENTER_Z);
-                }
+                pSpawn->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+                pSpawn->GetMotionMaster()->MovePoint(0, LOC_RAND_TO_CENTER_X, LOC_RAND_TO_CENTER_Y, LOC_RAND_TO_CENTER_Z); 
+                m_lRandomAddGUIDList.push_back(pSpawn->GetGUID());
             }
+            
+        }
+
+        int iSize2 = (sizeof(m_auiRandSpawnEntry) / sizeof(uint32));
+
+        for(uint8 i = 0; i < iSize2; ++i)
+        {
+            if (Creature* pSpawn = m_creature->SummonCreature(m_auiRandSpawnEntry[i],
+                LOC_RIGHT_X, LOC_RIGHT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1200000))
+            {
+                pSpawn->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+                pSpawn->GetMotionMaster()->MovePoint(0, LOC_RAND_TO_CENTER_X, LOC_RAND_TO_CENTER_Y, LOC_RAND_TO_CENTER_Z);
+                m_lRandomAddGUIDList.push_back(pSpawn->GetGUID());
+            }
+            
         }
     }
 
-    void DespawnSorceres()
+    void DespawnAdds()
     {
         if (!m_lSorcerersGUIDList.empty() && m_pInstance)
         {
@@ -247,6 +281,30 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                 {
                     if (pSorcerer->isAlive())
                         pSorcerer->ForcedDespawn();
+                }
+            }
+        }
+
+        if (!m_lRandomAddGUIDList.empty() && m_pInstance)
+        {
+            for(std::list<uint64>::iterator itr = m_lRandomAddGUIDList.begin(); itr != m_lRandomAddGUIDList.end(); ++itr)
+            {
+                if (Creature* pSpawn = m_pInstance->instance->GetCreature(*itr))
+                {
+                    if (pSpawn->isAlive())
+                        pSpawn->ForcedDespawn();
+                }
+            }
+        }
+
+        if (!m_lDefenderGUIDList.empty() && m_pInstance)
+        {
+            for(std::list<uint64>::iterator itr = m_lDefenderGUIDList.begin(); itr != m_lDefenderGUIDList.end(); ++itr)
+            {
+                if (Creature* pDefender = m_pInstance->instance->GetCreature(*itr))
+                {
+                    if (pDefender->isAlive())
+                        pDefender->ForcedDespawn();
                 }
             }
         }
@@ -261,7 +319,10 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                 if (Creature* pChanneler = m_pInstance->instance->GetCreature(*itr))
                 {
                     if (!pChanneler->isAlive())
+                    {
                         pChanneler->Respawn();
+                        pChanneler->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE); 
+                    }
                     else
                         pChanneler->AI()->EnterEvadeMode();
                 }
@@ -322,10 +383,11 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
 
                 if (Creature* pDefender = m_creature->SummonCreature(NPC_ASH_DEFENDER,
                     m_afSpawnLoc[uiRand].m_fX, m_afSpawnLoc[uiRand].m_fY, m_afSpawnLoc[uiRand].m_fZ, m_afSpawnLoc[uiRand].m_fO,
-                    TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 25000))
+                    TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1200000))
                 {
                     if (Unit* pAkama = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_AKAMA_SHADE)))
                         pDefender->AI()->AttackStart(pAkama);
+                    m_lDefenderGUIDList.push_back(pDefender->GetGUID());
                 }
 
                 m_uiDefenderTimer = 15000;
@@ -350,6 +412,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                         m_bIsBanished = false;
 
                         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
                         // Shade should move to Akama, not the other way around
                         AttackStart(pAkama);
@@ -432,6 +495,7 @@ struct MANGOS_DLL_DECL npc_akamaAI : public ScriptedAI
     void Reset()
     {
         SetCombatMovement(false);
+        m_creature->InterruptNonMeleeSpells(true);
 
         m_uiDestructivePoisonTimer = 15000;
         m_uiLightningBoltTimer = 10000;
@@ -507,7 +571,7 @@ struct MANGOS_DLL_DECL npc_akamaAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_bIsEventBegun || !m_pInstance)
+        if (!m_bIsEventBegun || !m_pInstance || m_pInstance->GetData64(DATA_SHADEOFAKAMA) == NOT_STARTED)
             return;
 
         if (!m_bCanStartCombat)

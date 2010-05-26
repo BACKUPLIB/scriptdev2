@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Shade_of_Akama
-SD%Complete: 85
+SD%Complete: 95
 SDComment: Seems to be complete. Some little details/cosmetics left (see next comment section).
 SDCategory: Black Temple
 EndScriptData */
@@ -227,11 +227,11 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         {
             if (Creature* pSorcerer = m_creature->SummonCreature(NPC_ASH_SORCERER,
                 m_afSpawnLoc[uiRand].m_fX, m_afSpawnLoc[uiRand].m_fY, m_afSpawnLoc[uiRand].m_fZ, m_afSpawnLoc[uiRand].m_fO,
-                TEMPSUMMON_MANUAL_DESPAWN, 0))
+                TEMPSUMMON_CORPSE_TIMED_DESPAWN, 120000))
             {
                 pSorcerer->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
-                float addXRand = urand(-6.0f, 6.0f) + 3.0f;
-                float addYRand = urand(-6.0f, 6.0f) + 3.0f;
+                float addXRand = urand(1.0f, 6.0f);
+                float addYRand = urand(1.0f, 6.0f);
                 pSorcerer->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX() + addXRand, m_creature->GetPositionY() + addYRand, m_creature->GetPositionZ());
                 pSorcerer->SetUInt64Value(UNIT_FIELD_TARGET, m_creature->GetGUID());
 
@@ -247,7 +247,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         for(uint8 i = 0; i < iSize1; ++i)
         {
             if (Creature* pSpawn = m_creature->SummonCreature(m_auiRandSpawnEntry[i],
-                LOC_LEFT_X, LOC_LEFT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1200000))
+                LOC_LEFT_X, LOC_LEFT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 120000))
             {
                 pSpawn->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                 pSpawn->GetMotionMaster()->MovePoint(0, LOC_RAND_TO_CENTER_X, LOC_RAND_TO_CENTER_Y, LOC_RAND_TO_CENTER_Z); 
@@ -261,7 +261,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         for(uint8 i = 0; i < iSize2; ++i)
         {
             if (Creature* pSpawn = m_creature->SummonCreature(m_auiRandSpawnEntry[i],
-                LOC_RIGHT_X, LOC_RIGHT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1200000))
+                LOC_RIGHT_X, LOC_RIGHT_Y, LOC_LOW_Z, 0.0f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 120000))
             {
                 pSpawn->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                 pSpawn->GetMotionMaster()->MovePoint(0, LOC_RAND_TO_CENTER_X, LOC_RAND_TO_CENTER_Y, LOC_RAND_TO_CENTER_Z);
@@ -860,7 +860,7 @@ struct MANGOS_DLL_DECL mob_ashtongue_sorcererAI : public ScriptedAI
 
     void Reset()
     {
-        m_uiCheckTimer = 5000;
+        m_uiCheckTimer = 7000;
         m_bStartBanishing = false;
     }
 

@@ -1,0 +1,11 @@
+UPDATE creature_template SET minhealth=53123, maxhealth=53123 WHERE entry=23318;
+UPDATE creature_template SET minhealth=48910, maxhealth=48910 WHERE entry IN (23524, 23523);
+UPDATE creature_template SET minhealth=1701990, maxhealth=1701990 WHERE entry=22841;
+UPDATE creature SET spawntimesecs=20 WHERE id=22990;
+UPDATE creature_template SET faction_A=16, faction_H=16 WHERE entry IN (22844, 22846, 22845, 22847, 22849);
+UPDATE creature_template SET minhealth=110277, maxhealth=110277 WHERE entry=23216;
+UPDATE creature_template SET dmg_multiplier=13 WHERE entry IN (23524, 23523, 23216, 23318);
+UPDATE creature_template SET minhealth=155442, maxhealth=155442 WHERE entry=23215;
+DELETE FROM creature_onkill_reputation WHERE creature_id IN (23216, 23524);
+UPDATE creature_template SET minhealth=243442, maxhealth=243442 WHERE entry=23421;
+UPDATE creature SET spawntimesecs=21600 WHERE id IN (22844, 22846, 22845, 22847, 22849);

@@ -310,14 +310,9 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
         if (Creature* pSath = instance->GetCreature(m_uiSathrovarrGUID))
         {
 			if (pSath->isAlive()&&pSath->getVictim()==pPlayer)
-            {
-				pSath->SendThreatRemove(pSath->getHostileRefManager().getFirst());
-				//pSath->getThreatManager().clearReferences();   
-                /*if (HostileReference* pRef = pSath->getThreatManager().getOnlineContainer().getReferenceByTarget(pPlayer))
-                {
-                    pRef->removeReference();
-                    debug_log("SD2: Deleting %s from Sathrovarr's threatlist", pPlayer->GetName());
-                }*/
+            {  
+                pSath->RemoveUnitFromHostileRefManager(pPlayer);
+                debug_log("SD2: Deleting %s from Sathrovarr's threatlist", pPlayer->GetName()); 
             }
         }
 

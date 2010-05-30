@@ -31,7 +31,7 @@ EndScriptData */
 #define SAY_SLAY1                   "You... are nothing!"
 #define SAY_SLAY2                   "Miserable nuisance!"
 #define SAY_SLAY3                   "Shaza-Kiel!" 
-#define SAY_DEATH                   "Tschüss mit Ü und Tschau mit AU"
+#define SAY_DEATH                   "Ihr habt euren Untergang besiegelt!"
 
 #define SPELL_MANA_MARK				31447
 #define SPELL_EXPLOSION_MARK		31463
@@ -108,13 +108,15 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         /* Prüft ob ein Spieler 0 Mana hat und lässt ihn die Explosion wirken und wirkt auf ihn eine Aura, damit nicht wieder */
         for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
-            Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
-			if (pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(SPELL_MANA_MARK)
-                && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10 && !pUnit->HasAura(SPELL_DARKNESS))
-			{
-				pUnit->CastSpell(pUnit, SPELL_EXPLOSION_MARK, true);
-                pUnit->CastSpell(pUnit, SPELL_DARKNESS, true);
-			}
+            if (Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+            {
+                if (pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(SPELL_MANA_MARK)
+                    && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10 && !pUnit->HasAura(SPELL_DARKNESS))
+			    {
+				    pUnit->CastSpell(pUnit, SPELL_EXPLOSION_MARK, true);
+                    pUnit->CastSpell(pUnit, SPELL_DARKNESS, true);
+			    }
+            }
         }
     }
 
@@ -128,6 +130,7 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         if (RemoveDarknessTimer < diff)
         {
             ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+            
             if (tList.empty())
                 return;
 
@@ -135,11 +138,14 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
 
             for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
             {
-                Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
-		        if (pUnit->HasAura(SPELL_DARKNESS))
-                    pUnit->RemoveAurasDueToSpell(SPELL_DARKNESS);
+                if (Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+                {
+		            if (pUnit->HasAura(SPELL_DARKNESS))
+                        pUnit->RemoveAurasDueToSpell(SPELL_DARKNESS);
+                }
             }
-        }
+            RemoveDarknessTimer = 9999999;
+        }else RemoveDarknessTimer -= diff;
 
 		if (MarkTimer < diff)
 		{

@@ -1,0 +1,3 @@
+DELETE FROM npc_vendor WHERE entry=88000 AND item=30609;
+INSERT INTO npc_vendor VALUES
+	(88000, 30609, 0, 0, 0);

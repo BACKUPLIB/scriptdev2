@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Hadronox
-SD%Complete: 20%
-SDComment:
+SD%Complete: 60%
+SDComment: Just spells implementet; cosmetic mistakes  
 SDCategory: Azjol'Nerub
 EndScriptData */
 
@@ -26,7 +26,11 @@ EndScriptData */
 
 enum
 {
-
+    SPELL_LEECH_POISON              = 53030,
+    SPELL_LEECH_POISON_H            = 59417,
+    SPELL_ARMOR_PENETRATION         = 53418,
+    SPELL_ACID_CLOUD                = 53400,
+    SPELL_ACID_CLOUD_H              = 59419,
 };
 
 /*######
@@ -45,19 +49,43 @@ struct MANGOS_DLL_DECL boss_hadronoxAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
+    uint32 LeechPoisonTimer;
+    uint32 ArmorPenetrationTimer;
+    uint32 AcidCloudTimer;
+
     void Reset()
     {
-    }
-
-    void KilledUnit(Unit* pVictim)
-    {
-        m_creature->SetHealth(m_creature->GetHealth() + (m_creature->GetMaxHealth() * 0.1));
+        LeechPoisonTimer = 2000;
+        ArmorPenetrationTimer = 4000;
+        AcidCloudTimer = 6000;
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        if (LeechPoisonTimer < uiDiff)
+        {
+            if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCastSpellIfCan(pVictim, m_bIsRegularMode ? SPELL_LEECH_POISON : SPELL_LEECH_POISON_H);
+
+            LeechPoisonTimer = urand(12000, 13000);
+        }else LeechPoisonTimer -= uiDiff;
+
+        if (ArmorPenetrationTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_ARMOR_PENETRATION);
+            ArmorPenetrationTimer = urand(12000, 22000);
+        }else ArmorPenetrationTimer -= uiDiff;
+
+        if (AcidCloudTimer < uiDiff)
+        {
+            if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCastSpellIfCan(pVictim, m_bIsRegularMode ? SPELL_ACID_CLOUD : SPELL_ACID_CLOUD_H);
+            
+            AcidCloudTimer = urand(11000, 12000);
+        }else AcidCloudTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }

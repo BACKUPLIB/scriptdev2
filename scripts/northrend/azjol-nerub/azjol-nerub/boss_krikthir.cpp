@@ -42,6 +42,16 @@ enum
     EMOTE_BOSS_GENERIC_FRENZY       = -1000005
 };
 
+#define CURSE_OF_FATIGUE            52592         
+#define CURSE_OF_FATIGUE_H          59368
+
+#define MIND_FLAY                   52586
+#define MIND_FLAY_H                 59367
+
+#define ENRAGE                      28747
+
+#define NPC_SWARM                   28735
+
 /*######
 ## boss_krikthir
 ######*/
@@ -58,13 +68,27 @@ struct MANGOS_DLL_DECL boss_krikthirAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
+    uint32 CurseTimer;
+    uint32 MindFlayTimer;
+    uint32 SwarmTimer;
+    uint32 EnrageRefreshTimer;
+
+    bool Enrage;
+
     void Reset()
     {
+        CurseTimer = 20000;
+        MindFlayTimer = 10000;
+        SwarmTimer = urand(6000, 10000);
+        Enrage = false;
+
+        m_pInstance->SetData(TYPE_KRIKTHIR, NOT_STARTED);
     }
 
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+        m_pInstance->SetData(TYPE_KRIKTHIR, IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -80,15 +104,75 @@ struct MANGOS_DLL_DECL boss_krikthirAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_KRIKTHIR, DONE);
+        m_pInstance->SetData(TYPE_KRIKTHIR, DONE);
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+        
+        if (m_creature->GetHealth() < m_creature->GetMaxHealth() / 5 && !Enrage)
+        {
+            Enrage = true;
+            DoCastSpellIfCan(m_creature, ENRAGE);
+            EnrageRefreshTimer = 600000;
+        }
+
+        if (EnrageRefreshTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature, ENRAGE);
+            EnrageRefreshTimer = 600000;
+        }else EnrageRefreshTimer -= uiDiff;
+
+        if (CurseTimer < uiDiff)
+        {
+            Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+            
+            if (!pTarget)
+                return;
+            
+            m_bIsRegularMode ? DoCastSpellIfCan(pTarget, CURSE_OF_FATIGUE): DoCastSpellIfCan(pTarget, CURSE_OF_FATIGUE_H);
+
+            CurseTimer = urand(11000, 13000);
+        }else CurseTimer -= uiDiff;
+
+        if (MindFlayTimer < uiDiff)
+        {
+            Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+            
+            if (!pTarget)
+                return;
+            
+            m_bIsRegularMode ? DoCastSpellIfCan(pTarget, MIND_FLAY): DoCastSpellIfCan(pTarget, MIND_FLAY_H);
+
+            MindFlayTimer = urand(14000, 18000);  
+        }else MindFlayTimer -= uiDiff;
+
+        if (SwarmTimer < uiDiff)
+        {
+            switch(urand(0, 1))
+            {
+                case 0: DoScriptText(SAY_SWARM_1, m_creature); break;
+                case 1: DoScriptText(SAY_SWARM_2, m_creature); break;
+            }
+
+            int i;
+            i = 0;
+            do 
+            {
+                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+                if (!pTarget)
+                    return;
+
+                float x = pTarget->GetPositionX() + urand(10.0f, 15.0f);
+                float y = pTarget->GetPositionY() + urand(10.0f, 15.0f);
+
+                m_creature->SummonCreature(NPC_SWARM, x, y, pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000); 
+                i++;
+            }while (i == 5);
+            SwarmTimer = urand(3000, 5000);
+        }
 
         DoMeleeAttackIfReady();
     }

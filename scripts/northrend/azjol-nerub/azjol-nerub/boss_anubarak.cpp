@@ -16,9 +16,9 @@
 
 /* ScriptData
 SDName: Boss_Anubarak
-SD%Complete: 20%
-SDComment:
-SDCategory: Azjol'NerubstrInstData
+SD%Complete: 80%
+SDComment: Some cosmetic mistakes.
+SDCategory: Azjol'Nerub
 EndScriptData */
 
 #include "precompiled.h"
@@ -39,6 +39,33 @@ enum
     SAY_DEATH                       = -1601024
 };
 
+#define SPELL_EARTH_EXPLOSION           42373
+#define SPELL_CARRION_SWARM             53520
+#define SPELL_IMPALE                    53454
+#define SPELL_IMPALE_H                  59446
+#define SPELL_LEECHING_SWARM            53467
+#define SPELL_LEECHING_SWARM_H          59430
+#define SPELL_POUND                     53472
+#define SPELL_POUND_H                   59433
+#define SPELL_BURROW                    26381
+
+#define NPC_ADD1                        28736
+#define NPC_ADD2                        29349
+#define NPC_ELITE_ADD                   28732
+
+#define MIDDLE_CORD_X                   552.927734f
+#define MIDDLE_CORD_Y                   248.950851f
+#define MIDDLE_CORD_Z                   223.912796f
+
+#define ELITE_SPAWN_1_X                 547.412841f
+#define ELITE_SPAWN_1_Y                 320.102448f
+#define ELITE_SPAWN_1_Z                 236.062057f
+
+#define ELITE_SPAWN_2_X                 554.539185f
+#define ELITE_SPAWN_2_Y                 319.792603f
+#define ELITE_SPAWN_2_Z                 235.927032f
+
+
 /*######
 ## boss_anubarak
 ######*/
@@ -55,16 +82,56 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
+    bool phase66;
+    bool phase66Over;
+    bool phase33;
+    bool phase33Over;
+    bool phase15;
+    bool phase15Over;
+
+    uint32 BurrowTimer;
+    uint32 VisComeBackTimer;
+    uint32 BurComeBackTimer;
+    uint32 IsBackTimer;
+    uint32 SummonCreatureTimer;
+    uint32 LeechingSwarmTimer;
+    uint32 CloseDoorTimer;
+    uint32 ImpaleTimer;
+    uint32 PoundTimer;
+    uint32 CarrionSwarmTimer;
+
+    int i;
+
+    Creature* Elite[5];
+
     void Reset()
     {
+        phase66 = false;
+        phase66Over = false;
+        phase33 = false;
+        phase33Over = false;
+        phase15 = false;
+        phase15Over = false;
+
+        BurrowTimer = 9999999;
+        VisComeBackTimer = 9999999;
+        BurComeBackTimer = 9999999;
+        IsBackTimer = 9999999;
+        SummonCreatureTimer = 9999999;
+        LeechingSwarmTimer = 4000;
+        CloseDoorTimer = 4000;
+        ImpaleTimer = 5000;
+        PoundTimer = 12000;
+        CarrionSwarmTimer = 13000;
+
+        i = 0;
+
+        m_pInstance->SetData(TYPE_ANUBARAK, NOT_STARTED);
     }
 
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_ANUBARAK, IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -80,15 +147,23 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_ANUBARAK, DONE);
+        m_pInstance->SetData(TYPE_ANUBARAK, DONE);
     }
 
-    void JustReachedHome()
+    void SpellHit(Unit* pTarget, const SpellEntry* pSpell)
     {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_ANUBARAK, NOT_STARTED);
+        if (pSpell->Id == SPELL_POUND || pSpell->Id == 53474 || pSpell->Id == 53473)
+        {
+            if (pTarget)
+                m_creature->DealDamage(pTarget, pTarget->CalcArmorReducedDamage(pTarget, urand(9000, 9700)), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        }
+
+        if (pSpell->Id == SPELL_POUND_H)
+        {
+            if (pTarget)
+                m_creature->DealDamage(pTarget, pTarget->CalcArmorReducedDamage(pTarget, urand(46125, 48000)), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        }
+            
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -96,13 +171,303 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (CloseDoorTimer < uiDiff)
+        {
+            m_pInstance->SetData(TYPE_ANUBARAK, IN_PROGRESS);
+            CloseDoorTimer = 9999999;
+        }else CloseDoorTimer -= uiDiff;
+
+        if (phase66 || phase33 || phase15)
+        {
+            if (ImpaleTimer < uiDiff)
+            {
+                if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                {
+                    if (Unit* pTrigger = m_creature->SummonCreature(15384, pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 6000))
+                        DoCastSpellIfCan(pTrigger, m_bIsRegularMode ? SPELL_IMPALE : SPELL_IMPALE_H);
+                }   
+                    
+                ImpaleTimer = 5000;
+            }else ImpaleTimer -= uiDiff;
+        }
+        else 
+        {
+            if (PoundTimer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POUND : SPELL_POUND_H);
+                PoundTimer = urand(15000, 18000);
+            }else PoundTimer -= uiDiff;
+            
+            if (LeechingSwarmTimer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LEECHING_SWARM : SPELL_LEECHING_SWARM_H);  
+                LeechingSwarmTimer = 15000;  
+            }else LeechingSwarmTimer -= uiDiff;
+
+            if (CarrionSwarmTimer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature, SPELL_CARRION_SWARM); 
+                CarrionSwarmTimer = urand(23000, 31000);
+            }else CarrionSwarmTimer -= uiDiff;
+        }
+
+        if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.66 && !phase66Over)
+        {
+            phase66 = true;
+            phase66Over = true;
+            DoCastSpellIfCan(m_creature, SPELL_BURROW);
+            BurrowTimer = 1700;
+            SummonCreatureTimer = 2000;
+        }
+        else if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.33 && !phase33Over)
+        {
+            phase33 = true;
+            phase33Over = true;
+            DoCastSpellIfCan(m_creature, SPELL_BURROW);
+            BurrowTimer = 1700;
+            SummonCreatureTimer = 2000;
+        }
+        else if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.15 && !phase15Over)
+        {
+            phase15 = true;
+            phase15Over = true;
+            DoCastSpellIfCan(m_creature, SPELL_BURROW);
+            BurrowTimer = 1700;
+            SummonCreatureTimer = 2000;
+        }
+
+        if (BurrowTimer < uiDiff)
+        {
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->GetMotionMaster()->MoveIdle();
+            if (phase66)
+                BurComeBackTimer = 7000;
+            else if (phase33)
+                BurComeBackTimer = 15000;
+            else if (phase15)
+                BurComeBackTimer = 25000;
+
+            BurrowTimer = 9999999;
+        }else BurrowTimer -= uiDiff;
+
+        if (BurComeBackTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature, SPELL_BURROW);
+            VisComeBackTimer = 8000;
+
+            BurComeBackTimer = 9999999;
+        }else BurComeBackTimer -= uiDiff;
+
+        if (VisComeBackTimer < uiDiff)
+        {
+            m_creature->SetVisibility(VISIBILITY_ON);
+            IsBackTimer = 3000;
+
+            VisComeBackTimer = 9999999;
+        }else VisComeBackTimer -= uiDiff;
+
+        if (IsBackTimer < uiDiff)
+        {
+            phase66 = false;
+            phase33 = false;
+            phase15 = false;
+            i = 0;
+
+            m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+            IsBackTimer = 9999999;
+        }else IsBackTimer -= uiDiff;
+
+        if (SummonCreatureTimer < uiDiff)
+        {
+            if (phase66 || phase33 || phase15)
+            {
+                switch(i)
+                {
+                    case 0:
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_1_X, ELITE_SPAWN_1_Y, ELITE_SPAWN_1_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        if (phase15)
+                            m_creature->SummonCreature(NPC_ADD2, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+
+                        SummonCreatureTimer = 2000;
+                        break;
+                    case 1:
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_2_X, ELITE_SPAWN_2_Y, ELITE_SPAWN_2_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        SummonCreatureTimer = phase33 ? 10000 : 6000;
+                        if (phase15)
+                        {
+                            i += 3;
+                            SummonCreatureTimer = 10000;
+                        }
+                        break;
+                    case 2:
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        if (phase66)
+                        {
+                            SummonCreatureTimer = 9999999;
+                            break;
+                        }
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_1_X, ELITE_SPAWN_1_Y, ELITE_SPAWN_1_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+
+                        SummonCreatureTimer = 1000;
+                        break;
+                    case 3:
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_2_X, ELITE_SPAWN_2_Y, ELITE_SPAWN_2_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+
+                        SummonCreatureTimer = 7000;
+                        break;
+                    case 4:
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        
+                        SummonCreatureTimer = 9999999;
+                        break;
+                    case 5:
+                        m_creature->SummonCreature(NPC_ADD2, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        
+                        SummonCreatureTimer = 2500;
+                        break;
+                    case 6:
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ADD1, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_1_X, ELITE_SPAWN_1_Y, ELITE_SPAWN_1_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        
+                        SummonCreatureTimer = 2000;
+                        break;
+                    case 7:
+                        m_creature->SummonCreature(NPC_ELITE_ADD, ELITE_SPAWN_2_X, ELITE_SPAWN_2_Y, ELITE_SPAWN_2_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+
+                        SummonCreatureTimer = 3000;
+                        break;
+                    case 8:
+                        m_creature->SummonCreature(NPC_ADD2, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+
+                        SummonCreatureTimer = 8000;
+                        break;
+                    case 9:
+                        m_creature->SummonCreature(NPC_ADD2, MIDDLE_CORD_X + urand(0.0f, 10.0f), MIDDLE_CORD_Y + urand(0.0f, 10.0f), MIDDLE_CORD_Z, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                        
+                        SummonCreatureTimer = 9999999;
+                        break;
+                    default:
+                        break;
+                }
+                i++;
+            }
+        }else SummonCreatureTimer -= uiDiff;
+ 
+        if (!phase66 && !phase33 && !phase15)
+            DoMeleeAttackIfReady();
+    }
+};
+
+#define ELITE_SPAWN_1_X_END             556.115845f
+#define ELITE_SPAWN_1_Y_END             260.768311f
+#define ELITE_SPAWN_1_Z_END             223.889069f
+
+#define ELITE_SPAWN_2_X_END             547.456970f
+#define ELITE_SPAWN_2_Y_END             260.716064f
+#define ELITE_SPAWN_2_Z_END             223.643402f
+
+#define ELITE_WP_1_X                    546.684875f
+#define ELITE_WP_1_Y                    278.920990f
+#define ELITE_WP_1_Z                    224.348969f
+
+#define ELITE_WP_2_X                    555.046631f
+#define ELITE_WP_2_Y                    278.821503f
+#define ELITE_WP_2_Z                    224.304581f
+
+struct MANGOS_DLL_DECL npc_elite_anubAI : public ScriptedAI
+{
+    npc_elite_anubAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {Reset();}
+    
+
+    uint32 moveWpTimer;
+    uint32 moveMiddleTimer;
+
+    bool setSpeed;
+
+    void Reset()
+    {
+        moveWpTimer = 100;
+        moveMiddleTimer = 7000;
+        setSpeed = false;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+        {
+            if (!m_creature->isTemporarySummon())
+                return;
+
+            if (m_creature->GetPositionX() < 550.0f)
+            {
+                if (moveWpTimer < uiDiff)
+                {
+                    m_creature->GetMotionMaster()->MovePoint(0, ELITE_WP_1_X, ELITE_WP_1_Y, ELITE_WP_1_Z);
+                    moveWpTimer = 9999999;
+                    return;
+                }else moveWpTimer -= uiDiff;
+            }
+            else
+            {
+                if (moveWpTimer < uiDiff)
+                {
+                    m_creature->GetMotionMaster()->MovePoint(0, ELITE_WP_2_X, ELITE_WP_2_Y, ELITE_WP_2_Z);
+                    moveWpTimer = 9999999;
+                    return;
+                }else moveWpTimer -= uiDiff;
+            }
+
+            if (m_creature->GetPositionX() < 550.0f)
+            {
+                if (moveMiddleTimer < uiDiff)
+                {
+                    m_creature->GetMotionMaster()->MovePoint(0, ELITE_SPAWN_2_X_END, ELITE_SPAWN_2_Y_END, ELITE_SPAWN_2_Z_END);
+                    moveMiddleTimer = 9999999;
+                    return;
+                }else moveMiddleTimer -= uiDiff;
+            }
+            else
+            {
+                if (moveMiddleTimer < uiDiff)
+                {
+                    m_creature->GetMotionMaster()->MovePoint(0, ELITE_SPAWN_1_X_END, ELITE_SPAWN_1_Y_END, ELITE_SPAWN_1_Z_END);
+                    moveMiddleTimer = 9999999;
+                    return;
+                }else moveMiddleTimer -= uiDiff;
+            }
+            return;
+
+            if (!setSpeed)
+            {
+                m_creature->SetSpeedRate(MOVE_WALK, 1.7f);
+                m_creature->SetSpeedRate(MOVE_RUN, 1.7f);
+                setSpeed = true;
+            }
+        }
+
         DoMeleeAttackIfReady();
     }
+
+    
 };
 
 CreatureAI* GetAI_boss_anubarak(Creature* pCreature)
 {
     return new boss_anubarakAI(pCreature);
+}
+
+CreatureAI* GetAI_npc_elite_anub(Creature* pCreature)
+{
+    return new npc_elite_anubAI(pCreature);
 }
 
 void AddSC_boss_anubarak()
@@ -112,5 +477,10 @@ void AddSC_boss_anubarak()
     newscript = new Script;
     newscript->Name = "boss_anubarak";
     newscript->GetAI = &GetAI_boss_anubarak;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_elite_anub";
+    newscript->GetAI = &GetAI_npc_elite_anub;
     newscript->RegisterSelf();
 }

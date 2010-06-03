@@ -325,8 +325,13 @@ bool GOHello_go_shrine_of_the_birds(Player* pPlayer, GameObject* pGo)
             break;
     }
 
+    Creature* pBird;
+
     if (uiBirdEntry)
-        pPlayer->SummonCreature(uiBirdEntry, fX, fY, fZ, pGo->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+    {
+        if (pBird = pPlayer->SummonCreature(uiBirdEntry, fX, fY, fZ, pGo->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
+            pBird->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);   
+    }
 
     return false;
 }

@@ -88,6 +88,8 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     uint32 m_uiCreateRiftTimer;
     uint64 m_uiChaoticRiftGUID;
 
+    std::list<uint64> m_uiRiftGUIDList;
+
     void Reset()
     {
         m_bChaoticRift = false;
@@ -95,6 +97,8 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
         m_uiSparkTimer = 5000;
         m_uiCreateRiftTimer = 25000;
         m_uiChaoticRiftGUID = 0;
+
+        DespawnRifts();
     }
 
     void Aggro(Unit* pWho)
@@ -108,6 +112,8 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ANOMALUS, DONE);
+
+        DespawnRifts();
     }
 
     void KilledUnit(Unit* pVictim)
@@ -143,10 +149,30 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     {
         int randPos = urand(0, 5);
 
-        Creature* pRift = m_creature->SummonCreature(NPC_CHAOTIC_RIFT, spawnRiftPos[randPos][0], spawnRiftPos[randPos][1], spawnRiftPos[randPos][2], spawnRiftPos[randPos][3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000);
-        DoScriptText(EMOTE_OPEN_RIFT, m_creature);
+        Creature* pRift = NULL;
+
+        if (pRift = m_creature->SummonCreature(NPC_CHAOTIC_RIFT, spawnRiftPos[randPos][0], spawnRiftPos[randPos][1], spawnRiftPos[randPos][2], spawnRiftPos[randPos][3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000))
+        {
+            DoScriptText(EMOTE_OPEN_RIFT, m_creature);
+            m_uiRiftGUIDList.push_back(pRift->GetGUID());
+        }
 
         return pRift?pRift->GetGUID():0;
+    }
+
+    void DespawnRifts()
+    {
+        if (!m_uiRiftGUIDList.empty() && m_pInstance)
+        {
+            for(std::list<uint64>::iterator itr = m_uiRiftGUIDList.begin(); itr != m_uiRiftGUIDList.end(); ++itr)
+            {
+                if (Creature* pRift = m_pInstance->instance->GetCreature(*itr))
+                {
+                    if (pRift->isAlive())
+                        pRift->ForcedDespawn();
+                }
+            }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)

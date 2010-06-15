@@ -340,6 +340,9 @@ scripts/northrend/crusaders_coliseum/trial_of_the_crusader/boss_twin_valkyr.cpp 
 scripts/northrend/crusaders_coliseum/trial_of_the_crusader/instance_trial_of_the_crusader.cpp \
 scripts/northrend/crusaders_coliseum/trial_of_the_crusader/trial_of_the_crusader.cpp \
 scripts/northrend/crusaders_coliseum/trial_of_the_crusader/trial_of_the_crusader.h \
+scripts/northrend/draktharon_keep/draktharon_keep.cpp \
+scripts/northrend/draktharon_keep/draktharon_keep.h \
+scripts/northrend/draktharon_keep/boss_dred.cpp \
 scripts/northrend/draktharon_keep/boss_novos.cpp \
 scripts/northrend/draktharon_keep/boss_tharonja.cpp \
 scripts/northrend/draktharon_keep/boss_trollgore.cpp \

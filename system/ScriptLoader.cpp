@@ -264,6 +264,7 @@ extern void AddSC_winterspring();
 //northrend
 extern void AddSC_boss_jedoga();                            //ahnkahet
 extern void AddSC_boss_nadox();
+extern void AddSC_boss_amanitar();
 extern void AddSC_boss_taldaram();
 extern void AddSC_boss_volazj();
 extern void AddSC_instance_ahnkahet();
@@ -685,6 +686,7 @@ void AddScripts()
     //northrend
     AddSC_boss_jedoga();                                    //ahnkahet
     AddSC_boss_nadox();
+    AddSC_boss_amanitar();
     AddSC_boss_taldaram();
     AddSC_boss_volazj();
     AddSC_instance_ahnkahet();

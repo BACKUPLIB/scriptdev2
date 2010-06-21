@@ -53,6 +53,7 @@ extern void AddSC_boss_quatermasterzigris();
 extern void AddSC_boss_pyroguard_emberseer();
 extern void AddSC_boss_gyth();
 extern void AddSC_boss_rend_blackhand();
+extern void AddSC_instance_blackrock_spire();
 extern void AddSC_boss_razorgore();                         //blackwing_lair
 extern void AddSC_boss_vael();
 extern void AddSC_boss_broodlord();
@@ -190,6 +191,7 @@ extern void AddSC_silvermoon_city();
 extern void AddSC_silverpine_forest();
 extern void AddSC_stormwind_city();
 extern void AddSC_stranglethorn_vale();
+extern void AddSC_swamp_of_sorrows();
 extern void AddSC_tirisfal_glades();
 extern void AddSC_undercity();
 extern void AddSC_western_plaguelands();
@@ -475,6 +477,7 @@ void AddScripts()
     AddSC_boss_pyroguard_emberseer();
     AddSC_boss_gyth();
     AddSC_boss_rend_blackhand();
+    AddSC_instance_blackrock_spire();
     AddSC_boss_razorgore();                                 //blackwing_lair
     AddSC_boss_vael();
     AddSC_boss_broodlord();
@@ -612,6 +615,7 @@ void AddScripts()
     AddSC_silverpine_forest();
     AddSC_stormwind_city();
     AddSC_stranglethorn_vale();
+    AddSC_swamp_of_sorrows();
     AddSC_tirisfal_glades();
     AddSC_undercity();
     AddSC_western_plaguelands();

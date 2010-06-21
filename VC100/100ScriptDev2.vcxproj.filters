@@ -372,6 +372,9 @@
     <ClCompile Include="..\scripts\eastern_kingdoms\stranglethorn_vale.cpp">
       <Filter>scripts\eastern_kingdoms</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\eastern_kingdoms\swamp_of_sorrows.cpp">
+      <Filter>scripts\eastern_kingdoms</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\eastern_kingdoms\tirisfal_glades.cpp">
       <Filter>scripts\eastern_kingdoms</Filter>
     </ClCompile>
@@ -454,6 +457,9 @@
       <Filter>scripts\eastern_kingdoms\blackrock_spire</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\boss_warmaster_voone.cpp">
+      <Filter>scripts\eastern_kingdoms\blackrock_spire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\instance_blackrock_spire.cpp">
       <Filter>scripts\eastern_kingdoms\blackrock_spire</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\eastern_kingdoms\blackwing_lair\boss_broodlord_lashlayer.cpp">
@@ -1003,9 +1009,6 @@
       <Filter>scripts\kalimdor\temple_of_ahnqiraj</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\kalimdor\wailing_caverns\instance_wailing_caverns.cpp">
-      <Filter>scripts\kalimdor\wailing_caverns</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\kalimdor\wailing_caverns\wailing_caverns.h">
       <Filter>scripts\kalimdor\wailing_caverns</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\zulfarrak.cpp">
@@ -1608,6 +1611,9 @@
     <ClInclude Include="..\scripts\eastern_kingdoms\blackrock_depths\blackrock_depths.h">
       <Filter>scripts\eastern_kingdoms\blackrock_depths</Filter>
     </ClInclude>
+    <ClInclude Include="..\scripts\eastern_kingdoms\blackrock_spire\blackrock_spire.h">
+      <Filter>scripts\eastern_kingdoms\blackrock_depths</Filter>
+    </ClInclude>
     <ClInclude Include="..\scripts\eastern_kingdoms\deadmines\deadmines.h">
       <Filter>scripts\eastern_kingdoms\deadmines</Filter>
     </ClInclude>
@@ -1673,6 +1679,9 @@
     </ClInclude>
     <ClInclude Include="..\scripts\kalimdor\temple_of_ahnqiraj\temple_of_ahnqiraj.h">
       <Filter>scripts\kalimdor\temple_of_ahnqiraj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scripts\kalimdor\wailing_caverns\wailing_caverns.h">
+      <Filter>scripts\kalimdor\wailing_caverns</Filter>
     </ClInclude>
     <ClInclude Include="..\scripts\northrend\azjol-nerub\ahnkahet\ahnkahet.h">
       <Filter>scripts\northrend\azjol-nerub\ahnkahet</Filter>

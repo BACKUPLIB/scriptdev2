@@ -3,6 +3,8 @@
 UPDATE `creature_template` SET `AIName` = "" WHERE `entry` = 26630;
 # boss trollgore heroic
 UPDATE `creature_template` SET `name` = "Trollgore", `ScriptName` = "boss_trollgore" WHERE `entry` = 31362;
+# boss novos heroic
+UPDATE `creature_template` SET `name` = "Novos the Summoner" WHERE `entry` = 31350;
 # crystal handler normal
 UPDATE `creature_template` SET `ScriptName` = "crystal_handler", `minlevel` = 75, `maxlevel` = 81, `minhealth` = 21200, `maxhealth` = 21200, `armor` = 4000, `mindmg` = 200, `maxdmg` = 300, `attackpower` = 200, `minrangedmg` = 200, `maxrangedmg` = 300, `lootid` = 0 WHERE `entry` = 26627;
 # crystal handler heroic

@@ -384,17 +384,6 @@ bool GOHello_go_tele_to_dalaran_crystal(Player* pPlayer, GameObject* pGo)
     return true;
 }
 
-/*######
-## go_tele_to_violet_stand
-######*/
-
-bool GOHello_go_tele_to_violet_stand(Player* pPlayer, GameObject* pGo)
-{
-    if (pPlayer->GetQuestRewardStatus(QUEST_LEARN_LEAVE_RETURN) || pPlayer->GetQuestStatus(QUEST_LEARN_LEAVE_RETURN) == QUEST_STATUS_INCOMPLETE)
-        return false;
-
-    return true;
-}
 
 /*######
 ## go_shaffars_stasis
@@ -439,6 +428,40 @@ bool GOHello_go_zuluheds_chain(Player* pPlayer, GameObject* pGo)
     if (pPlayer->hasQuest(10872))
         pPlayer->SetQuestStatus(10872, QUEST_STATUS_COMPLETE);
 		
+    return false;
+}
+
+/*######
+## go_tele_to_violet_stand
+######*/
+
+bool GOHello_go_tele_to_violet_stand(Player* pPlayer, GameObject* pGo)
+{
+    if (pPlayer->GetQuestRewardStatus(QUEST_LEARN_LEAVE_RETURN) || pPlayer->GetQuestStatus(QUEST_LEARN_LEAVE_RETURN) == QUEST_STATUS_INCOMPLETE)
+        return false;
+
+    return true;
+}
+
+/*######
+## go_blood_filled_orb
+######*/
+
+enum
+{
+    NPC_ZELEMAR_THE_WRATHFULL = 17830,
+    SAY_AGGRO                 = -1000579
+};
+
+float Position[4] = {-327.99f, 221.74f, -20.31f, 3.87f}; 
+
+bool GOHello_go_blood_filled_orb(Player* pPlayer, GameObject* pGo)
+{
+    if (Creature* pZelemar = pGo->SummonCreature(NPC_ZELEMAR_THE_WRATHFULL, Position[0], Position[1], Position[2], Position[3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+    {
+        DoScriptText(SAY_AGGRO, pZelemar);
+        pZelemar->AI()->AttackStart(pPlayer);     
+    }
     return false;
 }
 
@@ -531,11 +554,6 @@ void AddSC_go_scripts()
     newscript->pGOHello =           &GOHello_go_tele_to_dalaran_crystal;
     newscript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "go_tele_to_violet_stand";
-    newscript->pGOHello =           &GOHello_go_tele_to_violet_stand;
-    newscript->RegisterSelf();
-
 	newscript = new Script;
     newscript->Name = "go_shaffars_stasis";
     newscript->pGOHello =           &GOHello_go_shaffars_stasis;
@@ -549,5 +567,15 @@ void AddSC_go_scripts()
     newscript = new Script;
     newscript->Name = "go_zuluheds_chain";
     newscript->pGOHello =           &GOHello_go_zuluheds_chain;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_tele_to_violet_stand";
+    newscript->pGOHello =           &GOHello_go_tele_to_violet_stand;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_blood_filled_orb";
+    newscript->pGOHello =           &GOHello_go_blood_filled_orb;
     newscript->RegisterSelf();
 }

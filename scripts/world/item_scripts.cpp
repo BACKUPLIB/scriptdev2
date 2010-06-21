@@ -173,6 +173,7 @@ bool ItemUse_item_horn_of_the_frostbrood(Player* pPlayer, Item* pItem, const Spe
 
         return true;
     }
+    return false;
 }
 
 void AddSC_item_scripts()

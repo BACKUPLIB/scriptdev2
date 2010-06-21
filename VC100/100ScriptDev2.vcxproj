@@ -235,6 +235,7 @@
     <ClCompile Include="..\scripts\eastern_kingdoms\silverpine_forest.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\stormwind_city.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\stranglethorn_vale.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\swamp_of_sorrows.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\tirisfal_glades.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\undercity.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\western_plaguelands.cpp" />
@@ -263,6 +264,7 @@
     <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\boss_shadow_hunter_voshgajin.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\boss_the_beast.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\boss_warmaster_voone.cpp" />
+    <ClCompile Include="..\scripts\eastern_kingdoms\blackrock_spire\instance_blackrock_spire.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\blackwing_lair\boss_broodlord_lashlayer.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\blackwing_lair\boss_chromaggus.cpp" />
     <ClCompile Include="..\scripts\eastern_kingdoms\blackwing_lair\boss_ebonroc.cpp" />
@@ -653,6 +655,7 @@
     <ClInclude Include="..\base\guard_ai.h" />
     <ClInclude Include="..\base\simple_ai.h" />
     <ClInclude Include="..\scripts\eastern_kingdoms\blackrock_depths\blackrock_depths.h" />
+    <ClInclude Include="..\scripts\eastern_kingdoms\blackrock_spire\blackrock_spire.h" />
     <ClInclude Include="..\scripts\eastern_kingdoms\deadmines\deadmines.h" />
     <ClInclude Include="..\scripts\eastern_kingdoms\karazhan\karazhan.h" />
     <ClInclude Include="..\scripts\eastern_kingdoms\magisters_terrace\magisters_terrace.h" />

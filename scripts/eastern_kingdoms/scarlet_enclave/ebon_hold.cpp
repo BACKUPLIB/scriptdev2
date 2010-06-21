@@ -3307,7 +3307,7 @@ struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
             pl->SetClientControl(m_creature, 0);
             pl->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
             pl->SetCharm(NULL);
-            pl->SetFarSightGUID(0);
+            pl->GetCamera().ResetView();
             pl->SetMover(NULL);
             pl->RemovePetActionBar();
             m_creature->SetCharmerGUID(0);

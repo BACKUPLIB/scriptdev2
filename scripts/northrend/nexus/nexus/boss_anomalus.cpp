@@ -43,6 +43,8 @@ enum
     SPELL_SPARK_H                      = 57062,
 
     SPELL_ARCANE_FORM                  = 48019,
+
+	SPELL_BERSERK			           = 26662,
     // Chaotic Rift
     SPELL_RIFT_AURA                    = 47687,
     SPELL_RIFT_SUMMON_AURA             = 47732,
@@ -66,6 +68,8 @@ const float spawnRiftPos[6][4] =
     {652.564819f, -273.689362f, -8.751000f, 3.887317f}
 };
 
+#define BERSERK_Z_POS		    -12.0f
+
 /*######
 ## boss_anomalus
 ######*/
@@ -84,9 +88,11 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
 
     bool   m_bChaoticRift;
     bool   m_briftActive;
+	bool   m_bisInBerserk;
     uint32 m_uiSparkTimer;
     uint32 m_uiCreateRiftTimer;
     uint64 m_uiChaoticRiftGUID;
+	uint32 m_uiBerserkCheckTimer;
 
     std::list<uint64> m_uiRiftGUIDList;
 
@@ -94,9 +100,11 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     {
         m_bChaoticRift = false;
         m_briftActive = false;
+		m_bisInBerserk = false;
         m_uiSparkTimer = 5000;
         m_uiCreateRiftTimer = 25000;
         m_uiChaoticRiftGUID = 0;
+		m_uiBerserkCheckTimer = 6000;
 
         DespawnRifts();
     }
@@ -179,6 +187,18 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim() || m_creature->HasAura(SPELL_RIFT_SHIELD))
              return;
+		
+		if (!m_bisInBerserk)
+		{
+			if (m_uiBerserkCheckTimer < uiDiff)
+			{
+				if (m_creature->GetPositionZ() < BERSERK_Z_POS)
+					DoCastSpellIfCan(m_creature, SPELL_BERSERK);
+
+				m_bisInBerserk = true;
+				m_uiBerserkCheckTimer = 2000;
+			}else m_uiBerserkCheckTimer -= uiDiff;
+		}
 
         // Create additional Chaotic Rift at 50% HP
         if (!m_bChaoticRift && m_creature->GetHealthPercent() < 50.0f)

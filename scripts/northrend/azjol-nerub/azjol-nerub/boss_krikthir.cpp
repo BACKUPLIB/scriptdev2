@@ -165,12 +165,14 @@ struct MANGOS_DLL_DECL boss_krikthirAI : public ScriptedAI
                 if (!pTarget)
                     return;
 
-                float x = pTarget->GetPositionX() + urand(10.0f, 15.0f);
-                float y = pTarget->GetPositionY() + urand(10.0f, 15.0f);
+                float x = pTarget->GetPositionX() + 15.0f;
+                float y = pTarget->GetPositionY() + 15.0f;
 
-                m_creature->SummonCreature(NPC_SWARM, x, y, pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000); 
-                i++;
-            }while (i == 5);
+                Creature* pSwarm =m_creature->SummonCreature(NPC_SWARM, x, y, pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000); 
+                pSwarm->AddThreat(pTarget, 1.0f);
+				pSwarm->Attack(pTarget, true);
+				i++;
+			}while (m_bIsRegularMode ? i == 5 : i == 12);
             SwarmTimer = urand(3000, 5000);
         }
 

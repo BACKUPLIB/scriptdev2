@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_Anubarak
 SD%Complete: 80%
-SDComment: Some cosmetic mistakes.
+SDComment: Some cosmetic mistakes. TODO: spikes.
 SDCategory: Azjol'Nerub
 EndScriptData */
 
@@ -53,6 +53,8 @@ enum
 #define NPC_ADD2                        29349
 #define NPC_ELITE_ADD                   28732
 
+#define NPC_IMPALE_TRIGGER				31686
+
 #define MIDDLE_CORD_X                   552.927734f
 #define MIDDLE_CORD_Y                   248.950851f
 #define MIDDLE_CORD_Z                   223.912796f
@@ -64,6 +66,8 @@ enum
 #define ELITE_SPAWN_2_X                 554.539185f
 #define ELITE_SPAWN_2_Y                 319.792603f
 #define ELITE_SPAWN_2_Z                 235.927032f
+
+#define FAC_HOSTILE						16
 
 
 /*######
@@ -99,6 +103,9 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     uint32 ImpaleTimer;
     uint32 PoundTimer;
     uint32 CarrionSwarmTimer;
+	uint32 ImpaleTriggerTimer;
+
+	Unit* pTriggerTarget;
 
     int i;
 
@@ -121,8 +128,11 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         LeechingSwarmTimer = 4000;
         CloseDoorTimer = 4000;
         ImpaleTimer = 5000;
+		ImpaleTriggerTimer = 9999999;
         PoundTimer = 12000;
         CarrionSwarmTimer = 13000;
+
+		pTriggerTarget = NULL;
 
         i = 0;
 
@@ -162,8 +172,7 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         {
             if (pTarget)
                 m_creature->DealDamage(pTarget, pTarget->CalcArmorReducedDamage(pTarget, urand(46125, 48000)), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }
-            
+        }     
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -171,6 +180,7 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+		// Small hack to prevent a precocious close of the battlefield
         if (CloseDoorTimer < uiDiff)
         {
             m_pInstance->SetData(TYPE_ANUBARAK, IN_PROGRESS);
@@ -179,15 +189,23 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
 
         if (phase66 || phase33 || phase15)
         {
+			// TODO: Impale
             if (ImpaleTimer < uiDiff)
             {
-                if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                {
-                    if (Unit* pTrigger = m_creature->SummonCreature(15384, pVictim->GetPositionX(), pVictim->GetPositionY(), pVictim->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 6000))
-                        DoCastSpellIfCan(pTrigger, m_bIsRegularMode ? SPELL_IMPALE : SPELL_IMPALE_H);
-                }   
-                    
-                ImpaleTimer = 5000;
+				if (Unit* pImpaleVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+				{
+					if (Unit* pTriggerTarget = m_creature->SummonCreature(NPC_IMPALE_TRIGGER, pImpaleVictim->GetPositionX(), pImpaleVictim->GetPositionY(), pImpaleVictim->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
+					{
+						// modifies this trigger that he is matched to the fight
+						pTriggerTarget->SetVisibility(VISIBILITY_ON);
+						pTriggerTarget->GetMotionMaster()->Clear();
+						pTriggerTarget->GetMotionMaster()->MoveIdle();
+						pTriggerTarget->setFaction(FAC_HOSTILE);
+                        DoCastSpellIfCan(pTriggerTarget, SPELL_EARTH_EXPLOSION);
+						ImpaleTriggerTimer = 3000;						
+					}
+				}                    
+                ImpaleTimer = 8000;
             }else ImpaleTimer -= uiDiff;
         }
         else 
@@ -210,6 +228,17 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
                 CarrionSwarmTimer = urand(23000, 31000);
             }else CarrionSwarmTimer -= uiDiff;
         }
+
+		if (ImpaleTriggerTimer < uiDiff)
+		{
+			if (pTriggerTarget && pTriggerTarget->isAlive())
+			{
+				pTriggerTarget->CastSpell(pTriggerTarget, m_bIsRegularMode ? SPELL_IMPALE : SPELL_IMPALE_H, true);
+				pTriggerTarget->RemoveAurasDueToSpell(SPELL_EARTH_EXPLOSION);
+				pTriggerTarget->setDeathState(JUST_DIED);
+			}
+			ImpaleTriggerTimer = 9999999;
+		}else ImpaleTriggerTimer -= uiDiff;
 
         if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.66 && !phase66Over)
         {
@@ -455,9 +484,7 @@ struct MANGOS_DLL_DECL npc_elite_anubAI : public ScriptedAI
         }
 
         DoMeleeAttackIfReady();
-    }
-
-    
+    }  
 };
 
 CreatureAI* GetAI_boss_anubarak(Creature* pCreature)

@@ -1,8 +1,8 @@
 # update wotlk instance drak'tharon keep bosses
 # boss trollgore normal
-UPDATE `creature_template` SET `AIName` = "" WHERE `entry` = 26630;
+UPDATE `creature_template` SET `AIName` = "", `rank` = 3, `dmg_multiplier` = 15 WHERE `entry` = 26630;
 # boss trollgore heroic
-UPDATE `creature_template` SET `name` = "Trollgore", `ScriptName` = "boss_trollgore" WHERE `entry` = 31362;
+UPDATE `creature_template` SET `name` = "Trollgore", `ScriptName` = "boss_trollgore", `rank` = 3, `dmg_multiplier` = 25 WHERE `entry` = 31362;
 # boss novos heroic
 UPDATE `creature_template` SET `name` = "Novos the Summoner" WHERE `entry` = 31350;
 # crystal handler normal
@@ -10,9 +10,11 @@ UPDATE `creature_template` SET `ScriptName` = "crystal_handler", `minlevel` = 75
 # crystal handler heroic
 UPDATE `creature_template` SET `ScriptName` = "crystal_handler", `name` = "Crystal Handler", `equipment_id` = 1653 WHERE `entry` = 31344;
 # boss dred normal
-UPDATE `creature_template` SET `ScriptName` = "boss_dred", `AIName` = "" WHERE `entry` = 27483;
+#UPDATE `creature_template` SET `ScriptName` = "boss_dred", `AIName` = "" WHERE `entry` = 27483;
+UPDATE `creature_template` SET `ScriptName` = "", `AIName` = "EventAI" WHERE `entry` = 27483;
 # boss dred hero
-UPDATE `creature_template` SET `name` = "King Dred", `ScriptName` = "boss_dred" WHERE `entry` = 31349;
+#UPDATE `creature_template` SET `name` = "King Dred", `ScriptName` = "boss_dred" WHERE `entry` = 31349;
+UPDATE `creature_template` SET `name` = "King Dred", `ScriptName` = "", AIName = "EventAI" WHERE `entry` = 31349;
 # tharon'ja normal
 UPDATE `creature_template` SET `ScriptName` = "boss_tharonja", `rank` = 3, `minlevel` = 76, `maxlevel` = 76, `minhealth` = 275000, `maxhealth` = 275000  WHERE `entry` = 26632;
 # tharon'ja hero

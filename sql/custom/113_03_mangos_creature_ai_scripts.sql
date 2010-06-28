@@ -33,7 +33,7 @@ DELETE FROM `creature_ai_scripts` WHERE `id` = 2662303;
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,
 `event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) 
 VALUES (2662303,26623,2,100,1,50,1,10000,18000,11,47668,0,0,"Scourge Brute - Heal");
-# Drakkari Commander 27431
+# Drakkari Commander
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 27431;
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 27431;
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,
@@ -48,3 +48,5 @@ VALUES (2743103,27431,0,100,3,10000,15000,20000,30000,11,49807,0,0,"Drakkari Com
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,
 `event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) 
 VALUES (2743104,27431,0,100,5,8000,12000,20000,25000,11,24236,0,0,"Drakkari Commander - Whirlwind(Heroic)");
+# Drakkari Shaman slower heal chain casting
+UPDATE `creature_ai_scripts` SET `event_param3` = 12000, `event_param4` = 20000 WHERE `id` = 2663912

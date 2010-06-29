@@ -77,11 +77,12 @@ struct MANGOS_DLL_DECL mob_ahnkahar_eggAI : public ScriptedAI
 
         if (m_pInstance)
         {
-            if (Creature*  pElderNadox = ((Creature*)Unit::GetUnit(*m_creature, m_pInstance->GetData64(NPC_ELDER_NADOX))))
+            if (Creature* pElderNadox = ((Creature*)Unit::GetUnit(*m_creature, m_pInstance->GetData64(NPC_ELDER_NADOX))))
             {
                 float fPosX, fPosY, fPosZ;
                 pElderNadox->GetPosition(fPosX, fPosY, fPosZ);
                 pSummoned->GetMotionMaster()->MovePoint(0, fPosX, fPosY, fPosZ);
+				pSummoned->CastSpell(pSummoned, SPELL_GUARDIAN_AURA_TRIGGERED, true);
             }
         }
     }

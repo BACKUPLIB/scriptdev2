@@ -37,6 +37,7 @@ enum
     NPC_ANNHYLDE                = 24068,
     NPC_THROW_TARGET            = 23996,                    //the target, casting spell and target of moving dummy
     NPC_THROW_DUMMY             = 23997,                    //the axe, moving to target
+	NPC_INGVAR_ACHIEVEMENT		= 23980,					//use this mob to apply archievment
 
     //phase 1
     SPELL_CLEAVE                = 42724,
@@ -52,6 +53,8 @@ enum
 
     //phase 2
     SPELL_DARK_SMASH            = 42723,
+
+	SPELL_SHADOW_AXE			= 42748,
 
     SPELL_DREADFUL_ROAR         = 42729,
     SPELL_DREADFUL_ROAR_H       = 59734,
@@ -69,8 +72,13 @@ enum
     SPELL_SPOTLIGHT             = 62897                     //visual spotligth (not correct spell)
 };
 
+#define SAY_ANNHYLDE			"Ingvar! Euer jämmerlicher Fehlschlag wird anderen eine Warnung sein. Ihr seid verdammt! Erhebt Euch und folgt dem Willen des Meisters!"
+
 #define PHASE_1_DISPLAY_ID      21953     
 #define PHASE_2_DISPLAY_ID      26351
+
+#define FAC_FRIENDLY			35
+
 /*######
 ## boss_ingvar
 ######*/
@@ -97,6 +105,7 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
     uint32 m_uiDreadfulRoarTimer;
     uint32 m_uiDarkSmash;
     uint32 m_uiWoeStrike;
+	uint32 m_uiShadowAxeTimer;
     uint32 m_uiSpotlightTimer;
     uint32 m_uiRescureTimer;
     uint32 m_uiRemoveBlackBubbleTimer;
@@ -112,6 +121,7 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
         m_uiSmashTimer = urand(8000, 15000);
         m_uiStaggeringRoarTimer = urand(10000, 25000);
         m_uiEnrageTimer = 30000;
+		m_uiShadowAxeTimer = 20000;
     }
 
     void Aggro(Unit* pWho)
@@ -139,12 +149,16 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
 
             m_bRescureInProgress = true;
             m_uiSpotlightTimer = 4000;
+			m_uiRescureTimer = 9999999;
         }
     }
 
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH_SECOND, m_creature);
+		Player* pPlayerKiller = ((Player*)pKiller);
+		if (pPlayerKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
+			pPlayerKiller->RewardPlayerAndGroupAtEvent(NPC_INGVAR_ACHIEVEMENT, m_creature);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -159,7 +173,9 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
         {
             if (m_uiSpotlightTimer < uiDiff)
             {
-                m_creature->SummonCreature(24068, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ() + 35, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 16000);  
+                if (Creature* pValkyr = m_creature->SummonCreature(24068, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ() + 5, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 16000))
+					pValkyr->setFaction(FAC_FRIENDLY);
+
                 m_creature->CastSpell(m_creature, SPELL_SPOTLIGHT, true, 0, 0, ObjectGuid());
                 m_uiRescureTimer = 14000;
                 m_uiSpotlightTimer = 9999999;
@@ -223,13 +239,7 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
                 m_uiEnrageTimer -= uiDiff;
         }
         else
-        {
-            /*if (m_uiRemoveBlackBubbleTimer < uiDiff)
-            {
-                m_creature->RemoveAurasDueToSpell(SPELL_SCOURGE_RES_BUBBLE, 0);
-                m_uiRemoveBlackBubbleTimer = 9999999;
-            }else m_uiRemoveBlackBubbleTimer -= uiDiff; */
-            
+		{            
             if (m_uiDreadfulRoarTimer < uiDiff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_DREADFUL_ROAR : SPELL_DREADFUL_ROAR_H);
@@ -247,6 +257,12 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
                 DoCastSpellIfCan(m_creature, SPELL_DARK_SMASH);
                 m_uiDarkSmash = 20000;
             }else m_uiDarkSmash -= uiDiff;
+
+			if (m_uiShadowAxeTimer < uiDiff)
+			{
+				DoCastSpellIfCan(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), SPELL_SHADOW_AXE);
+				m_uiShadowAxeTimer = 44000;
+			}else m_uiShadowAxeTimer -= uiDiff;
         }
 
         DoMeleeAttackIfReady();
@@ -294,7 +310,7 @@ struct MANGOS_DLL_DECL npc_annhyldeAI : public ScriptedAI
     {
         if (SpeakTimer < uiDiff)
         {
-            m_creature->MonsterYell("Rise in the name of the Lich King. Jaja der Lich King is allmächtig und so deswegen red ich da jetzt was damit die 10 sekunden vergehen. Tada jetzt könnt ihr weiterkämpfen.", 0, 0);      
+            m_creature->MonsterYell(SAY_ANNHYLDE, LANG_UNIVERSAL, m_creature->GetGUID());      
             SpeakTimer = 9999999;
         }else SpeakTimer -= uiDiff;
         

@@ -257,7 +257,7 @@ struct MANGOS_DLL_DECL mob_chaotic_riftAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        m_uiSummonTimer = 16000;
+        m_uiSummonTimer = 4000;
         DoCastSpellIfCan(m_creature, SPELL_RIFT_AURA);
         //DoCastSpellIfCan(m_creature, SPELL_RIFT_SUMMON_AURA);
     }
@@ -282,7 +282,7 @@ struct MANGOS_DLL_DECL mob_chaotic_riftAI : public Scripted_NoMovementAI
         if (m_uiSummonTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature, SPELL_SUMMON_CRAZED_MANA_WRAITH);
-            m_uiSummonTimer = 16000;
+            m_uiSummonTimer = urand(4000, 7000);
         }
         else
             m_uiSummonTimer -= uiDiff;

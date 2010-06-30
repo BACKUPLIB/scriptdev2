@@ -159,22 +159,23 @@ struct MANGOS_DLL_DECL boss_dredAI : public ScriptedAI
             CallForRaptorSpawnCheck();
         }else CallForRaptor_Timer -= uiDiff;
 
-        //Call For Raptor - spawn
+        //Call For Raptor
         if (CallForRaptorSpawn_Timer < uiDiff && CallForRaptorSpawn_Check == 1)
         {    
-            switch(urand(0, 1))
+            std::list<Creature*> assistList;
+
+            GetCreatureListWithEntryInGrid(assistList,m_creature,NPC_DRAKKARI_GUTRIPPER,30.f);
+            if(assistList.empty())
+                GetCreatureListWithEntryInGrid(assistList,m_creature,NPC_DRAKKARI_SCYTHECLAW,30.f);
+
+            if(!assistList.empty())
             {
-                case 0:
+                Creature* target = *(assistList.begin());
+                if(target && target->isAlive())
                 {
-                    if (Creature* pRaptor1 = m_creature->SummonCreature(NPC_DRAKKARI_GUTRIPPER, PosSummon1[0], PosSummon1[1], PosSummon1[2], 0 , TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 240000))
-                        pRaptor1->AI()->AttackStart(m_creature->getVictim());
+                    target->AI()->AttackStart(m_creature->getVictim());
                 }
-                case 1:
-                {
-                    if (Creature* pRaptor2 = m_creature->SummonCreature(NPC_DRAKKARI_SCYTHECLAW, PosSummon1[0], PosSummon1[1], PosSummon1[2], 0 , TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 240000))
-                        pRaptor2->AI()->AttackStart(m_creature->getVictim());
-                }
-            }
+            }   
             CallForRaptorSpawn_Check = 0;
         }else CallForRaptorSpawn_Timer -= uiDiff;
 

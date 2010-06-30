@@ -156,9 +156,8 @@ struct MANGOS_DLL_DECL boss_ingvarAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH_SECOND, m_creature);
-		Player* pPlayerKiller = ((Player*)pKiller);
-		if (pPlayerKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
-			pPlayerKiller->RewardPlayerAndGroupAtEvent(NPC_INGVAR_ACHIEVEMENT, m_creature);
+        if (Player* pPlayerKiller = pKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
+            pPlayerKiller->RewardPlayerAndGroupAtEvent(NPC_INGVAR_ACHIEVEMENT, m_creature);
     }
 
     void KilledUnit(Unit* pVictim)

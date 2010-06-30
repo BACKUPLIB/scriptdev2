@@ -568,8 +568,10 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
         if (m_bIsDuelInProgress && uiDamage >= m_creature->GetHealth())
         {
             uiDamage = 0;
+            m_creature->MonsterYell("duel is over",LANG_UNIVERSAL,0);
             if (Player* pPlyr = (Player*) Unit::GetUnit(*m_creature, m_uiDuelerGUID))
             {
+                m_creature->MonsterYell("you get kill credit",LANG_UNIVERSAL,0);
                 //hack for not everywhere working SPELL_DUEL_VICTORY
                 pPlyr->KilledMonsterCredit(29025,0);
                 //m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
@@ -749,6 +751,9 @@ struct MANGOS_DLL_DECL npc_koltira_deathweaverAI : public npc_escortAI
     {
         if (HasEscortState(STATE_ESCORT_PAUSED))
         {
+            if(m_uiWave < 4 && !m_creature->HasAura(SPELL_ANTI_MAGIC_ZONE))
+                DoCastSpellIfCan(m_creature, SPELL_ANTI_MAGIC_ZONE);
+
             if (m_uiWave_Timer < uiDiff)
             {
                 switch(m_uiWave)

@@ -422,7 +422,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
 
         Unit* target = NULL;
         // add half objectsize as radius, to include also player standing "in" netherspite
-        float radius = portal->GetDistance2d(m_creature) + m_creature->GetObjectSize()/2;
+        float radius = portal->GetDistance2d(m_creature) + m_creature->GetObjectBoundingRadius()/2;
         {
             CellPair p(MaNGOS::ComputeCellPair(portal->GetPositionX(), portal->GetPositionY()));
             Cell cell(p);

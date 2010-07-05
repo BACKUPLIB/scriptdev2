@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Gothik
-SD%Complete: 60
+SD%Complete: 60%
 SDComment: Only base implemented. Todo: control adds at summon. Handle case of raid not splitted in two sides
 SDCategory: Naxxramas
 EndScriptData */

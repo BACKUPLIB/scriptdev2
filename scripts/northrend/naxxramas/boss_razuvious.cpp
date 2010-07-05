@@ -39,7 +39,6 @@ enum
 
     SPELL_UNBALANCING_STRIKE = 26613,
     SPELL_DISRUPTING_SHOUT   = 55543,
-    SPELL_DISRUPTING_SHOUT_H = 29107,
     SPELL_JAGGED_KNIFE       = 55550,
     SPELL_HOPELESS           = 29125
 };
@@ -60,13 +59,15 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
     uint32 m_uiDisruptingShoutTimer;
     uint32 m_uiJaggedKnifeTimer;
     uint32 m_uiCommandSoundTimer;
+	uint32 m_uiHopelessTimer;
 
     void Reset()
     {
-        m_uiUnbalancingStrikeTimer = 30000;                 // 30 seconds
-        m_uiDisruptingShoutTimer   = 15000;                 // 15 seconds
+        m_uiUnbalancingStrikeTimer = 30000;                 
+        m_uiDisruptingShoutTimer   = 15000;                 
         m_uiJaggedKnifeTimer       = urand(10000, 15000);
-        m_uiCommandSoundTimer      = 40000;                 // 40 seconds
+        m_uiCommandSoundTimer      = 40000;                 
+		m_uiHopelessTimer		   = 30000;					
     }
 
     void KilledUnit(Unit* Victim)
@@ -125,7 +126,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         // Disrupting Shout
         if (m_uiDisruptingShoutTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_DISRUPTING_SHOUT : SPELL_DISRUPTING_SHOUT_H);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_DISRUPTING_SHOUT);
             m_uiDisruptingShoutTimer = 25000;
         }
         else
@@ -134,12 +135,21 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         // Jagged Knife
         if (m_uiJaggedKnifeTimer < uiDiff)
         {
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCastSpellIfCan(pTarget, SPELL_JAGGED_KNIFE);
-            m_uiJaggedKnifeTimer = 10000;
+            if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                    m_creature->CastSpell(target, SPELL_JAGGED_KNIFE, false);
+            m_uiJaggedKnifeTimer = urand(10000, 15000);
         }
         else
             m_uiJaggedKnifeTimer -= uiDiff;
+
+		// Hopeless
+        if (m_uiHopelessTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature, SPELL_HOPELESS, true);
+            m_uiHopelessTimer = 30000;
+        }
+		else 
+			m_uiHopelessTimer -= uiDiff;
 
         // Random say
         if (m_uiCommandSoundTimer < uiDiff)

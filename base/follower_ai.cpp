@@ -44,7 +44,6 @@ void FollowerAI::AttackStart(Unit* pWho)
 
 //This part provides assistance to a player that are attacked by pWho, even if out of normal aggro range
 //It will cause m_creature to attack pWho that are attacking _any_ player (which has been confirmed may happen also on offi)
-//The flag (type_flag) is unconfirmed, but used here for further research and is a good candidate.
 bool FollowerAI::AssistPlayerInCombat(Unit* pWho)
 {
     if (!pWho->getVictim())

@@ -276,7 +276,7 @@ extern void AddSC_boss_krikthir();
 extern void AddSC_instance_azjol_nerub();
 extern void AddSC_boss_anubarak_trial();                    //Crusaders' Coliseum, trial_of_the_crusader
 extern void AddSC_boss_jaraxxus();
-extern void AddSC_faction_champions();
+extern void AddSC_boss_faction_champions();
 extern void AddSC_northrend_beasts();
 extern void AddSC_twin_valkyr();
 extern void AddSC_trial_of_the_crusader();
@@ -338,6 +338,13 @@ extern void AddSC_boss_ymiron();
 extern void AddSC_instance_pinnacle();
 extern void AddSC_instance_violet_hold();                   //violet_hold
 extern void AddSC_violet_hold();
+
+//Forge of Souls
+extern void AddSC_instance_forge_of_souls();
+extern void AddSC_boss_devourer_of_souls();
+extern void AddSC_boss_bronjahm();
+extern void AddSC_trash_forge_of_souls();
+extern void AddSC_forge_of_souls();
 
 extern void AddSC_borean_tundra();
 extern void AddSC_dalaran();
@@ -700,7 +707,7 @@ void AddScripts()
     AddSC_instance_azjol_nerub();
     AddSC_boss_anubarak_trial();                            //Crusaders' Coliseum, trial_of_the_crusader
     AddSC_boss_jaraxxus();
-    AddSC_faction_champions();
+    AddSC_boss_faction_champions();
     AddSC_northrend_beasts();
     AddSC_twin_valkyr();
     AddSC_trial_of_the_crusader();
@@ -762,6 +769,12 @@ void AddScripts()
     AddSC_instance_pinnacle();
     AddSC_instance_violet_hold();                           //violet_hold
     AddSC_violet_hold();
+
+    AddSC_instance_forge_of_souls();                        //Forge of Souls
+    AddSC_boss_devourer_of_souls();
+    AddSC_boss_bronjahm();
+    AddSC_trash_forge_of_souls();
+    AddSC_forge_of_souls();
 
     AddSC_borean_tundra();
     AddSC_dalaran();

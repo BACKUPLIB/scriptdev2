@@ -568,13 +568,9 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
         if (m_bIsDuelInProgress && uiDamage >= m_creature->GetHealth())
         {
             uiDamage = 0;
-            m_creature->MonsterYell("duel is over",LANG_UNIVERSAL,0);
             if (Player* pPlyr = (Player*) Unit::GetUnit(*m_creature, m_uiDuelerGUID))
             {
-                m_creature->MonsterYell("you get kill credit",LANG_UNIVERSAL,0);
-                //hack for not everywhere working SPELL_DUEL_VICTORY
-                pPlyr->KilledMonsterCredit(29025,0);
-                //m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
+                m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
             }
             //possibly not evade, but instead have end sequenze
             EnterEvadeMode();

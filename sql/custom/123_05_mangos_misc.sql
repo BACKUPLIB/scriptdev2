@@ -1,4 +1,4 @@
-﻿-- Forge of souls
+-- Forge of souls
 UPDATE `instance_template` SET `script`='instance_forge_of_souls' WHERE `map`=632;
 UPDATE `creature_template` SET `ScriptName`='boss_bronjahm', `AIName` ='' WHERE `entry`=36497;
 UPDATE `creature_template` SET `ScriptName`='mob_soul_fragment', `modelid_A`= 30233, `modelid_H`= 30233, `AIName` ='' WHERE `entry`=36535;
@@ -46,12 +46,12 @@ INSERT INTO `npc_text` (`ID`, `Text0_0`) VALUES
 
 DELETE FROM `locales_npc_text` WHERE `entry` IN (724001, 724002, 724003, 724004, 724005, 724006); 
 INSERT INTO `locales_npc_text` (`entry`, `Text0_0_loc1`, `Text0_0_loc2`, `Text0_0_loc3`, `Text0_0_loc4`, `Text0_0_loc5`, `Text0_0_loc6`, `Text0_0_loc7`, `Text0_0_loc8`) VALUES
-(724001, 'Greetings $N! Are you ready to be tested in Crusaders Coliseum?', NULL, NULL, NULL, NULL, NULL, NULL, 'Приветствую, $N! Вы готовы пройти Испытание Крестоносца?'),
-(724002, 'Are you ready for the next stage?', NULL, NULL, NULL, NULL, NULL, NULL, 'Вы готовы к следующему этапу?'),
-(724003, 'Are you ready to fight the champions of the Silver vanguard?', NULL, NULL, NULL, NULL, NULL, NULL, 'Вы готовы драться с чемпионами Серебряного авангарда?'),
-(724004, 'Are you ready for the next stage?', NULL, NULL, NULL, NULL, NULL, NULL, 'Вы готовы к следующему этапу?'),
-(724005, 'Are you ready to continue battle with Anub-Arak?', NULL, NULL, NULL, NULL, NULL, NULL, 'Вы готовы продолжить бой с Ануб-Араком?'),
-(724006, 'Today, the arena is closed. Script dungeon designed specifically for server Pandora http://wow.teletoria.ru (c) /dev/rsa 2010', NULL, NULL, NULL, NULL, NULL, NULL, 'На сегодня арена закрыта. Скрипт инстанса разработан специально для сервера Пандора http://wow.teletoria.ru (c) /dev/rsa 2010');
+(724001, 'Greetings $N! Are you ready to be tested in Crusaders Coliseum?', NULL, NULL, NULL, NULL, NULL, NULL, '???????????, $N! ?? ?????? ?????? ????????? ????????????'),
+(724002, 'Are you ready for the next stage?', NULL, NULL, NULL, NULL, NULL, NULL, '?? ?????? ? ?????????? ??????'),
+(724003, 'Are you ready to fight the champions of the Silver vanguard?', NULL, NULL, NULL, NULL, NULL, NULL, '?? ?????? ??????? ? ?????????? ??????????? ??????????'),
+(724004, 'Are you ready for the next stage?', NULL, NULL, NULL, NULL, NULL, NULL, '?? ?????? ? ?????????? ??????'),
+(724005, 'Are you ready to continue battle with Anub-Arak?', NULL, NULL, NULL, NULL, NULL, NULL, '?? ?????? ?????????? ??? ? ????-???????'),
+(724006, 'Today, the arena is closed. Script dungeon designed specifically for server Pandora http://wow.teletoria.ru (c) /dev/rsa 2010', NULL, NULL, NULL, NULL, NULL, NULL, '?? ??????? ????? ???????. ?????? ???????? ?????????? ?????????? ??? ??????? ??????? http://wow.teletoria.ru (c) /dev/rsa 2010');
 
 UPDATE `creature_template` SET `scriptname`='boss_lich_king_toc' WHERE `entry`=35877;
 UPDATE `creature_template` SET `minhealth`= 20000, `maxhealth` = 20000, `faction_A`= 1770, `faction_H` = 1770,  `scriptname`='npc_fizzlebang_toc' WHERE `entry`=35458;

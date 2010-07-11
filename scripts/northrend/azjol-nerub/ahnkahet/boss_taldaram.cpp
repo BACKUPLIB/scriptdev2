@@ -80,11 +80,13 @@ struct MANGOS_DLL_DECL boss_taldaramAI : public ScriptedAI
     bool m_bIsRegularMode;
 
 	bool isInVanish;
+	bool isInVampyrMode;
 
 	uint32 summonFlameOrbTimer;
 	uint32 vanishTimer;
 	uint32 bloodthirstTimer;
 	uint32 embraceOfTheVampyrTimer;
+	uint32 embraceOfTheVampyrInterruptDamage;
 
     void Reset()
     {
@@ -124,6 +126,19 @@ struct MANGOS_DLL_DECL boss_taldaramAI : public ScriptedAI
         if (m_pInstance)
             m_pInstance->SetData(TYPE_TALDARAM, DONE);
     }
+
+	void DamageTaken(Unit* pDoneBy, uint32 uiDamage)
+	{
+		if (isInVampyrMode)
+			embraceOfTheVampyrInterruptDamage += uiDamage;
+
+		if (embraceOfTheVampyrInterruptDamage > 20000)
+		{
+			m_creature->InterruptNonMeleeSpells(false);	
+			isInVampyrMode = false;
+			embraceOfTheVampyrInterruptDamage = 0;
+		}
+	}
 
 	void MoveInLineOfSight(Unit* pWho)
     {
@@ -224,6 +239,7 @@ struct MANGOS_DLL_DECL boss_taldaramAI : public ScriptedAI
 					m_creature->NearTeleportTo(pPlayer->GetPositionX() + 3.0f, pPlayer->GetPositionY() + 3.0f, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
 					m_creature->SetVisibility(VISIBILITY_ON);
 					DoCastSpellIfCan(pPlayer, m_bIsRegularMode ? SPELL_EMBRACE_OF_THE_VAMPYR : SPELL_EMBRACE_OF_THE_VAMPYR_H);
+					isInVampyrMode = true;
 					summonFlameOrbTimer += 20000;
 				}
 				
@@ -281,7 +297,7 @@ struct MANGOS_DLL_DECL mob_taldaram_flame_orbAI : public ScriptedAI
 		if (castTimer < uiDiff)
 		{
 			m_creature->CastSpell(m_creature, SPELL_FLAME_SPHERE_PERIODIC, true);
-			castTimer = 250;
+			castTimer = 500;
 		}else castTimer -= uiDiff;
     }
 };

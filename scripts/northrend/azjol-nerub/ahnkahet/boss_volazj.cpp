@@ -35,8 +35,14 @@ enum
     SAY_DEATH_1                    = -1619038, 
     SAY_DEATH_2                    = -1619039, 
  
-    SPELL_INSANITY                  = 57496, 
- 
+    SPELL_INSANITY                  = 57496,
+	
+	SPELL_INSANITY_PHASE_16			= 57508,
+	SPELL_INSANITY_PHASE_32			= 57509,
+	SPELL_INSANITY_PHASE_64			= 57510,
+	SPELL_INSANITY_PHASE_128		= 57511,
+	SPELL_INSANITY_PHASE_256		= 57512,
+	
     SPELL_SHIVER                    = 57949, 
     SPELL_SHIVER_H                  = 59978, 
  
@@ -122,8 +128,18 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
     bool isInInsanity; 
     bool phase66; 
     bool phase33; 
+	bool clone16;
+	bool clone32;
+	bool clone64;
+	bool clone128;
+	bool clone256;
  
     std::list<uint64> cloneGUIDList; 
+	std::list<uint64> clone16GUIDList;
+	std::list<uint64> clone32GUIDList;
+	std::list<uint64> clone64GUIDList;
+	std::list<uint64> clone128GUIDList;
+	std::list<uint64> clone256GUIDList;
  
     uint32 insanityEndTimer; 
     uint32 insanityTimer; 
@@ -140,10 +156,20 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 		shiverTimer = 13000;
 		mindFlayTimer = 9000;
 		cloneGUIDList.clear();
+		clone16GUIDList.clear();
+		clone32GUIDList.clear();
+		clone64GUIDList.clear();
+		clone128GUIDList.clear();
+		clone256GUIDList.clear();
 
 		isInInsanity = false;
 		phase66 = false;
 		phase33 = false;
+		clone16 = false;
+		clone32 = false;
+		clone64 = false;
+		clone128 = false;
+		clone256 = false;
 
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, NOT_STARTED);
@@ -172,155 +198,225 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, DONE);
     } 
+
+	void setPlayersPhase()
+	{
+		int i = 1;
+
+		std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+		for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+		{ 
+			if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+			{ 
+				if(target && target->GetTypeId() == TYPEID_PLAYER) 
+				{
+					switch(i)
+						{
+							case 1:
+								target->CastSpell(target, SPELL_INSANITY_PHASE_16, true);
+								break;
+							case 2:
+								target->CastSpell(target, SPELL_INSANITY_PHASE_32, true);
+								break;
+							case 3:
+								target->CastSpell(target, SPELL_INSANITY_PHASE_64, true);
+								break;
+							case 4:
+								target->CastSpell(target, SPELL_INSANITY_PHASE_128, true);
+								break;
+							case 5:
+								target->CastSpell(target, SPELL_INSANITY_PHASE_256, true);
+								break;
+							default:
+								break;
+						}
+					i++;
+				}
+			}
+		}	
+	}
  
     void createClassMirrors() 
-    { 
-        std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
-        for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
-        { 
-            if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
-            { 
-                if(target && target->GetTypeId() == TYPEID_PLAYER) 
-                { 
-                    switch (target->getClass()) 
-                    { 
-                        case CLASS_PRIEST: 
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_PRIEST : CLONE_HEALTH_PRIEST_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-								pClone->GetMotionMaster()->MoveChase(target);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_PALADIN: 
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId()); 
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_PALA : CLONE_HEALTH_PALA_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f); 
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_WARLOCK: 
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-								pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_WARLOCK : CLONE_HEALTH_WARLOCK_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_MAGE:    
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_MAGE : CLONE_HEALTH_MAGE_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_ROGUE:  
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_ROGUE : CLONE_HEALTH_ROGUE_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_WARRIOR: 
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_WARRIOR : CLONE_HEALTH_WARRIOR_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_DRUID:  
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId()); 
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_DRUID : CLONE_HEALTH_DRUID_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_SHAMAN:  
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId()); 
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_SHAMAN : CLONE_HEALTH_SHAMAN_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_HUNTER:  
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId());
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_HUNT : CLONE_HEALTH_HUNT_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        case CLASS_DEATH_KNIGHT: 
-                            if (Unit* pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
-                            { 
-                                pClone->SetDisplayId(target->GetNativeDisplayId()); 
-								pClone->SetName(target->GetName());
-                                pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_DK : CLONE_HEALTH_DK_H); 
-                                pClone->SetHealth(pClone->GetMaxHealth()); 
-                                pClone->Attack(target, true); 
-                                pClone->AddThreat(target, 10.0f);
-								pClone->setFaction(FAC_HOSTILE);
-                                cloneGUIDList.push_back(pClone->GetGUID()); 
-                            } 
-                            break; 
-                        default: 
-                            break; 
-                    } 
-                } 
-            } 
-        }    
+    {
+		for (int i = 0; i <= 5; i++)
+		{
+			std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+			for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+			{ 
+				if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+				{ 
+					if(target && target->GetTypeId() == TYPEID_PLAYER) 
+					{
+						Unit* pClone = NULL;
+						switch (target->getClass()) 
+						{ 
+							case CLASS_PRIEST: 
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_PRIEST : CLONE_HEALTH_PRIEST_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									pClone->GetMotionMaster()->MoveChase(target);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_PALADIN: 
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId()); 
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_PALA : CLONE_HEALTH_PALA_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f); 
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_WARLOCK: 
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_WARLOCK : CLONE_HEALTH_WARLOCK_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_MAGE:    
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_MAGE : CLONE_HEALTH_MAGE_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_ROGUE:  
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_ROGUE : CLONE_HEALTH_ROGUE_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_WARRIOR: 
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_WARRIOR : CLONE_HEALTH_WARRIOR_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_DRUID:  
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId()); 
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_DRUID : CLONE_HEALTH_DRUID_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_SHAMAN:  
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId()); 
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_SHAMAN : CLONE_HEALTH_SHAMAN_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_HUNTER:  
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId());
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_HUNT : CLONE_HEALTH_HUNT_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							case CLASS_DEATH_KNIGHT: 
+								if (pClone = m_creature->SummonCreature(m_bIsRegularMode ? CLONE : CLONE_H, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000)) 
+								{ 
+									pClone->SetDisplayId(target->GetNativeDisplayId()); 
+									pClone->SetName(target->GetName());
+									pClone->SetMaxHealth(m_bIsRegularMode ? CLONE_HEALTH_DK : CLONE_HEALTH_DK_H); 
+									pClone->SetHealth(pClone->GetMaxHealth()); 
+									pClone->Attack(target, true); 
+									pClone->AddThreat(target, 10.0f);
+									pClone->setFaction(FAC_HOSTILE);
+									cloneGUIDList.push_back(pClone->GetGUID()); 
+								} 
+								break; 
+							default: 
+								break; 
+						} 
+
+						if (pClone)
+						{
+							switch(i)
+							{
+								case 1:
+									pClone->SetPhaseMask(16, true);
+									clone16GUIDList.push_back(pClone->GetGUID());
+									break;
+								case 2:
+									pClone->SetPhaseMask(32, true);
+									clone32GUIDList.push_back(pClone->GetGUID());
+									break;
+								case 3:
+									pClone->SetPhaseMask(64, true);
+									clone64GUIDList.push_back(pClone->GetGUID());
+									break;
+								case 4:
+									pClone->SetPhaseMask(128, true);
+									clone128GUIDList.push_back(pClone->GetGUID());
+									break;
+								case 5:
+									pClone->SetPhaseMask(256, true);
+									clone256GUIDList.push_back(pClone->GetGUID());
+									break;
+								default:
+									break;
+							}
+						}
+					} 
+				} 
+			} 
+		}
     } 
 
 	bool cloneAlive()
@@ -328,6 +424,91 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 		if (!cloneGUIDList.empty() && m_pInstance)
 		{
 			for (std::list<uint64>::iterator itr = cloneGUIDList.begin(); itr != cloneGUIDList.end(); ++itr)
+			{
+				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
+				{
+					if (pClone->isAlive())
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool clone16Alive()
+	{
+		if (!clone16GUIDList.empty() && m_pInstance)
+		{
+			for (std::list<uint64>::iterator itr = clone16GUIDList.begin(); itr != clone16GUIDList.end(); ++itr)
+			{
+				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
+				{
+					if (pClone->isAlive())
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool clone32Alive()
+	{
+		if (!clone32GUIDList.empty() && m_pInstance)
+		{
+			for (std::list<uint64>::iterator itr = clone32GUIDList.begin(); itr != clone32GUIDList.end(); ++itr)
+			{
+				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
+				{
+					if (pClone->isAlive())
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool clone64Alive()
+	{
+		if (!clone64GUIDList.empty() && m_pInstance)
+		{
+			for (std::list<uint64>::iterator itr = clone64GUIDList.begin(); itr != clone64GUIDList.end(); ++itr)
+			{
+				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
+				{
+					if (pClone->isAlive())
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool clone128Alive()
+	{
+		if (!clone128GUIDList.empty() && m_pInstance)
+		{
+			for (std::list<uint64>::iterator itr = clone128GUIDList.begin(); itr != clone128GUIDList.end(); ++itr)
+			{
+				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
+				{
+					if (pClone->isAlive())
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool clone256Alive()
+	{
+		if (!clone256GUIDList.empty() && m_pInstance)
+		{
+			for (std::list<uint64>::iterator itr = clone256GUIDList.begin(); itr != clone256GUIDList.end(); ++itr)
 			{
 				if (Creature* pClone = m_pInstance->instance->GetCreature(*itr))
 				{
@@ -356,9 +537,151 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
                     m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim()); 
                     m_creature->Attack(m_creature->getVictim(), true); 
                     insanityEndTimer = 9999999; 
+					clone16 = clone32 = clone64 = clone128 = clone256 = false;
+					return;
                 }else 
                     insanityEndTimer = 1000; 
-            }else insanityEndTimer -= uiDiff; 
+            }else insanityEndTimer -= uiDiff;
+
+			if (!clone16Alive() && !clone16)
+			{
+				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+				{ 
+					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					{ 
+						if (target && target->GetTypeId() == TYPEID_PLAYER) 
+						{
+							if (target->GetPhaseMask() == 16)
+							{
+								target->RemoveAurasDueToSpell(SPELL_INSANITY_PHASE_16);
+								if (!clone32)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_32, true);
+								else if (!clone64)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_64, true);
+								else if (!clone128)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_128, true);
+								else if (!clone256)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_256, true);
+							}
+						}
+					} 
+				}
+
+				clone16 = true;
+			}
+
+			if (!clone32Alive() && !clone32)
+			{
+				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+				{ 
+					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					{ 
+						if (target && target->GetTypeId() == TYPEID_PLAYER) 
+						{
+							if (target->GetPhaseMask() == 32)
+							{
+								target->RemoveAurasDueToSpell(SPELL_INSANITY_PHASE_32);
+								if (!clone16)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_16, true);
+								else if (!clone64)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_64, true);
+								else if (!clone128)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_128, true);
+								else if (!clone256)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_256, true);
+							}
+						}
+					} 
+				}
+
+				clone32 = true;
+			}
+
+			if (!clone64Alive() && !clone64)
+			{
+				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+				{ 
+					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					{ 
+						if (target && target->GetTypeId() == TYPEID_PLAYER) 
+						{
+							if (target->GetPhaseMask() == 64)
+							{
+								target->RemoveAurasDueToSpell(SPELL_INSANITY_PHASE_64);
+								if (!clone16)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_16, true);
+								else if (!clone32)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_32, true);
+								else if (!clone128)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_128, true);
+								else if (!clone256)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_256, true);
+							}
+						}
+					} 
+				}
+
+				clone64 = true;
+			}
+
+			if (!clone128Alive() && !clone128)
+			{
+				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+				{ 
+					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					{ 
+						if (target && target->GetTypeId() == TYPEID_PLAYER) 
+						{
+							if (target->GetPhaseMask() == 128)
+							{
+								target->RemoveAurasDueToSpell(SPELL_INSANITY_PHASE_128);
+								if (!clone16)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_16, true);
+								else if (!clone32)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_32, true);
+								else if (!clone64)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_64, true);
+								else if (!clone256)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_256, true);
+							}
+						}
+					} 
+				}
+
+				clone128 = true;
+			}
+
+			if (!clone256Alive() && !clone256)
+			{
+				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+				{ 
+					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					{ 
+						if (target && target->GetTypeId() == TYPEID_PLAYER) 
+						{
+							if (target->GetPhaseMask() == 256)
+							{
+								target->RemoveAurasDueToSpell(SPELL_INSANITY_PHASE_256);
+								if (!clone16)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_16, true);
+								else if (!clone32)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_32, true);
+								else if (!clone64)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_64, true);
+								else if (!clone128)
+									target->CastSpell(target, SPELL_INSANITY_PHASE_128, true);
+							}
+						}
+					} 
+				}
+
+				clone256 = true;
+			}
         } 
         else 
         { 

@@ -66,14 +66,26 @@ struct MANGOS_DLL_DECL mob_ahnkahar_eggAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
 
-    void Reset() {}
+	Creature* pCurrentGuardian;
+
+	uint32 immunityTimer;
+
+    void Reset() 
+	{
+		pCurrentGuardian = NULL;
+		immunityTimer = 2900;		
+	}
+
     void MoveInLineOfSight(Unit* pWho) {}
     void AttackStart(Unit* pWho) {}
 
     void JustSummoned(Creature* pSummoned)
     {
         if (pSummoned->GetEntry() == NPC_AHNKAHAR_GUARDIAN)
+		{
             DoScriptText(EMOTE_HATCH, m_creature);
+			pSummoned->CastSpell(pSummoned, SPELL_GUARDIAN_AURA_TRIGGERED, true);
+		}
 
         if (m_pInstance)
         {
@@ -82,10 +94,22 @@ struct MANGOS_DLL_DECL mob_ahnkahar_eggAI : public ScriptedAI
                 float fPosX, fPosY, fPosZ;
                 pElderNadox->GetPosition(fPosX, fPosY, fPosZ);
                 pSummoned->GetMotionMaster()->MovePoint(0, fPosX, fPosY, fPosZ);
-				pSummoned->CastSpell(pSummoned, SPELL_GUARDIAN_AURA_TRIGGERED, true);
             }
         }
     }
+
+	void UpdateAI(const uint32 uiDiff)
+	{
+		if (pCurrentGuardian && pCurrentGuardian->isAlive())
+		{
+			if (immunityTimer < uiDiff)
+			{
+				pCurrentGuardian->CastSpell(pCurrentGuardian, SPELL_GUARDIAN_AURA_TRIGGERED, true);
+				pCurrentGuardian->RemoveAurasDueToSpell(SPELL_GUARDIAN_AURA_TRIGGERED);
+				immunityTimer = 2900;
+			}else immunityTimer -= uiDiff;
+		}
+	}
 };
 
 CreatureAI* GetAI_mob_ahnkahar_egg(Creature* pCreature)

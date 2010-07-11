@@ -223,7 +223,8 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 			else
 			{
 				MoveVolunteer();
-				pVisualTrigger->ForcedDespawn();
+				if (pVisualTrigger)
+					pVisualTrigger->ForcedDespawn();
 			}
 		}
 	}
@@ -303,7 +304,8 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 					m_creature->Attack(pTarget, true);
 				}
 
-				pVisualTrigger->ForcedDespawn();
+				if (pVisualTrigger)
+					pVisualTrigger->ForcedDespawn();
 				
 				victimCounter++;
 				volunteerPhase = false;

@@ -420,14 +420,14 @@ bool GOHello_go_mana_tomb_stasis(Player* pPlayer, GameObject* pGo)
 ## go_zuluheds_chain
 ######*/
 
+#define QUEST_ZULUHEDS_CHAIN_1		10866
+#define QUEST_ZULUHEDS_CHAIN_2		10872
+
 bool GOHello_go_zuluheds_chain(Player* pPlayer, GameObject* pGo)
 {
-    if (pPlayer->hasQuest(10866))
-        pPlayer->SetQuestStatus(10866, QUEST_STATUS_COMPLETE);
-
-    if (pPlayer->hasQuest(10872))
-        pPlayer->SetQuestStatus(10872, QUEST_STATUS_COMPLETE);
-		
+	pPlayer->CompleteQuest(QUEST_ZULUHEDS_CHAIN_1);
+	pPlayer->CompleteQuest(QUEST_ZULUHEDS_CHAIN_2);
+			
     return false;
 }
 

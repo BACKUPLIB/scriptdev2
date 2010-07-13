@@ -89,12 +89,21 @@ struct SpellTable
     int32  textEntry;                                  // Text entry from script_text for this spell
 };
 
+enum SpellEffectMask
+{
+    SPELL_EFFECT_MASK_0 =   0x1,
+    SPELL_SFFECT_MASK_1 =   0x2,
+    SPELL_EFFECT_MASK_2 =   0x4
+};
+
 class MANGOS_DLL_DECL BossAura : public Aura
 {
     public:
-        BossAura(const SpellEntry *spell, SpellEffectIndex effect, int32 *basepoints, Unit *target, Unit *caster) : Aura(spell, effect, basepoints, target, caster)
+        BossAura(const SpellEntry *spell, SpellEffectIndex effect, int32 *basepoints, SpellAuraHolder* holder, Unit *target, Unit *caster) : Aura(spell, effect, basepoints, holder, target, caster)
             {}
 };
+
+SpellAuraHolder* CreateAuraHolderWithAuras(const SpellEntry *spell, SpellEffectMask effectMask, int32 *bp, Unit *target, Unit *caster);
 
 class MANGOS_DLL_DECL BossSpellWorker
 {

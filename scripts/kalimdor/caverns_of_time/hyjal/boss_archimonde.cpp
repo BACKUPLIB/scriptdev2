@@ -397,7 +397,7 @@ struct MANGOS_DLL_DECL boss_archimondeAI : public ScriptedAI
 
         if (m_creature->HasAura(chargeSpell, EFFECT_INDEX_0))
         {
-            m_creature->RemoveSingleAuraFromStack(chargeSpell, EFFECT_INDEX_0);
+            m_creature->RemoveSingleAuraHolderFromStack(chargeSpell);
             DoCastSpellIfCan(m_creature->getVictim(), unleashSpell);
             HasCast = true;
             --SoulChargeCount;

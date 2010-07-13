@@ -6,6 +6,19 @@
 #ifdef DEF_BOSS_SPELL_WORKER_H
 #include "ace/Process_Mutex.h"
 
+SpellAuraHolder* CreateAuraHolderWithAuras(const SpellEntry *spell, SpellEffectMask effectMask, int32 *bp, Unit *target, Unit *caster)
+{
+    SpellAuraHolder *holder = new SpellAuraHolder(spell, target, caster, NULL);
+
+    for (uint8 i = EFFECT_INDEX_0; i<MAX_EFFECT_INDEX; i++)
+        if (effectMask & (1 << i))
+        {
+            Aura* Aur = new BossAura(spell, SpellEffectIndex(i), &bp[i], holder, target, caster);
+            holder->AddAura(Aur, SpellEffectIndex(i));
+        }
+    return holder;
+}
+
 BossSpellWorker::BossSpellWorker(ScriptedAI* bossAI)
 {
      boss = bossAI->m_creature;
@@ -181,8 +194,11 @@ CanCastResult BossSpellWorker::_BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarg
             case APPLY_AURA_SELF:
                    spell = (SpellEntry *)GetSpellStore()->LookupEntry(pSpell->m_uiSpellEntry[currentDifficulty]);
                    if (spell)
-                       if (boss->AddAura(new BossAura(spell, EFFECT_INDEX_0, &pSpell->varData, boss, boss)))
+                   {
+                       int32 bp[MAX_EFFECT_INDEX] = {pSpell->varData, 0, 0};
+                       if (boss->AddSpellAuraHolder(CreateAuraHolderWithAuras(spell, SPELL_EFFECT_MASK_0, bp, boss, boss)))
                               return CAST_OK;
+                   }
                    return CAST_FAIL_OTHER;
                    break;
 
@@ -515,7 +531,7 @@ bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget, uint8 index)
 
         if (_auraCount(m_uiSpellIdx,pTarget,(SpellEffectIndex)index) > 1)
         {
-            if (pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty],(SpellEffectIndex)index)->modStackAmount(-1))
+            if (pTarget->GetSpellAuraHolder(pSpell->m_uiSpellEntry[currentDifficulty])->ModStackAmount(-1))
                 return true;
             else return false;
         }
@@ -541,11 +557,11 @@ bool BossSpellWorker::_doAura(uint8 m_uiSpellIdx, Unit* pTarget, SpellEffectInde
 
     spell = (SpellEntry *)GetSpellStore()->LookupEntry(pSpell->m_uiSpellEntry[currentDifficulty]);
     if (spell)
-        {
-            int32 basepoint = pSpell->varData ?  pSpell->varData - 1 : spell->EffectBasePoints[index] + 1;
-            if (pTarget->AddAura(new BossAura(spell, index, &basepoint, pTarget, pTarget)))
-                return true;
-        };
+    {
+        int32 bp[MAX_EFFECT_INDEX] = {pSpell->varData ?  pSpell->varData - 1 : spell->EffectBasePoints[index] + 1, 0, 0};
+        if (pTarget->AddSpellAuraHolder(CreateAuraHolderWithAuras(spell, SPELL_EFFECT_MASK_0, bp, pTarget, pTarget)))
+            return true;
+    };
 
     error_log("BSW: FAILED adding aura from spell %u index %u",pSpell->m_uiSpellEntry[currentDifficulty], index);
 

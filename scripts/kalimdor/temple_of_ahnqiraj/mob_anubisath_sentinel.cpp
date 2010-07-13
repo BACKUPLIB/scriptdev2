@@ -32,6 +32,7 @@ EndScriptData */
 #include "CellImpl.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
+#include "SpellAuras.h"
 
 #define SPELL_MENDING_BUFF      2147
 
@@ -59,7 +60,7 @@ class MANGOS_DLL_DECL SentinelAbilityAura : public Aura
     public:
         ~SentinelAbilityAura();
         Unit* GetTriggerTarget() const;
-        SentinelAbilityAura(aqsentinelAI *abilityOwner, SpellEntry *spell, uint32 ability, SpellEffectIndex eff);
+        SentinelAbilityAura(aqsentinelAI *abilityOwner, SpellEntry *spell, uint32 ability, SpellEffectIndex eff, SpellAuraHolder *holder);
     protected:
         aqsentinelAI *aOwner;
         int32 currentBasePoints;
@@ -224,13 +225,15 @@ struct MANGOS_DLL_DECL aqsentinelAI : public ScriptedAI
     void GainSentinelAbility(uint32 id)
     {
         const SpellEntry *spell = GetSpellStore()->LookupEntry(id);
+        SpellAuraHolder *holder = new SpellAuraHolder(spell, m_creature, m_creature, NULL);
         for (int i=0; i<3; ++i)
         {
             if (!spell->Effect[i])
                 continue;
-            SentinelAbilityAura *a = new SentinelAbilityAura(this, (SpellEntry *)spell, id, SpellEffectIndex(i));
-            m_creature->AddAura(a);
+            SentinelAbilityAura *a = new SentinelAbilityAura(this, (SpellEntry *)spell, id, SpellEffectIndex(i), holder);
+            holder->AddAura(a, SpellEffectIndex(i));
         }
+        m_creature->AddSpellAuraHolder(holder);
     }
 
     void Aggro(Unit* pWho)
@@ -309,8 +312,8 @@ Unit* SentinelAbilityAura::GetTriggerTarget() const
     }
 }
 
-SentinelAbilityAura::SentinelAbilityAura(aqsentinelAI *abilityOwner, SpellEntry *spell, uint32 ability, SpellEffectIndex eff)
-: Aura(spell, eff, NULL, abilityOwner->m_creature, abilityOwner->m_creature, NULL)
+SentinelAbilityAura::SentinelAbilityAura(aqsentinelAI *abilityOwner, SpellEntry *spell, uint32 ability, SpellEffectIndex eff, SpellAuraHolder* holder)
+: Aura(spell, eff, NULL, holder, abilityOwner->m_creature, abilityOwner->m_creature, NULL)
 {
     aOwner = abilityOwner;
     abilityId = ability;

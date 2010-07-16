@@ -1,0 +1,2 @@
+# update npc scarlet ghoul
+UPDATE `creature_template` SET `type_flags` = 4096, `minlevel` = 44, `maxlevel` = 46, `minhealth` = 891, `maxhealth` = 960, `armor` = 2750, `mindmg` = 77, `maxdmg` = 102, `type` = 6,`ScriptName` = "npc_scarlet_ghoul" WHERE `entry` = 28845;

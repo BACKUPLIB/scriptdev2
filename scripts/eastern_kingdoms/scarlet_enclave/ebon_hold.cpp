@@ -31,7 +31,9 @@ EndContentData */
 
 #include "precompiled.h"
 #include "escort_ai.h"
+#include "follower_ai.h"
 #include "WorldPacket.h"
+#include "../../../game/TemporarySummon.h"
 #define LESS_MOB // if you do not have a good server and do not want it to be laggy as hell
 
 /*######
@@ -568,9 +570,11 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
         if (m_bIsDuelInProgress && uiDamage >= m_creature->GetHealth())
         {
             uiDamage = 0;
-            if (Player* pPlyr = (Player*) Unit::GetUnit(*m_creature, m_uiDuelerGUID))
+            if (Player* pPlyr = pDoneBy->GetCharmerOrOwnerPlayerOrPlayerItself())
             {
-                m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
+                pPlyr->KilledMonsterCredit(NPC_EBON_HOLD_DUEL,0);
+                m_uiDuelerGUID = 0;
+                //m_creature->CastSpell(pPlyr, SPELL_DUEL_VICTORY, true);
             }
             //possibly not evade, but instead have end sequenze
             EnterEvadeMode();
@@ -1370,7 +1374,8 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
 enum scarletminer
 {
     SPELL_GIFT_OF_THE_HARVESTER_MISSILE = 52481,
-    NPC_SCARLET_GHOUL                   = 28845
+    NPC_SCARLET_GHOUL                   = 28845,
+    QUEST_GIFT_KEEPS_GIVING             = 12698
 };
 
 struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
@@ -1393,10 +1398,10 @@ struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
     {
         if (pCaster->GetTypeId() == TYPEID_PLAYER && m_creature->isAlive() && pSpell->Id == SPELL_GIFT_OF_THE_HARVESTER_MISSILE)
         {
-            if(((Player*)pCaster)->GetQuestStatus(12698) == QUEST_STATUS_INCOMPLETE)
+            if(((Player*)pCaster)->GetQuestStatus(QUEST_GIFT_KEEPS_GIVING) == QUEST_STATUS_INCOMPLETE)
             {
                 // spell 52490 Scarlet Miner Ghoul Transform doesn't work, hack it
-                Unit* pGhoul = m_creature->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 60000);
+                Unit* pGhoul = pCaster->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 60000);
                 ((Player*)pCaster)->KilledMonsterCredit(NPC_SCARLET_GHOUL,pGhoul->GetGUID());
                 m_creature->setDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();
@@ -1404,6 +1409,37 @@ struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
         }
     }
 };
+
+/*######
+## Mob scarlet ghoul
+######*/
+struct MANGOS_DLL_DECL npc_scarlet_ghoulAI : public FollowerAI
+{
+    npc_scarlet_ghoulAI(Creature* pCreature) : FollowerAI(pCreature) 
+    { 
+        Player *plyr;
+        if (pCreature->isTemporarySummon())
+            plyr =(Player*)(pCreature->GetUnit(*pCreature, ((TemporarySummon*)pCreature)->GetSummonerGuid().GetRawValue()));
+
+        if (plyr)
+        {
+            StartFollow(plyr);
+        }
+        Reset(); 
+    }
+
+    void Reset(){}
+
+    void JustDied(Unit* pKiller)
+    {
+        m_creature->ForcedDespawn();
+    }
+};
+
+CreatureAI* GetAI_npc_scarlet_ghoul(Creature* pCreature)
+{
+    return new npc_scarlet_ghoulAI(pCreature);
+}
 
 /*######
 ## Mob scarlet courier
@@ -3438,6 +3474,11 @@ void AddSC_ebon_hold()
     newscript = new Script;
     newscript->Name = "mob_scarlet_miner";
     newscript->GetAI = &GetAI_mob_scarlet_miner;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_scarlet_ghoul";
+    newscript->GetAI = &GetAI_npc_scarlet_ghoul;
     newscript->RegisterSelf();
 
     newscript = new Script;

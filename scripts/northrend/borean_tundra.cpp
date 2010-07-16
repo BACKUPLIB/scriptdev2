@@ -304,6 +304,10 @@ CreatureAI* GetAI_npc_nesingwary_trapper(Creature* pCreature)
     return new npc_nesingwary_trapperAI(pCreature);
 }
 
+/*######
+## npc_orphaned_calf
+######*/
+
 enum
 {
     QUEST_KHUNOK_WILL_KNOW      = 11878,
@@ -314,18 +318,18 @@ enum
 struct MANGOS_DLL_DECL npc_orphaned_calfAI : public FollowerAI
 {
     npc_orphaned_calfAI(Creature* pCreature) : FollowerAI(pCreature) 
-    {         
+    {        
         if (pCreature->GetOwner() && pCreature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
-        {
-            StartFollow((Player*)pCreature->GetOwner());
-            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            
+        { 
+            if(const Quest *quest = GetQuestTemplateStore(QUEST_KHUNOK_WILL_KNOW))
+                StartFollow((Player*)pCreature->GetOwner(),0,quest);
+            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);  
         }
         Reset();}
 
     uint32 m_uiTimer;
 
-    void Reset() { m_uiTimer = 900000; }
+    void Reset() {m_uiTimer = 900000; }
 
     void UpdateAI(const uint32 diff)
     {
@@ -333,13 +337,14 @@ struct MANGOS_DLL_DECL npc_orphaned_calfAI : public FollowerAI
         if(m_uiTimer < diff)
             m_creature->ForcedDespawn();
         else m_uiTimer -= diff;
-    }
-
-    void JustDied()
-    {
-        Player *pPlayer = (Player*)m_creature->GetOwner();
-        if(pPlayer)
-            pPlayer->SendQuestFailed(QUEST_KHUNOK_WILL_KNOW);
+        
+        if(Unit* khunok = GetClosestCreatureWithEntry(m_creature,NPC_KHUNOK,5.0f))
+            if(Player* pPlyr = (Player*) m_creature->GetOwner())
+                if(pPlyr->GetQuestStatus(QUEST_KHUNOK_WILL_KNOW) == QUEST_STATUS_INCOMPLETE)
+                {
+                    pPlyr->AreaExploredOrEventHappens(QUEST_KHUNOK_WILL_KNOW);
+                    SetFollowComplete();
+                }
     }
 };
 
@@ -347,7 +352,7 @@ CreatureAI* GetAI_npc_orphaned_calf(Creature* pCreature)
 {
     return new npc_orphaned_calfAI(pCreature);
 }
-
+/*
 #define GOSSIP_ITEM_RELEASE     "[Give the the orphaned calf to Khu'nok]"
 
 bool GossipHello_npc_orphaned_calf(Player* pPlayer, Creature* pCreature)
@@ -372,7 +377,7 @@ bool GossipSelect_npc_orphaned_calf(Player* pPlayer, Creature* pCreature, uint32
     }
 
     return true;
-}
+}*/
 
 /*######
 ## npc_lurgglbr
@@ -522,8 +527,8 @@ void AddSC_borean_tundra()
     newscript = new Script;
     newscript->Name = "npc_orphaned_calf";
     newscript->GetAI = &GetAI_npc_orphaned_calf;
-    newscript->pGossipHello = &GossipHello_npc_orphaned_calf;
-    newscript->pGossipSelect = &GossipSelect_npc_orphaned_calf;
+    //newscript->pGossipHello = &GossipHello_npc_orphaned_calf;
+    //newscript->pGossipSelect = &GossipSelect_npc_orphaned_calf;
     newscript->RegisterSelf();
 
     newscript = new Script;

@@ -33,6 +33,7 @@ EndContentData */
 #include "precompiled.h"
 #include "follower_ai.h"
 #include "escort_ai.h"
+#include "objectmgr.h"
 
 /*######
 ## npc_fizzcrank_fullthrottle

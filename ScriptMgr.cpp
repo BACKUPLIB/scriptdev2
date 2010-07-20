@@ -229,6 +229,7 @@ char const* ScriptsVersion()
 {
     if (!strSD2Version.empty())
     {
+        strSD2Version.insert(0, _DISTRIBUTION " based on ");
         strSD2Version.append(_FULLVERSION);
         return strSD2Version.c_str();
     }

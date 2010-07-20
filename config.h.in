@@ -26,6 +26,10 @@
 // for that day.
 #define SD2_CONF_VERSION    2009040501
 
+#ifndef _DISTRIBUTION
+    #define _DISTRIBUTION "OVscript [135]"
+#endif
+
 #ifdef WIN32
   #define MANGOS_DLL_EXPORT extern "C" __declspec(dllexport)
 #elif defined( __GNUC__ )

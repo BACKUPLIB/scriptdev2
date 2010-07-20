@@ -229,7 +229,9 @@ char const* ScriptsVersion()
 {
     if (!strSD2Version.empty())
     {
-        strSD2Version.insert(0, _DISTRIBUTION " based on ");
+        #if PLATFORM != PLATFORM_WINDOWS
+            strSD2Version.insert(0, _DISTRIBUTION " based on ");
+        #endif
         strSD2Version.append(_FULLVERSION);
         return strSD2Version.c_str();
     }

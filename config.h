@@ -55,8 +55,4 @@
   #define _SCRIPTDEV2_CONFIG  SYSCONFDIR"scriptdev2.conf"
 #endif
 
-#ifndef _DISTRIBUTION
-    #define _DISTRIBUTION "OVscript [135]"
-#endif
-
 #endif

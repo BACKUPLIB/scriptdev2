@@ -91,6 +91,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
     uint32 m_uiTeleportTimer;
     uint32 m_uiShadowboltTimer;
+    uint32 m_uiHarvestSoulTimer;
 
     void Reset()
     {
@@ -104,6 +105,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
         m_uiTeleportTimer = 15000;
         m_uiShadowboltTimer = 2500;
+        m_uiHarvestSoulTimer = 15000;
     }
 
     void Aggro(Unit* pWho)
@@ -324,6 +326,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                         m_uiTeleportTimer -= uiDiff;
                 }
 
+                //Shadow Bolt
                 if (m_uiShadowboltTimer < uiDiff)
                 {
                     if (DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ?  SPELL_SHADOWBOLT: SPELL_SHADOWBOLT_H) == CAST_OK)
@@ -331,6 +334,15 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 }
                 else
                     m_uiShadowboltTimer -= uiDiff;
+
+                //Harvest Soul
+                if (m_uiHarvestSoulTimer < uiDiff)
+                {
+	                DoCast(m_creature->getVictim(), SPELL_HARVESTSOUL);
+	                m_uiHarvestSoulTimer = 15000;
+                }
+                else
+	                m_uiHarvestSoulTimer -= uiDiff;
 
                 DoMeleeAttackIfReady();                     // possibly no melee at all
                 break;

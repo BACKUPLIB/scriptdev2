@@ -2846,54 +2846,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\revision.h"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Extracting revision"
-					CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;&quot;$(SolutionDir)..\..\..\win\VC90\genrevision__Win32_$(ConfigurationName)\genrevision.exe&quot;&#x0D;&#x0A;"
-					AdditionalDependencies=".svn/entries"
-					Outputs="revision.h"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Extracting revision"
-					CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;&quot;$(SolutionDir)..\..\..\win\VC90\genrevision__Win32_$(ConfigurationName)\genrevision.exe&quot;&#x0D;&#x0A;"
-					AdditionalDependencies=".svn/entries"
-					Outputs="revision.h"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|x64"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Extracting revision"
-					CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;&quot;$(SolutionDir)..\..\..\win\VC90\genrevision__Win32_$(ConfigurationName)\genrevision.exe&quot;&#x0D;&#x0A;"
-					AdditionalDependencies=".svn/entries"
-					Outputs="revision.h"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|x64"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Extracting revision"
-					CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;&quot;$(SolutionDir)..\..\..\win\VC90\genrevision__Win32_$(ConfigurationName)\genrevision.exe&quot;&#x0D;&#x0A;"
-					AdditionalDependencies=".svn/entries"
-					Outputs="revision.h"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
 			RelativePath="..\ScriptMgr.cpp"
 			>
 		</File>

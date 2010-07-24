@@ -56,10 +56,10 @@ enum
 #define LOC_X2    3531.271f
 #define LOC_Y2    -3847.424f
 #define LOC_Z2    299.450f
-
+/* not used (max 2 targets)
 #define LOC_X3    3497.067f
 #define LOC_Y3    -3843.384f
-#define LOC_Z3    302.384f
+#define LOC_Z3    302.384f*/
 
 struct MANGOS_DLL_DECL npc_web_wrapAI : public ScriptedAI
 {
@@ -149,13 +149,13 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
         ThreatList const& tList = m_creature->getThreatManager().getThreatList();
         std::vector<Unit *> targets;
 
-        // This spell doesn't work if we only have 1 player on threat list
-        if (tList.size() < 2)
-            return;
-
-        // begin + 1 , so we don't target the one with the highest threat
         ThreatList::const_iterator itr = tList.begin();
-        std::advance(itr, 1);
+
+        if (tList.size() > 2)
+        {
+            // begin + 1 , if more then 2 players in list to avoid player with most threat
+            std::advance(itr, 1);
+        }
 
         // store the threat list in a different container
         for (;itr != tList.end(); ++itr)
@@ -167,15 +167,20 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
                 targets.push_back(target);
         }
 
-        // cut down to size if we have more than 3 targets
-        while(targets.size() > 3)
+        uint8 max = 0;
+        //set max on 2 (25players) or 1 (10 players)
+        if(m_pInstance)
+            max = (m_creature->GetMap()->GetDifficulty()%2)?2:1;
+
+        // cut down to size if we have more than max targets
+        while(targets.size() > max)
             targets.erase(targets.begin()+rand()%targets.size());
 
         int i = 0;
 
         for(std::vector<Unit *>::iterator iter = targets.begin(); iter!= targets.end(); ++iter, ++i)
         {
-            // Teleport the 3 targets to a location on the wall and summon a Web Wrap on them
+            // Teleport the targets to a location on the wall and summon a Web Wrap on them
             switch(i)
             {
                 case 0:
@@ -194,6 +199,7 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
                             pWebAI->SetVictim(*iter);
                     }
                     break;
+                /*  only 1 or 2 targets
                 case 2:
                     DoTeleportPlayer((*iter), LOC_X3, LOC_Y3, LOC_Z3, (*iter)->GetOrientation());
                     if (Creature* pWrap = m_creature->SummonCreature(NPC_WEB_WRAP, LOC_X3, LOC_Y3, LOC_Z3, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
@@ -201,6 +207,8 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
                         if (npc_web_wrapAI* pWebAI = dynamic_cast<npc_web_wrapAI*>(pWrap->AI()))
                             pWebAI->SetVictim(*iter);
                     }
+                    break;*/
+                default:
                     break;
             }
         }

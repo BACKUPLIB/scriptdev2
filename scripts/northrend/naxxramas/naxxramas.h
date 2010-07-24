@@ -39,6 +39,11 @@ enum
 
     NPC_ANUB_REKHAN             = 15956,
     NPC_FAERLINA                = 15953,
+    NPC_WORSHIPPER              = 16506,
+    NPC_WORSHIPPER_1            = 165061,
+    NPC_WORSHIPPER_2            = 165062,
+    NPC_WORSHIPPER_3            = 165063,
+    NPC_WORSHIPPER_4            = 165064,
 
     NPC_THADDIUS                = 15928,
     NPC_STALAGG                 = 15929,
@@ -173,6 +178,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
 
         uint64 m_uiAnubRekhanGUID;
         uint64 m_uiFaerlinanGUID;
+        uint64 m_uiWorshipperGUID[4];
+        uint8  m_uiWorshipperCount;
 
         uint64 m_uiZeliekGUID;
         uint64 m_uiThaneGUID;

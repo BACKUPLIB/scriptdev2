@@ -196,9 +196,18 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public BSWScriptedAI
 
         timedCast(SPELL_BATTER, uiDiff);
 
-        if (timedCast(SPELL_FIRE_BOMB, uiDiff, m_creature->getVictim()) == CAST_OK) {
-        doCast(SPELL_FIRE_BOMB_1, m_creature->getVictim());
-        doCast(SPELL_FIRE_BOMB_DOT, m_creature->getVictim());
+        if (timedCast(SPELL_FIRE_BOMB, uiDiff, m_creature->getVictim()) == CAST_OK) 
+        {
+            doCast(SPELL_FIRE_BOMB_1, m_creature->getVictim());
+            if(Creature* fireBomb = m_creature->SummonCreature(NPC_FIRE_BOMB
+                          ,m_creature->getVictim()->GetPositionX()
+                          ,m_creature->getVictim()->GetPositionY()
+                          ,m_creature->getVictim()->GetPositionZ()
+                          ,0,TEMPSUMMON_TIMED_DESPAWN,60000))
+            {
+                fireBomb->GetMotionMaster()->MoveIdle();
+                doCast(SPELL_FIRE_BOMB_DOT, fireBomb);
+            }
         }
 
         timedCast(SPELL_HEAD_CRACK, uiDiff);

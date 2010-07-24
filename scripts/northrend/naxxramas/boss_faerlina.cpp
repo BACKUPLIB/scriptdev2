@@ -42,8 +42,13 @@ enum
     SPELL_ENRAGE              = 28798,
     H_SPELL_ENRAGE            = 54100,
 
+    SPELL_WIDOWS_EMBRACE      = 28732,
+
     SPELL_RAINOFFIRE          = 28794                       //Not sure if targeted AoEs work if casted directly upon a pPlayer
 };
+
+static uint32 m_uiWorshippers[4] = {NPC_WORSHIPPER_1,NPC_WORSHIPPER_2,NPC_WORSHIPPER_3,NPC_WORSHIPPER_4}; 
+
 struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
 {
     boss_faerlinaAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -60,6 +65,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     uint32 m_uiPoisonBoltVolleyTimer;
     uint32 m_uiRainOfFireTimer;
     uint32 m_uiEnrageTimer;
+    uint8  m_uiDeadWorshippers;
     bool   m_bHasTaunted;
 
     void Reset()
@@ -67,6 +73,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         m_uiPoisonBoltVolleyTimer = 8000;
         m_uiRainOfFireTimer = 16000;
         m_uiEnrageTimer = 60000;
+        m_uiDeadWorshippers = 0;
     }
 
     void Aggro(Unit* pWho)
@@ -99,6 +106,20 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         DoScriptText(urand(0, 1)?SAY_SLAY1:SAY_SLAY2, m_creature);
     }
 
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell) 
+    {
+        if(pSpell->Id == SPELL_WIDOWS_EMBRACE)
+        {
+            if(m_creature->HasAura(SPELL_ENRAGE,EFFECT_INDEX_2))
+            {
+                m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
+                m_uiEnrageTimer = 60000;
+            }
+            else
+                m_uiEnrageTimer += 30000;
+        }
+    }
+
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
@@ -117,6 +138,42 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        if(m_pInstance)
+        {
+            uint8 curr = 0;
+            // look how many worshippers are dead
+            for(int i=0;i<4;i++)
+            {
+                if(Unit* worshipper = Unit::GetUnit(*m_creature,m_pInstance->GetData64(m_uiWorshippers[i])))
+                {
+                    if(!worshipper->isAlive())
+                    {
+                        curr++;
+                    }
+                }
+            }
+            
+            // did at a worshipper die?
+            if(curr > m_uiDeadWorshippers)
+            {
+                m_uiDeadWorshippers = curr;
+                m_creature->CastSpell(m_creature->getVictim(),SPELL_WIDOWS_EMBRACE,true);
+                
+                // hack: players get hit by the spell, so remove spell from them
+                Map *map = m_creature->GetMap();
+                if (!map->IsDungeon())
+                return;
+
+                Map::PlayerList const &PlayerList = map->GetPlayers();
+                if (PlayerList.isEmpty())
+                return;
+
+                for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                    if(i->getSource()->HasAura(SPELL_WIDOWS_EMBRACE))
+                        i->getSource()->RemoveAurasDueToSpell(SPELL_WIDOWS_EMBRACE);
+            }
+        }
 
         // Poison Bolt Volley
         if (m_uiPoisonBoltVolleyTimer < uiDiff)

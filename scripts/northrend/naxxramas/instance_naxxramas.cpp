@@ -37,6 +37,7 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
 
     m_uiAnubRekhanGUID(0),
     m_uiFaerlinanGUID(0),
+    m_uiWorshipperCount(0),
 
     m_uiZeliekGUID(0),
     m_uiThaneGUID(0),
@@ -86,6 +87,7 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
 void instance_naxxramas::Initialize()
 {
     memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+    memset(&m_uiWorshipperGUID, 0, sizeof(m_uiWorshipperGUID));
 }
 
 void instance_naxxramas::OnCreatureCreate(Creature* pCreature)
@@ -104,6 +106,7 @@ void instance_naxxramas::OnCreatureCreate(Creature* pCreature)
         case NPC_GOTHIK:            m_uiGothikGUID = pCreature->GetGUID();      break;
         case NPC_KELTHUZAD:         m_uiKelthuzadGUID = pCreature->GetGUID();   break;
         case NPC_SUB_BOSS_TRIGGER:  m_lGothTriggerList.push_back(pCreature->GetGUID()); break;
+        case NPC_WORSHIPPER:        if(m_uiWorshipperCount<5) m_uiWorshipperGUID[m_uiWorshipperCount++] = pCreature->GetGUID(); break;
     }
 }
 
@@ -489,6 +492,14 @@ uint64 instance_naxxramas::GetData64(uint32 uiData)
             return m_uiGothikGUID;
         case NPC_KELTHUZAD:
             return m_uiKelthuzadGUID;
+        case NPC_WORSHIPPER_1:
+            return m_uiWorshipperGUID[0];
+        case NPC_WORSHIPPER_2:
+            return m_uiWorshipperGUID[1];
+        case NPC_WORSHIPPER_3:
+            return m_uiWorshipperGUID[2];
+        case NPC_WORSHIPPER_4:
+            return m_uiWorshipperGUID[3];
     }
     return 0;
 }

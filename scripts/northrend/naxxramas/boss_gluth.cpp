@@ -92,6 +92,9 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
 
     uint32 m_uiBerserkTimer;
 
+    uint32 m_uiRangeCheck_Timer;
+    std::list<uint64> m_lZombieGUIDList;
+
     void Reset()
     {
         m_uiMortalWoundTimer = 8000;
@@ -100,12 +103,22 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         m_uiSummonTimer = 10000;
 
         m_uiBerserkTimer = MINUTE*8*IN_MILLISECONDS;
+
+        m_uiRangeCheck_Timer = 1000;
+        m_lZombieGUIDList.clear();
     }
 
     void JustDied(Unit* pKiller)
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_GLUTH, DONE);
+
+        std::list<Creature*> pZombies;
+        GetCreatureListWithEntryInGrid(pZombies, m_creature, NPC_ZOMBIE_CHOW, DEFAULT_VISIBILITY_INSTANCE);
+
+        if (!pZombies.empty())
+            for(std::list<Creature*>::iterator itr = pZombies.begin(); itr != pZombies.end(); ++itr)
+                (*itr)->ForcedDespawn();
     }
 
     void Aggro(Unit* pWho)
@@ -118,6 +131,11 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_GLUTH, FAIL);
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        summoned->SetSpeedRate(MOVE_RUN, 0.8f);
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -134,14 +152,42 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         else
             m_uiMortalWoundTimer -= uiDiff;
 
-        // Decimate
+        //Decimate_Timer
         if (m_uiDecimateTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), SPELL_DECIMATE);
-            m_uiDecimateTimer = 100000;
-        }
-        else
-            m_uiDecimateTimer -= uiDiff;
+            DoCast(m_creature->getVictim(),SPELL_DECIMATE); // need core support
+
+            // workaround below
+            std::list<HostileReference*> t_list = m_creature->getThreatManager().getThreatList();
+            if (t_list.size())
+            {
+                //begin + 1 , so we don't target the one with the highest threat
+                std::list<HostileReference*>::iterator itr = t_list.begin();
+                std::advance(itr, 1);
+                for(; itr!= t_list.end(); ++itr)
+                {
+                    Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
+                    if (target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER &&
+                        (target->GetHealth() > target->GetMaxHealth() * 0.05))
+                        target->SetHealth(target->GetMaxHealth() * 0.05);
+                }
+            }
+            /* not sure if this is needed
+            // Move Zombies
+            if (!m_lZombieGUIDList.empty())
+            {
+                for(std::list<uint64>::iterator itr = m_lZombieGUIDList.begin(); itr != m_lZombieGUIDList.end(); ++itr)
+                    if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+                        if (pTemp->isAlive())
+                        {
+                            ((mob_zombie_chowsAI*)pTemp->AI())->bIsForceMove = true;
+                            if (m_creature->GetHealth() > m_creature->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
+                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.02);
+                            pTemp->AddThreat(m_creature, 1000000000.0f); // force move toward to Gluth
+                        }
+            }*/
+            m_uiDecimateTimer = (m_bIsRegularMode ? 100000 : 120000);
+        }else m_uiDecimateTimer -= uiDiff;
 
         // Enrage
         if (m_uiEnrageTimer < uiDiff)
@@ -152,13 +198,32 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
         else
             m_uiEnrageTimer -= uiDiff;
 
+        if (m_uiRangeCheck_Timer < uiDiff)
+        {
+            if (!m_lZombieGUIDList.empty())
+            {
+                for(std::list<uint64>::iterator itr = m_lZombieGUIDList.begin(); itr != m_lZombieGUIDList.end(); ++itr)
+                    if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+                        if (pTemp->isAlive() && m_creature->IsWithinDistInMap(pTemp, ATTACK_DISTANCE))
+                        {
+                            DoScriptText(EMOTE_ZOMBIE, m_creature);
+                            m_creature->SetHealth(m_creature->GetHealth() + m_creature->GetMaxHealth() * 0.05);
+                            pTemp->ForcedDespawn();
+                        }
+            }
+            m_uiRangeCheck_Timer = 1000;
+        }else m_uiRangeCheck_Timer -= uiDiff;
+
         // Summon
         if (m_uiSummonTimer < uiDiff)
         {
             if (Creature* pZombie = m_creature->SummonCreature(NPC_ZOMBIE_CHOW, ADD_1X, ADD_1Y, ADD_1Z, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80000))
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                {
                     pZombie->AddThreat(pTarget);
+                    m_lZombieGUIDList.push_back(pZombie->GetGUID());
+                }
             }
 
             if (!m_bIsRegularMode)

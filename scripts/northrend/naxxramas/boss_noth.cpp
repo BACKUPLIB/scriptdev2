@@ -152,11 +152,11 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
             m_pInstance->SetData(TYPE_NOTH, FAIL);
     }
 
-    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    /*void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
         if (pCaster == m_creature && pSpell->Effect[EFFECT_INDEX_0] == SPELL_EFFECT_LEAP)
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_CRIPPLE : SPELL_CRIPPLE_H);
-    }
+    }*/
 
     void UpdateAI(const uint32 uiDiff)
     {
@@ -191,6 +191,8 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
                         SPELL_BLINK_1, SPELL_BLINK_2, SPELL_BLINK_3, SPELL_BLINK_4
                     };
 
+                    DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_CRIPPLE : SPELL_CRIPPLE_H);
+                    
                     if (DoCastSpellIfCan(m_creature, auiSpellBlink[urand(0,3)]) == CAST_OK)
                     {
                         DoResetThreat();

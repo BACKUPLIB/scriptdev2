@@ -40,7 +40,10 @@ enum
     SPELL_UNBALANCING_STRIKE = 26613,
     SPELL_DISRUPTING_SHOUT   = 55543,
     SPELL_JAGGED_KNIFE       = 55550,
-    SPELL_HOPELESS           = 29125
+    SPELL_HOPELESS           = 29125,
+    SPELL_FORCE_OBEDIENCE    = 55479,
+
+    NPC_DEATH_KNIGHT_UNDERSTUDY = 16803
 };
 
 struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
@@ -72,13 +75,11 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
     void KilledUnit(Unit* Victim)
     {
-        if (urand(0, 3))
-            return;
-
-        switch(urand(0, 1))
+        switch(urand(0, 5))
         {
             case 0: DoScriptText(SAY_SLAY1, m_creature); break;
             case 1: DoScriptText(SAY_SLAY2, m_creature); break;
+            default: return;
         }
     }
 
@@ -88,6 +89,15 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, DONE);
+
+        std::list<Creature*> m_pDeathKnight;
+        GetCreatureListWithEntryInGrid(m_pDeathKnight, m_creature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f);
+
+        if (!m_pDeathKnight.empty())
+            for(std::list<Creature*>::iterator itr = m_pDeathKnight.begin(); itr != m_pDeathKnight.end(); ++itr)
+            {
+                (*itr)->CastSpell((*itr), SPELL_HOPELESS, true);
+            }
     }
 
     void Aggro(Unit* pWho)
@@ -101,6 +111,14 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, IN_PROGRESS);
+
+        if(!m_bIsRegularMode)
+        {
+            m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2781.99f, -3087.81f, 267.68f, 0.61f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
+            m_creature->SummonCreature(NPC_DEATH_KNIGHT_UNDERSTUDY, 2779.13f, -3112.39f, 267.68f, 5.1f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 3000000);
+        }
+
+        m_creature->CallForHelp(20.0f);
     }
 
     void JustReachedHome()
@@ -141,16 +159,7 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         }
         else
             m_uiJaggedKnifeTimer -= uiDiff;
-
-		// Hopeless
-        if (m_uiHopelessTimer < uiDiff)
-        {
-            DoCastSpellIfCan(m_creature, SPELL_HOPELESS, true);
-            m_uiHopelessTimer = 30000;
-        }
-		else 
-			m_uiHopelessTimer -= uiDiff;
-
+ 
         // Random say
         if (m_uiCommandSoundTimer < uiDiff)
         {
@@ -175,11 +184,35 @@ CreatureAI* GetAI_boss_razuvious(Creature* pCreature)
     return new boss_razuviousAI(pCreature);
 }
 
+bool GossipHello_npc_obedience_crystal(Player* pPlayer, Creature* pCreature)
+{
+    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Use mind control!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+bool GossipSelect_npc_obedience_crystal(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if (Unit* target = GetClosestCreatureWithEntry(pCreature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f))
+            pPlayer->CastSpell(target,SPELL_FORCE_OBEDIENCE, true);
+        pPlayer->CLOSE_GOSSIP_MENU();
+        pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
+    }
+    return true;
+}
+
 void AddSC_boss_razuvious()
 {
     Script* NewScript;
     NewScript = new Script;
     NewScript->Name = "boss_razuvious";
     NewScript->GetAI = &GetAI_boss_razuvious;
+    NewScript->RegisterSelf();
+
+    NewScript = new Script;
+    NewScript->Name = "npc_obedience_crystal";
+    NewScript->pGossipHello = &GossipHello_npc_obedience_crystal;
+    NewScript->pGossipSelect = &GossipSelect_npc_obedience_crystal;
     NewScript->RegisterSelf();
 }

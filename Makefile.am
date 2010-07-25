@@ -392,6 +392,7 @@ scripts/northrend/naxxramas/boss_loatheb.cpp \
 scripts/northrend/naxxramas/boss_maexxna.cpp \
 scripts/northrend/naxxramas/boss_noth.cpp \
 scripts/northrend/naxxramas/boss_patchwerk.cpp \
+scripts/northrend/naxxramas/boss_grobbulus.cpp \
 scripts/northrend/naxxramas/boss_razuvious.cpp \
 scripts/northrend/naxxramas/boss_sapphiron.cpp \
 scripts/northrend/naxxramas/boss_thaddius.cpp \

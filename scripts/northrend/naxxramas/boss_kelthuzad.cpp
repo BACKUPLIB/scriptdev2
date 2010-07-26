@@ -465,23 +465,41 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             else
                 m_uiFrostBoltNovaTimer -= uiDiff;
 
+                        //Check for Mana Detonation
             if (m_uiManaDetonationTimer < uiDiff)
             {
-                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-
-                if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER && pTarget->getPowerType() == POWER_MANA)
-                {
-                    if (DoCastSpellIfCan(pTarget, SPELL_MANA_DETONATION) == CAST_OK)
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
+                    if (pTarget->getPowerType() == POWER_MANA)
                     {
-                        if (urand(0, 1))
-                            DoScriptText(SAY_SPECIAL1_MANA_DET, m_creature);
+                        int32 curPower = pTarget->GetPower(POWER_MANA);
+                        if (curPower < (m_bIsRegularMode ? 4000 : 5500))
+                            return;
 
-                        m_uiManaDetonationTimer = 20000;
+                        m_creature->CastSpell(pTarget,SPELL_MANA_DETONATION, true);
+                        int32 manareduction = m_bIsRegularMode ? urand(2500,4000) : urand(3500,5500);
+                        int32 mana = curPower - manareduction;
+                        pTarget->SetPower(POWER_MANA, mana);
+
+                        Map *map = m_creature->GetMap();
+                        if (map->IsDungeon())
+                        {
+                            Map::PlayerList const &PlayerList = map->GetPlayers();
+
+                            if (!PlayerList.isEmpty())
+
+                                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                                {
+                                    if (i->getSource()->isAlive() && pTarget->GetDistance2d(i->getSource()->GetPositionX(), i->getSource()->GetPositionY()) < 15)
+                                        i->getSource()->DealDamage(i->getSource(), manareduction, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, true);
+                                }
+                        }
                     }
-                }
-            }
-            else
-                m_uiManaDetonationTimer -= uiDiff;
+
+                if (rand()%2)
+                    DoScriptText(SAY_SPECIAL1_MANA_DET, m_creature);
+
+                m_uiManaDetonationTimer = 15000;
+            }else m_uiManaDetonationTimer -= uiDiff;
 
             if (m_uiShadowFissureTimer < uiDiff)
             {

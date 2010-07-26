@@ -26,31 +26,38 @@ EndScriptData */
 
 enum
 {
-    EMOTE_BREATH         = -1533082,
-    EMOTE_FLY            = -1533083,
-    EMOTE_GROUND         = -1533160,
-    EMOTE_ENRAGE         = -1533161,
+    EMOTE_BREATH                = -1533082,
+    EMOTE_FLY                   = -1533083,
+    EMOTE_GROUND                = -1533160,
+    EMOTE_ENRAGE                = -1533161,
 
-    SPELL_ICEBOLT        = 28522,
-    SPELL_FROST_BREATH   = 29318,
+    SPELL_ICEBOLT               = 28522,
+    SPELL_ICEBLOCK              = 62766,
+    SPELL_FROST_BREATH          = 29318,
+    SPELL_FROST_BREATH_H        = 28524,
+    SPELL_FROST_BREATH_VISUAL   = 30101,
 
-    SPELL_FROST_AURA     = 28531,
-    H_SPELL_FROST_AURA   = 55799,
+    SPELL_FROST_AURA            = 28531,
+    H_SPELL_FROST_AURA          = 55799,
 
-    SPELL_LIFE_DRAIN     = 28542,
-    H_SPELL_LIFE_DRAIN   = 55665,
+    SPELL_LIFE_DRAIN            = 28542,
+    H_SPELL_LIFE_DRAIN          = 55665,
 
-    SPELL_TAIL_SWEEP     = 55697,
-    H_SPELL_TAIL_SWEEP   = 55696,
+    SPELL_TAIL_SWEEP            = 55697,
+    H_SPELL_TAIL_SWEEP          = 55696,
 
-    SPELL_BLIZZARD       = 28547,
-    H_SPELL_BLIZZARD     = 55699,
+    SPELL_BLIZZARD              = 28547,
+    H_SPELL_BLIZZARD            = 55699,
 
-    SPELL_CLEAVE         = 19983,
-    SPELL_BESERK         = 26662,
+    SPELL_CLEAVE                = 19983,
+    SPELL_BESERK                = 26662,
 
-    GO_ICE_BLOCK         = 181247, // Not sure
+    SPELL_DIES                  = 29357,
+
+    NPC_FROST_BREATH_TARGET     = 34548,  //hack
 };
+
+float frostBreathTargetCoord[3] = {3522.39f, -5236.78f, 137.6f};
 
 struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 {
@@ -78,7 +85,9 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
     uint32 m_uiPhase;
     uint32 m_uiLandTimer;
     bool m_bLandoff;
-    std::set<uint64> m_lIceBlocks;
+    std::vector<Unit*> targets;
+    std::vector<Player*> immunePlayers;
+    Creature* pFrostBreathTarget;
 
     void Reset()
     {
@@ -94,22 +103,9 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         m_uiPhase = 1;
         m_uiIceboltCount = 0;
         m_bLandoff = false;
-
-        DespawnIceBlocks();
-    }
-
-    void DespawnIceBlocks()
-    {
-        if (m_pInstance)
-        {
-            for (std::set<uint64>::const_iterator itr = m_lIceBlocks.begin(); itr != m_lIceBlocks.end(); ++itr)
-            {
-                if (GameObject* pIceBlock = m_pInstance->instance->GetGameObject(*itr))
-                    pIceBlock->Delete();
-            }
-        }
-
-        m_lIceBlocks.clear();
+        pFrostBreathTarget;
+        targets.clear();
+        immunePlayers.clear();
     }
 
     void Aggro(Unit* pWho)
@@ -119,25 +115,52 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
         m_creature->SetInCombatWithZone();
         DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_AURA : H_SPELL_FROST_AURA);
+
+        pFrostBreathTarget = m_creature->SummonCreature(NPC_FROST_BREATH_TARGET,
+                                            frostBreathTargetCoord[0],
+                                            frostBreathTargetCoord[1],
+                                            frostBreathTargetCoord[2],0.f,TEMPSUMMON_MANUAL_DESPAWN,0);
     }
 
     void JustDied(Unit* pKiller)
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_SAPPHIRON, DONE);
+        if(pFrostBreathTarget)
+            pFrostBreathTarget->ForcedDespawn();
+        m_creature->CastSpell(m_creature, SPELL_DIES, true);
     }
 
     void JustReachedHome()
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_SAPPHIRON, FAIL);
+        if(pFrostBreathTarget)
+            pFrostBreathTarget->ForcedDespawn();
     }
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
     {
-        if (spell->Id == SPELL_FROST_BREATH)
+        if(spell->Id == SPELL_ICEBOLT)
+        {
             if (target->HasAura(SPELL_ICEBOLT))
+            {
+                target->CastSpell(target, SPELL_ICEBLOCK, true);
+                target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+            }
+            return;
+        }
+
+        if(spell->Id == SPELL_FROST_BREATH || spell->Id == SPELL_FROST_BREATH_H)
+        {
+            if (target->HasAura(SPELL_ICEBOLT))
+            {
+                target->RemoveAurasDueToSpell(SPELL_ICEBLOCK);
                 target->RemoveAurasDueToSpell(SPELL_ICEBOLT);
+                target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
+                return;
+            }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -174,7 +197,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 {
                     if (DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_BLIZZARD : H_SPELL_BLIZZARD) == CAST_OK)
-                        m_uiBlizzardTimer = 20000;
+                        m_uiBlizzardTimer = urand(17,20)*IN_MILLISECONDS;
                 }
             }
             else
@@ -227,17 +250,17 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 {
                     if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     {
-                        if (DoCastSpellIfCan(pTarget, SPELL_ICEBOLT) == CAST_OK)
-                        {
-                            if (GameObject *pIceBlock = pTarget->SummonGameobject(GO_ICE_BLOCK, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), 0))
-                                m_lIceBlocks.insert(pIceBlock->GetGUID());
-
+                        if(DoCastSpellIfCan(pTarget,SPELL_ICEBOLT) == CAST_OK)
+                        {  
+                            targets.push_back(pTarget);
                             ++m_uiIceboltCount;
 
                             if (m_uiIceboltCount == m_uiIceboltCountMax)
                             {
                                 DoScriptText(EMOTE_BREATH, m_creature);
-                                m_uiFrostBreathTimer = 7000;
+                                m_uiFrostBreathTimer = 5500;
+                                if(pFrostBreathTarget)
+                                    m_creature->CastSpell(pFrostBreathTarget,SPELL_FROST_BREATH_VISUAL,true);
                             }
 
                             m_uiIceboltTimer = 4000;
@@ -268,9 +291,36 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 {
                     if (m_uiFrostBreathTimer < uiDiff)
                     {
+                        if(!pFrostBreathTarget)
+                            return;
+
+                        Map *map = m_creature->GetMap();
+                        if (!map->IsDungeon())
+                            return;
+
+                        Map::PlayerList const &PlayerList = map->GetPlayers();
+
+                        //check for each player
+                        for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                            //check for both iceblocks
+                            for(std::vector<Unit*>::iterator itr = targets.begin(); itr!= targets.end(); ++itr)
+                                //check if player near iceblock
+                                if(i->getSource()->GetDistance2d((*itr)) <= INTERACTION_DISTANCE)
+                                    //check if player is behind iceblock
+                                    if(pFrostBreathTarget->GetDistanceOrder((*itr),i->getSource(),false))
+                                    {
+                                        i->getSource()->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+                                        immunePlayers.push_back(i->getSource());
+                                        break;
+                                    }                      
+
                         if (DoCastSpellIfCan(m_creature, SPELL_FROST_BREATH) == CAST_OK)
                         {
-                            DespawnIceBlocks();
+                            //remove frost immunity
+                            for(std::vector<Player*>::iterator itr = immunePlayers.begin(); itr!= immunePlayers.end(); ++itr)
+                            {
+                                (*itr)->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
+                            }
                             m_uiLandTimer = 4000;
                             m_bLandoff = true;
                         }
@@ -279,6 +329,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                         m_uiFrostBreathTimer -= uiDiff;
                 }
             }
+                
         }
     }
 };

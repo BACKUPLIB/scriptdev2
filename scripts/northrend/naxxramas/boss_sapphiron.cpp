@@ -120,6 +120,11 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                                             frostBreathTargetCoord[0],
                                             frostBreathTargetCoord[1],
                                             frostBreathTargetCoord[2],0.f,TEMPSUMMON_MANUAL_DESPAWN,0);
+        if(pFrostBreathTarget)
+        {
+            pFrostBreathTarget->SetSpeedRate(MOVE_WALK,0.0f,true);
+            pFrostBreathTarget->SetSpeedRate(MOVE_RUN,0.0f,true);
+        }
     }
 
     void JustDied(Unit* pKiller)
@@ -141,17 +146,14 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
     {
-        if(spell->Id == SPELL_ICEBOLT)
+        if (spell->Id == SPELL_ICEBOLT)
         {
             if (target->HasAura(SPELL_ICEBOLT))
             {
                 target->CastSpell(target, SPELL_ICEBLOCK, true);
                 target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
             }
-            return;
-        }
-
-        if(spell->Id == SPELL_FROST_BREATH || spell->Id == SPELL_FROST_BREATH_H)
+        } else if (spell->Id == SPELL_FROST_BREATH || spell->Id == SPELL_FROST_BREATH_H)
         {
             if (target->HasAura(SPELL_ICEBOLT))
             {
@@ -160,6 +162,10 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
                 return;
             }
+        } else if (spell->Id == SPELL_FROST_BREATH_VISUAL)
+        {
+            target->GetMotionMaster()->MoveIdle();
+            target->getThreatManager().clearReferences();
         }
     }
 
@@ -258,7 +264,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                             if (m_uiIceboltCount == m_uiIceboltCountMax)
                             {
                                 DoScriptText(EMOTE_BREATH, m_creature);
-                                m_uiFrostBreathTimer = 5500;
+                                m_uiFrostBreathTimer = 8700;
                                 if(pFrostBreathTarget)
                                     m_creature->CastSpell(pFrostBreathTarget,SPELL_FROST_BREATH_VISUAL,true);
                             }

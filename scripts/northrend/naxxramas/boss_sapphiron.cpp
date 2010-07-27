@@ -329,6 +329,8 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                             }
                             m_uiLandTimer = 4000;
                             m_bLandoff = true;
+                            immunePlayers.clear();
+                            targets.clear();
                         }
                     }
                     else

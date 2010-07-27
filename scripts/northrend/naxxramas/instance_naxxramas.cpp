@@ -80,6 +80,7 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
     m_fChamberCenterX(0.0f),
     m_fChamberCenterY(0.0f),
     m_fChamberCenterZ(0.0f)
+
 {
     Initialize();
 }
@@ -290,6 +291,8 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
             {
                 DoUseDoorOrButton(m_uiNothExitDoorGUID);
                 DoUseDoorOrButton(m_uiHeigEntryDoorGUID);
+                // use this as long as heigan is not spawned
+                DoUseDoorOrButton(m_uiHeigExitDoorGUID);
             }
             break;
         case TYPE_HEIGAN:
@@ -360,6 +363,8 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
             {
                 DoUseDoorOrButton(m_uiGlutExitDoorGUID);
                 DoUseDoorOrButton(m_uiThadDoorGUID);
+                // use this as long as thaddius is not spawned
+                DoUseDoorOrButton(m_uiConsEyeRampGUID);
             }
             break;
         case TYPE_THADDIUS:

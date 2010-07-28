@@ -21,7 +21,7 @@ SDComment:
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 //#include "spell.h"
 
 //Still not used, need more info
@@ -167,7 +167,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_ZULJINEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_ZULJIN, NOT_STARTED);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_ZULJINDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
 		}
@@ -211,7 +211,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_ZULJINEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_ZULJIN, IN_PROGRESS);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_ZULJINDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_READY);
 		}
@@ -239,7 +239,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_ZULJINEVENT, DONE);
+            pInstance->SetData(TYPE_ZULJIN, DONE);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_ZULJINDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
 		}

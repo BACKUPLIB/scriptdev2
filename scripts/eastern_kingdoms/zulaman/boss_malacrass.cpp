@@ -22,7 +22,7 @@ SDCategory: Zul'Aman
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 
 #define SAY_AGGRO               -1568024
 #define SAY_ENRAGE              -1568025
@@ -212,7 +212,7 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
     void Reset()
     {
         if(pInstance)
-            pInstance->SetData(DATA_HEXLORDEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_MALACRASS, NOT_STARTED);
 
         SpiritBolts_Timer = 20000;
         bDrainPower = false;
@@ -233,7 +233,7 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_HEXLORDEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_MALACRASS, IN_PROGRESS);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HEXLORDDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_READY);
 		}
@@ -266,7 +266,7 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_HEXLORDEVENT, DONE);
+            pInstance->SetData(TYPE_MALACRASS, DONE);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HEXLORDDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
 	}
@@ -490,7 +490,7 @@ struct MANGOS_DLL_DECL boss_hexlord_addAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(pInstance && pInstance->GetData(DATA_HEXLORDEVENT) != IN_PROGRESS)
+        if(pInstance && pInstance->GetData(TYPE_MALACRASS) != IN_PROGRESS)
             EnterEvadeMode();
 
         DoMeleeAttackIfReady();

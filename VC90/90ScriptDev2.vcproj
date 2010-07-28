@@ -1135,15 +1135,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\scripts\eastern_kingdoms\zulaman\def_zulaman.h"
-						>
-					</File>
-					<File
 						RelativePath="..\scripts\eastern_kingdoms\zulaman\instance_zulaman.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\scripts\eastern_kingdoms\zulaman\zulaman.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\eastern_kingdoms\zulaman\zulaman.h"
 						>
 					</File>
 				</Filter>
@@ -2234,6 +2234,26 @@
 							</File>
 						</Filter>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="ruby_sanctum"
+					>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_baltharus.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_halion.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_saviana.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_zarithian.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

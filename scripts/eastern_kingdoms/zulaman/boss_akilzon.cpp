@@ -24,7 +24,7 @@ SQLUpdate:
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 #include "Spell.h"
 #include "Weather.h"
 
@@ -82,7 +82,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
     void Reset()
     {
         if(pInstance)
-            pInstance->SetData(DATA_AKILZONEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_AKILZON, NOT_STARTED);
 
         StaticDisruption_Timer = urand(10, 20)*1000; //10 to 20 seconds (bosskillers)
         GustOfWind_Timer = urand(20, 30)*1000; //20 to 30 seconds(bosskillers)
@@ -115,7 +115,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
 
         if(pInstance)
 		{
-            pInstance->SetData(DATA_AKILZONEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_AKILZON, IN_PROGRESS);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_AKILZONDOOR)))
                 pEncounterDoor->SetGoState(GO_STATE_READY);
 		}
@@ -127,7 +127,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
 
         if(pInstance)
 		{
-            pInstance->SetData(DATA_AKILZONEVENT, DONE);
+            pInstance->SetData(TYPE_AKILZON, DONE);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_AKILZONDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
 			if (pInstance->GetData64(DATA_BOSSKILLED)>=4) {

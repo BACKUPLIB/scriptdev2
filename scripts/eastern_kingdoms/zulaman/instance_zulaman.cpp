@@ -22,7 +22,7 @@ SDCategory: Zul'Aman
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 
 #define ENCOUNTERS     6
 #define RAND_VENDOR    2
@@ -218,7 +218,7 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_NALORAKKEVENT:
+        case TYPE_NALORAKK:
             Encounters[0] = data;
             if(data == DONE)
             {
@@ -230,7 +230,7 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
                 SummonHostage(0);
             }
             break;
-        case DATA_AKILZONEVENT:
+        case TYPE_AKILZON:
             Encounters[1] = data;
             DoUseDoorOrButton(AkilzonDoorGUID, data != IN_PROGRESS);
             if(data == DONE)
@@ -243,27 +243,27 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
                 SummonHostage(1);
             }
             break;
-        case DATA_JANALAIEVENT:
+        case TYPE_JANALAI:
             Encounters[2] = data;
             if(data == DONE) SummonHostage(2);
             break;
-        case DATA_HALAZZIEVENT:
+        case TYPE_HALAZZI:
             Encounters[3] = data;
             //DoUseDoorOrButton(HalazziDoorGUID, data != IN_PROGRESS);
             if(data == DONE) SummonHostage(3);
             break;
-        case DATA_HEXLORDEVENT:
+        case TYPE_MALACRASS:
             Encounters[4] = data;
             if(data == IN_PROGRESS)
                 DoUseDoorOrButton(HexLordGateGUID, false);
 			else if(data == NOT_STARTED)
 				CheckInstanceStatus();
             break;
-        case DATA_ZULJINEVENT:
+        case TYPE_ZULJIN:
             Encounters[5] = data;
             DoUseDoorOrButton(ZulJinDoorGUID, data != IN_PROGRESS);
             break;
-        case DATA_CHESTLOOTED:
+        case TYPE_CHESTLOOTED:
             ChestLooted++;
             SaveToDB();
             break;
@@ -292,13 +292,13 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_NALORAKKEVENT: return Encounters[0];
-        case DATA_AKILZONEVENT:  return Encounters[1];
-        case DATA_JANALAIEVENT:  return Encounters[2];
-        case DATA_HALAZZIEVENT:  return Encounters[3];
-        case DATA_HEXLORDEVENT:  return Encounters[4];
-        case DATA_ZULJINEVENT:   return Encounters[5];
-        case DATA_CHESTLOOTED:   return ChestLooted;
+        case TYPE_NALORAKK: return Encounters[0];
+        case TYPE_AKILZON:  return Encounters[1];
+        case TYPE_JANALAI:  return Encounters[2];
+        case TYPE_HALAZZI:  return Encounters[3];
+        case TYPE_MALACRASS:  return Encounters[4];
+        case TYPE_ZULJIN:   return Encounters[5];
+        case TYPE_CHESTLOOTED:   return ChestLooted;
         case TYPE_RAND_VENDOR_1: return RandVendor[0];
         case TYPE_RAND_VENDOR_2: return RandVendor[1];
         default:                 return 0;

@@ -22,7 +22,7 @@ SDCategory: Zul'Aman
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 
 #define SAY_AGGRO                   -1568000
 #define SAY_FIRE_BOMBS              -1568001
@@ -125,7 +125,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
     void Reset()
     {
         if (pInstance)
-            pInstance->SetData(DATA_JANALAIEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_JANALAI, NOT_STARTED);
 
         FireBreathTimer = 8000;
         BombTimer = 30000;
@@ -154,7 +154,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
 
 		if (pInstance)
 		{
-            pInstance->SetData(DATA_JANALAIEVENT, DONE);
+            pInstance->SetData(TYPE_JANALAI, DONE);
 			if (pInstance->GetData64(DATA_BOSSKILLED)>=4) {
 				if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HEXLORDGATE)))
 					pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
@@ -176,7 +176,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
         DoScriptText(SAY_AGGRO, m_creature);
 
         if (pInstance)
-            pInstance->SetData(DATA_JANALAIEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_JANALAI, IN_PROGRESS);
 			m_creature->SetInCombatWithZone();
     }
 
@@ -560,7 +560,7 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!pInstance || !(pInstance->GetData(DATA_JANALAIEVENT) == IN_PROGRESS))
+        if(!pInstance || !(pInstance->GetData(TYPE_JANALAI) == IN_PROGRESS))
         {
             m_creature->SetVisibility(VISIBILITY_OFF);
             m_creature->setDeathState(JUST_DIED);
@@ -635,7 +635,7 @@ struct MANGOS_DLL_DECL mob_hatchlingAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!pInstance || !(pInstance->GetData(DATA_JANALAIEVENT) == IN_PROGRESS))
+        if(!pInstance || !(pInstance->GetData(TYPE_JANALAI) == IN_PROGRESS))
         {
             m_creature->SetVisibility(VISIBILITY_OFF);
             m_creature->setDeathState(JUST_DIED);

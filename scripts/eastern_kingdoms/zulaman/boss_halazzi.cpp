@@ -22,7 +22,7 @@ SDCategory: Zul¡äAman
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 //#include "spell.h"
 
 #define SAY_AGGRO                       -1568042
@@ -99,7 +99,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
     {
 		if(pInstance)
 		{
-            pInstance->SetData(DATA_HALAZZIEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_HALAZZI, NOT_STARTED);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HALAZZIFRONTDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_READY);
 		}
@@ -117,7 +117,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
 	void Aggro(Unit *who)
     {
 		if(pInstance)
-            pInstance->SetData(DATA_HALAZZIEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_HALAZZI, IN_PROGRESS);
 
         DoScriptText(SAY_AGGRO, m_creature);
         EnterPhase(PHASE_LYNX);
@@ -316,7 +316,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
     {
 		if(pInstance)
 		{
-            pInstance->SetData(DATA_HALAZZIEVENT, DONE);
+            pInstance->SetData(TYPE_HALAZZI, DONE);
 			if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HALAZZIFRONTDOOR)))
 				pEncounterDoor->SetGoState(GO_STATE_ACTIVE);
 			if (pInstance->GetData64(DATA_BOSSKILLED)>=4) {

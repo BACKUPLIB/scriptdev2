@@ -22,7 +22,7 @@ SDCategory: Zul'Aman
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_zulaman.h"
+#include "zulaman.h"
 #include "Unit.h"
 
 #define SAY_WAVE1_AGGRO         -1568010
@@ -87,7 +87,7 @@ struct MANGOS_DLL_DECL boss_nalorakkAI : public ScriptedAI
     void Reset()
     {
         if(pInstance)
-            pInstance->SetData(DATA_NALORAKKEVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_NALORAKK, NOT_STARTED);
 
         Surge_Timer = 15000 + rand()%5000;
         BrutalSwipe_Timer = 7000 + rand()%5000;
@@ -105,7 +105,7 @@ struct MANGOS_DLL_DECL boss_nalorakkAI : public ScriptedAI
     void Aggro(Unit *who)
     {
         if(pInstance)
-            pInstance->SetData(DATA_NALORAKKEVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_NALORAKK, IN_PROGRESS);
 
         DoScriptText(SAY_AGGRO, m_creature);
         m_creature->SetInCombatWithZone();
@@ -115,7 +115,7 @@ struct MANGOS_DLL_DECL boss_nalorakkAI : public ScriptedAI
     {
         if(pInstance)
 		{
-            pInstance->SetData(DATA_NALORAKKEVENT, DONE);
+            pInstance->SetData(TYPE_NALORAKK, DONE);
 			if (pInstance->GetData64(DATA_BOSSKILLED)>=4) {
 				if (GameObject* pEncounterDoor = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_HEXLORDGATE)))
 					pEncounterDoor->SetGoState(GO_STATE_ACTIVE);

@@ -82,17 +82,14 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
     bool m_bIsRegularMode;
 
     bool m_bPhase1;
-    bool m_bPhase2_Check;
     uint32 m_uiHandler_Spawn;
     uint32 m_uiHandler_Count;
     uint32 m_uiFrostbolt_Timer;
     uint32 m_uiArcaneBlast_Timer;
     uint32 m_uiSpecialCast_Timer;
-    //uint32 m_uiSummonMinion_Timer;
     
     void Reset()
     {
-        m_bPhase2_Check = true;
         m_uiHandler_Spawn = 5000;
         m_uiHandler_Count = 0;
         m_bPhase1 = false;
@@ -100,13 +97,13 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         if(m_pInstance)
         {
-            m_pInstance->SetData(TYPE_CRYSTALS_ACTIVATED, 0);
             for(int i=0;i<4;i++)
             {
                 GameObject* pGo = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(i));
-                if(pGo && pGo->GetGoState() == GO_STATE_ACTIVE)
-                    pGo->UseDoorOrButton(0,false);
+                if(pGo && pGo->GetGoState() == GO_STATE_READY)
+                    pGo->UseDoorOrButton(0,false);   
             }
+            m_pInstance->SetData(TYPE_CRYSTALS_ACTIVATED, 0);
         }
     }
 
@@ -135,36 +132,9 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if(m_pInstance)
-            if(m_bPhase2_Check && m_pInstance->GetData(TYPE_CRYSTALS_ACTIVATED) == 4)
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                m_creature->InterruptSpell(CURRENT_CHANNELED_SPELL);
-                //m_uiSummonMinion_Timer = urand (15000,20000);
-                m_uiSpecialCast_Timer = urand(15000, 20000);
-                m_uiArcaneBlast_Timer = urand(25000, 30000);
-                m_uiFrostbolt_Timer = 500;
-                m_bPhase1 = false;
-                m_bPhase2_Check = false;
-            }
-
+        //phase 2
         if (!m_bPhase1)
         {
-            //Regual cast - frostbolt
-            if (m_uiFrostbolt_Timer < uiDiff && m_uiArcaneBlast_Timer > uiDiff && m_uiSpecialCast_Timer > uiDiff)
-            {
-                DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), m_bIsRegularMode ? SPELL_FROSTBOLT : H_SPELL_FROSTBOLT);
-                m_uiFrostbolt_Timer = 1000;
-            }else m_uiFrostbolt_Timer -= uiDiff;
-
-               //Arcane Blast
-            if (m_uiArcaneBlast_Timer < uiDiff)
-            {
-                m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
-                m_creature->CastSpell(m_creature, m_bIsRegularMode ? SPELL_ARCANE_BLAST : H_SPELL_ARCANE_BLAST, true);
-                m_uiArcaneBlast_Timer = urand(25000, 30000);
-            }else m_uiArcaneBlast_Timer -= uiDiff;
-
             //Wrath Of Misery or Blizzard
             if (m_uiSpecialCast_Timer < uiDiff)
             {
@@ -178,52 +148,61 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
                 }
                 m_uiSpecialCast_Timer = urand(10000, 15000);
             }else m_uiArcaneBlast_Timer -= uiDiff;
-            
-            /*//Summon Minions (Heroic)
-            if (m_uiSummonMinion_Timer < uiDiff)
-            {
-                if(m_bIsRegularMode)
-                    return;
 
-                uint8 SummonLoc = rand()%POS;
-                if (Creature* pAdd1 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[SummonLoc][0],PosSummonHandler[SummonLoc][1],PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
-                    pAdd1->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd2 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[SummonLoc][0],PosSummonHandler[SummonLoc][1],PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
-                    pAdd2->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd3 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[SummonLoc][0],PosSummonHandler[SummonLoc][1],PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
-                    pAdd3->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd4 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[SummonLoc][0],PosSummonHandler[SummonLoc][1],PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
-                    pAdd4->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd5 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[SummonLoc][0],PosSummonHandler[SummonLoc][1],PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
-                    pAdd5->AI()->AttackStart(m_creature->getVictim());
-                m_uiSummonMinion_Timer = urand (15000,20000);
-            }else m_uiSummonMinion_Timer -= uiDiff;*/
+                           //Arcane Blast
+            if (m_uiArcaneBlast_Timer < uiDiff)
+            {
+                m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
+                m_creature->CastSpell(m_creature, m_bIsRegularMode ? SPELL_ARCANE_BLAST : H_SPELL_ARCANE_BLAST, true);
+                m_uiArcaneBlast_Timer = urand(25000, 30000);
+            }else m_uiArcaneBlast_Timer -= uiDiff;
+
+            //Regual cast - frostbolt
+            if (m_uiFrostbolt_Timer < uiDiff && m_uiArcaneBlast_Timer > uiDiff && m_uiSpecialCast_Timer > uiDiff)
+            {
+                DoCast(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), m_bIsRegularMode ? SPELL_FROSTBOLT : H_SPELL_FROSTBOLT);
+                m_uiFrostbolt_Timer = 1000;
+            }else m_uiFrostbolt_Timer -= uiDiff;
 
         }
-        
-        //Phase 1 Waves spawn
-        if (m_uiHandler_Spawn < uiDiff && m_bPhase1 == true)
+        else
         {
+            //Phase 1 Waves spawn
+            if (m_uiHandler_Spawn < uiDiff)
+            {
                 uint8 SummonLoc = rand()%2+1;
-                if(m_uiHandler_Count < 4 && rand()%3)
+                if(m_uiHandler_Count < 4)// && rand()%2)
                 {
                     DoScriptText(SAY_ADDS,m_creature);
-                    if(Creature* pCrystalHandler = m_creature->SummonCreature(NPC_CRYSTAL_HANDLER, PosSummonHandler[SummonLoc][0]+rand()%2,PosSummonHandler[SummonLoc][1]+rand()%2,PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
+                    if(Creature* pCrystalHandler = m_creature->SummonCreature(NPC_CRYSTAL_HANDLER, PosSummonHandler[SummonLoc][0]+rand()%2,PosSummonHandler[SummonLoc][1]+rand()%2,PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))
                         pCrystalHandler->AI()->AttackStart(m_creature->getVictim());
                     m_uiHandler_Count++;
                 }
                 m_creature->HandleEmoteCommand(EMOTE_ASSISTANCE);
-                if (Creature* pAdd1 = m_creature->SummonCreature(NPC_HULKING_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
+                if (Creature* pAdd1 = m_creature->SummonCreature(NPC_HULKING_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))
                     pAdd1->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd2 = m_creature->SummonCreature(NPC_RISEN_SHADOWCASTER, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
+                if (Creature* pAdd2 = m_creature->SummonCreature(NPC_RISEN_SHADOWCASTER, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))
                     pAdd2->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd3 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
+                if (Creature* pAdd3 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))
                     pAdd3->AI()->AttackStart(m_creature->getVictim());
-                if (Creature* pAdd4 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_TIMED_DESPAWN, 120000))
+                if (Creature* pAdd4 = m_creature->SummonCreature(NPC_FETID_TROLL_CORPSE, PosSummonHandler[STAIRS][0]+rand()%2,PosSummonHandler[STAIRS][1]+rand()%2,PosSummonHandler[STAIRS][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))
                     pAdd4->AI()->AttackStart(m_creature->getVictim());
                 m_uiHandler_Spawn = 17500;
 
-        }else m_uiHandler_Spawn -= uiDiff;
+            }
+                else m_uiHandler_Spawn -= uiDiff;
+
+            if(m_pInstance)
+                if(m_pInstance->GetData(TYPE_CRYSTALS_ACTIVATED) == 4)
+                {
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    m_creature->InterruptSpell(CURRENT_CHANNELED_SPELL);
+                    m_uiSpecialCast_Timer = urand(15000, 20000);
+                    m_uiArcaneBlast_Timer = urand(25000, 30000);
+                    m_uiFrostbolt_Timer = 500;
+                    m_bPhase1 = false;
+                }
+        }
     }
 };
 

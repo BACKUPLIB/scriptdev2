@@ -171,7 +171,7 @@ struct MANGOS_DLL_DECL boss_novosAI : public ScriptedAI
             if (m_uiHandler_Spawn < uiDiff)
             {
                 uint8 SummonLoc = rand()%2+1;
-                if(m_uiHandler_Count < 4)// && rand()%2)
+                if(m_uiHandler_Count < 4 && rand()%2)
                 {
                     DoScriptText(SAY_ADDS,m_creature);
                     if(Creature* pCrystalHandler = m_creature->SummonCreature(NPC_CRYSTAL_HANDLER, PosSummonHandler[SummonLoc][0]+rand()%2,PosSummonHandler[SummonLoc][1]+rand()%2,PosSummonHandler[SummonLoc][2],0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 360000))

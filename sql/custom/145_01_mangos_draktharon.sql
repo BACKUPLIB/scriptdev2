@@ -27,7 +27,7 @@ DELETE FROM `creature_loot_template` WHERE `item` = 38555;
 # update ritual crystal GOs
 UPDATE `gameobject_template` SET `data0` = 0, `data1` = 0 WHERE entry IN (189299, 189300, 189301, 189302);
 # add script to drak'tharon keep instance
-UPDATE `instance_template` SET `script` = "instance_draktharon_keep" WHERE `map` = 600;
+UPDATE `instance_template` SET `ScriptName` = "instance_draktharon_keep" WHERE `map` = 600;
 
 # fix for some drak'tharon instance mobs
 # make risen drakkari bat rider selectable

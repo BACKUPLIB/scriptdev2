@@ -544,6 +544,13 @@ bool EffectAuraDummy(const Aura* pAura, bool apply)
 }
 
 MANGOS_DLL_EXPORT
+bool ProcessEventId(uint32 eventId, Object* source, Object* target, bool data)
+{
+    // just for compile, replace by clean version of sd2-team!!
+    return false;
+}
+
+MANGOS_DLL_EXPORT
 InstanceData* CreateInstanceData(Map *map)
 {
     if (!map->IsDungeon())

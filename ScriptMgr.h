@@ -20,6 +20,7 @@ class SpellCastTargets;
 class Map;
 class Unit;
 class WorldObject;
+class Object;
 class Aura;
 
 #define MAX_SCRIPTS         5000                            //72 bytes each (approx 351kb)
@@ -35,7 +36,7 @@ struct Script
         pChooseReward(NULL), pItemHello(NULL), pGOHello(NULL), pAreaTrigger(NULL), pItemQuestAccept(NULL),
         pQuestAccept(NULL), pGOQuestAccept(NULL), pGOChooseReward(NULL), pItemUse(NULL),
         pEffectDummyCreature(NULL), pEffectDummyGameObj(NULL), pEffectDummyItem(NULL), pEffectAuraDummy(NULL),
-        GetAI(NULL), GetInstanceData(NULL)
+        GetAI(NULL), GetInstanceData(NULL), pProcessEventId(NULL)
     {}
 
     std::string Name;
@@ -64,6 +65,7 @@ struct Script
     bool (*pEffectDummyGameObj      )(Unit*, uint32, SpellEffectIndex, GameObject*);
     bool (*pEffectDummyItem         )(Unit*, uint32, SpellEffectIndex, Item*);
     bool (*pEffectAuraDummy         )(const Aura*, bool);
+    bool (*pProcessEventId          )(uint32 eventId, Object* source, Object* target, bool data);
 
     CreatureAI* (*GetAI)(Creature*);
     InstanceData* (*GetInstanceData)(Map*);

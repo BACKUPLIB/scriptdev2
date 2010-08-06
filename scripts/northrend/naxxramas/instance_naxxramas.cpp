@@ -48,6 +48,8 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
     m_uiStalaggGUID(0),
     m_uiFeugenGUID(0),
 
+    m_uiHeiganGUID(0),
+
     m_uiKelthuzadGUID(0),
 
     m_uiPathExitDoorGUID(0),
@@ -105,6 +107,7 @@ void instance_naxxramas::OnCreatureCreate(Creature* pCreature)
         case NPC_THADDIUS:          m_uiThaddiusGUID = pCreature->GetGUID();    break;
         case NPC_STALAGG:           m_uiStalaggGUID = pCreature->GetGUID();     break;
         case NPC_FEUGEN:            m_uiFeugenGUID = pCreature->GetGUID();      break;
+        case NPC_HEIGAN:            m_uiHeiganGUID = pCreature->GetGUID();      break;
         case NPC_ZELIEK:            m_uiZeliekGUID = pCreature->GetGUID();      break;
         case NPC_THANE:             m_uiThaneGUID = pCreature->GetGUID();       break;
         case NPC_BLAUMEUX:          m_uiBlaumeuxGUID = pCreature->GetGUID();    break;
@@ -296,8 +299,6 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
             {
                 DoUseDoorOrButton(m_uiNothExitDoorGUID);
                 DoUseDoorOrButton(m_uiHeigEntryDoorGUID);
-                // use this as long as heigan is not spawned
-                DoUseDoorOrButton(m_uiHeigExitDoorGUID);
             }
             break;
         case TYPE_HEIGAN:
@@ -400,8 +401,6 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
             {
                 DoUseDoorOrButton(m_uiGlutExitDoorGUID);
                 DoUseDoorOrButton(m_uiThadDoorGUID);
-                // use this as long as thaddius is not spawned
-                DoUseDoorOrButton(m_uiConsEyeRampGUID);
             }
             break;
         case TYPE_THADDIUS:
@@ -530,6 +529,8 @@ uint64 instance_naxxramas::GetData64(uint32 uiData)
             return m_uiStalaggGUID;
         case NPC_FEUGEN:
             return m_uiFeugenGUID;
+        case NPC_HEIGAN:
+            return m_uiHeiganGUID;
         case NPC_GOTHIK:
             return m_uiGothikGUID;
         case NPC_KELTHUZAD:

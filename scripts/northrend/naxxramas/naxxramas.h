@@ -53,6 +53,8 @@ enum
     NPC_STALAGG                 = 15929,
     NPC_FEUGEN                  = 15930,
 
+    NPC_HEIGAN                  = 15936,
+
     NPC_ZELIEK                  = 16063,
     NPC_THANE                   = 16064,
     NPC_BLAUMEUX                = 16065,
@@ -193,6 +195,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         uint64 m_uiThaddiusGUID;
         uint64 m_uiStalaggGUID;
         uint64 m_uiFeugenGUID;
+
+        uint64 m_uiHeiganGUID;
 
         uint64 m_uiKelthuzadGUID;
 

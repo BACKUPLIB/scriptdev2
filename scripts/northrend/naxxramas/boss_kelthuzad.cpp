@@ -133,7 +133,6 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     uint32 m_uiAbominationCount;
     uint32 m_uiSummonIntroTimer;
     uint32 m_uiIntroPackCount;
-    Creature* pShadowFissure;
 
     std::set<uint64> m_lIntroMobsSet;
     std::set<uint64> m_lAddsSet;
@@ -505,35 +504,32 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 {
-                    if(pShadowFissure = m_creature->SummonCreature(NPC_SHADOW_FISSURE,pTarget->GetPositionX(),
-                                                                   pTarget->GetPositionY(), pTarget->GetPositionZ(), 
-                                                                   0, TEMPSUMMON_TIMED_DESPAWN,3300))
-                    {
+                        m_creature->CastSpell(pTarget,SPELL_SHADOW_FISSURE,true);
                         m_uiShadowFissureActiveTimer = 3000;
                         if (urand(0, 1))
                             DoScriptText(SAY_SPECIAL3_MANA_DET, m_creature);
-
-                        m_uiShadowFissureTimer = 25000;
-                    }
                 }
+                m_uiShadowFissureTimer = 25000;
             }
             else
                 m_uiShadowFissureTimer -= uiDiff;
 
-            if(m_uiShadowFissureActiveTimer && pShadowFissure)
+            if(m_uiShadowFissureActiveTimer)
                 if(m_uiShadowFissureActiveTimer < uiDiff)
                 {
                     // hack for shadow fissure
-                    // TODO: find energy beam spell
+                    // TODO: find energy beam visual spell
+                    m_uiShadowFissureActiveTimer = 0;
+
+                    Creature* pFissure = GetClosestCreatureWithEntry(m_creature, NPC_SHADOW_FISSURE, 100.0f);
+
+                    if(!pFissure)
+                        return;
 
                     Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
                     for (Map::PlayerList::const_iterator itr = pPlayers.begin(); itr != pPlayers.end(); ++itr)
-                    {
-                        if(itr->getSource()->GetDistance2d(pShadowFissure) < 2.0f)
-                            pShadowFissure->DealDamage(itr->getSource(),itr->getSource()->GetHealth(),NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    }
-                    pShadowFissure->ForcedDespawn();
-                    m_uiShadowFissureActiveTimer = 0;
+                        if(itr->getSource()->GetDistance2d(pFissure) < 2.0f)
+                            pFissure->DealDamage(itr->getSource(),itr->getSource()->GetHealth(),NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
                 else 
                     m_uiShadowFissureActiveTimer -= uiDiff;
@@ -551,8 +547,9 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             else
                 m_uiFrostBlastTimer -= uiDiff;
 
-            if (!m_bIsRegularMode)
-            {
+            // not sure if this is right
+            //if (!m_bIsRegularMode)
+            //{
                 if (m_uiChainsTimer < uiDiff)
                 {
                     if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_CHAINS_OF_KELTHUZAD) == CAST_OK)
@@ -564,7 +561,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                 }
                 else
                     m_uiChainsTimer -= uiDiff;
-            }
+            //}
 
             if (m_uiPhase == PHASE_NORMAL)
             {

@@ -192,12 +192,31 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
                     };
 
                     DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_CRIPPLE : SPELL_CRIPPLE_H);
+
+                    // spell not working, workaround:
+                    //if (DoCastSpellIfCan(m_creature, auiSpellBlink[urand(0,3)]) == CAST_OK)
                     
-                    if (DoCastSpellIfCan(m_creature, auiSpellBlink[urand(0,3)]) == CAST_OK)
+                    Map* pMap = m_creature->GetMap();
+                    Map::PlayerList const &PlayerList = pMap->GetPlayers();
+
+                    for(Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
                     {
-                        DoResetThreat();
-                        m_uiBlinkTimer = 25000;
+                        Player* pPlayer = itr->getSource();
+                        // do not teleport to the current victim
+                        if (pPlayer && pPlayer != m_creature->getVictim())
+                        {
+                            if(pPlayer->IsWithinDistInMap(m_creature, 20.0f))
+                            {
+                                m_creature->NearTeleportTo(pPlayer->GetPositionX()+rand()%2,
+                                pPlayer->GetPositionY()+rand()%2, 
+                                pPlayer->GetPositionZ(),m_creature->GetOrientation());
+                                break;
+                            }
+                        }
                     }
+
+                    DoResetThreat();
+                    m_uiBlinkTimer = 25000;
                 }
                 else
                     m_uiBlinkTimer -= uiDiff;

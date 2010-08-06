@@ -125,6 +125,15 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, FAIL);
+
+        std::list<Creature*> m_pDeathKnight;
+        GetCreatureListWithEntryInGrid(m_pDeathKnight, m_creature, NPC_DEATH_KNIGHT_UNDERSTUDY, 100.0f);
+
+        if (!m_pDeathKnight.empty())
+            for(std::list<Creature*>::iterator itr = m_pDeathKnight.begin(); itr != m_pDeathKnight.end(); ++itr)
+            {
+                (*itr)->Respawn();
+            }
     }
 
     void UpdateAI(const uint32 uiDiff)

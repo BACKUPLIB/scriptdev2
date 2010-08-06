@@ -77,6 +77,11 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
     m_uiKelthuzadDoorGUID(0),
     m_uiKelthuzadExitDoorGUID(0),
 
+    m_bBlaumeuxDead(false),
+    m_bRivendareDead(false),
+    m_bZeliekDead(false),
+    m_bKorthazzDead(false),
+
     m_fChamberCenterX(0.0f),
     m_fChamberCenterY(0.0f),
     m_fChamberCenterZ(0.0f)
@@ -337,6 +342,38 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
                     break;
             }
             m_auiEncounter[7] = uiData;
+            break;
+        case TYPE_BLAUMEUX:
+            if (uiData == DONE)
+            {
+                m_bBlaumeuxDead = true;
+                if (m_bRivendareDead && m_bZeliekDead && m_bKorthazzDead)
+                    SetData(TYPE_FOUR_HORSEMEN, DONE);
+            }
+            break;
+        case TYPE_RIVENDARE:
+            if (uiData == DONE)
+            {
+                m_bRivendareDead = true;
+                if (m_bBlaumeuxDead && m_bZeliekDead && m_bKorthazzDead)
+                    SetData(TYPE_FOUR_HORSEMEN, DONE);
+            }
+            break;
+        case TYPE_ZELIEK:
+            if (uiData == DONE)
+            {
+                m_bZeliekDead = true;
+                if (m_bBlaumeuxDead && m_bRivendareDead && m_bKorthazzDead)
+                    SetData(TYPE_FOUR_HORSEMEN, DONE);
+            }
+            break;
+        case TYPE_KORTHAZZ:
+            if (uiData == DONE)
+            {
+                m_bKorthazzDead = true;
+                if (m_bBlaumeuxDead && m_bRivendareDead && m_bZeliekDead)
+                    SetData(TYPE_FOUR_HORSEMEN, DONE);
+            }
             break;
         case TYPE_FOUR_HORSEMEN:
             m_auiEncounter[8] = uiData;

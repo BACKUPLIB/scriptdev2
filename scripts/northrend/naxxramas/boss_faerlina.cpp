@@ -132,6 +132,14 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_FAERLINA, FAIL);
+
+        for(int i=0;i<4;i++)
+            {
+                if(Creature* worshipper = (Creature*) Unit::GetUnit(*m_creature,m_pInstance->GetData64(m_uiWorshippers[i])))
+                {
+                    worshipper->Respawn();
+                }
+            }
     }
 
     void UpdateAI(const uint32 uiDiff)

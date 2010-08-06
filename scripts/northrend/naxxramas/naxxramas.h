@@ -26,6 +26,10 @@ enum
     TYPE_RAZUVIOUS              = 7,
     TYPE_GOTHIK                 = 8,
     TYPE_FOUR_HORSEMEN          = 9,
+    TYPE_BLAUMEUX               = 91,
+    TYPE_RIVENDARE              = 92,
+    TYPE_KORTHAZZ               = 93,
+    TYPE_ZELIEK                 = 94,
 
     TYPE_PATCHWERK              = 10,
     TYPE_GROBBULUS              = 11,
@@ -221,6 +225,11 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
 
         uint64 m_uiKelthuzadDoorGUID;
         uint64 m_uiKelthuzadExitDoorGUID;
+
+        bool m_bBlaumeuxDead;
+        bool m_bRivendareDead;
+        bool m_bZeliekDead;
+        bool m_bKorthazzDead;
 
         float m_fChamberCenterX;
         float m_fChamberCenterY;

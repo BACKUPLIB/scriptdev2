@@ -19,3 +19,6 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES('130958','15929','533','3','1','15297','0','3450.45','-2931.42','312.091','5.49779','604800','0','0','836700','0','0','0');
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES('130959','15930','533','3','1','15297','0','3508.14','-2988.65','312.092','2.37365','604800','0','0','836700','0','0','0');
 */
+
+# add script for boss_anub'rekhan fight crypt-guard mob
+UPDATE `creature_template` SET `ScriptName` = "mob_crypt_guard", `AIName` = "" WHERE `entry` = 16573;

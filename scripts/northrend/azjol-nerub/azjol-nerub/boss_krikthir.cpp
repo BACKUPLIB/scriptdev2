@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Krikthir
-SD%Complete: 20%
+SD%Complete: 90%
 SDComment:
 SDCategory: Azjol'Nerub
 EndScriptData */
@@ -42,7 +42,7 @@ enum
     EMOTE_BOSS_GENERIC_FRENZY       = -1000005
 };
 
-#define CURSE_OF_FATIGUE            52592         
+#define CURSE_OF_FATIGUE            52592
 #define CURSE_OF_FATIGUE_H          59368
 
 #define MIND_FLAY                   52586
@@ -151,30 +151,33 @@ struct MANGOS_DLL_DECL boss_krikthirAI : public ScriptedAI
 
         if (SwarmTimer < uiDiff)
         {
-            switch(urand(0, 1))
-            {
-                case 0: DoScriptText(SAY_SWARM_1, m_creature); break;
-                case 1: DoScriptText(SAY_SWARM_2, m_creature); break;
-            }
+			if (!urand(0, 1))
+			{
+				switch(urand(0, 1))
+				{
+					case 0: DoScriptText(SAY_SWARM_1, m_creature); break;
+					case 1: DoScriptText(SAY_SWARM_2, m_creature); break;
+				}
+			}
 
-            int i;
-            i = 0;
-            do 
-            {
-                Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-                if (!pTarget)
-                    return;
+			int i;
+			i = 0;
+			do 
+			{
+				Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
 
-                float x = pTarget->GetPositionX() + 15.0f;
-                float y = pTarget->GetPositionY() + 15.0f;
+				if (!pTarget)
+					return;
 
-                Creature* pSwarm =m_creature->SummonCreature(NPC_SWARM, x, y, pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000); 
-                pSwarm->AddThreat(pTarget, 1.0f);
-				pSwarm->Attack(pTarget, true);
+				float x = pTarget->GetPositionX() + urand(3.0f, 15.0f);
+				float y = pTarget->GetPositionY() + urand(3.0f, 15.0f);
+
+				Creature* pSwarm = m_creature->SummonCreature(NPC_SWARM, x, y, pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000);
+				pSwarm->SetInCombatWith(pTarget);
 				i++;
-			}while (m_bIsRegularMode ? i == 5 : i == 12);
-            SwarmTimer = urand(3000, 5000);
-        }
+			}while (m_bIsRegularMode ? i <= 5 : i <= 12);
+			SwarmTimer = urand(3000, 5000);
+        }else SwarmTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }

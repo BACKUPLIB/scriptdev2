@@ -19,13 +19,14 @@ Config SD2Config;
 
 QueryResult* strSD2Pquery(char* str)
 {
-    return SD2Database.Query(str);
+return SD2Database.Query(str);
 }
 
 void FillSpellSummary();
 
 void LoadDatabase()
 {
+
     std::string strSD2DBinfo = SD2Config.GetStringDefault("ScriptDev2DatabaseInfo", "");
 
     if (strSD2DBinfo.empty())
@@ -43,6 +44,7 @@ void LoadDatabase()
         pSystemMgr.LoadVersion();
         pSystemMgr.LoadScriptTexts();
         pSystemMgr.LoadScriptTextsCustom();
+        pSystemMgr.LoadScriptGossipTexts();
         pSystemMgr.LoadScriptWaypoints();
     }
     else
@@ -50,6 +52,7 @@ void LoadDatabase()
         error_log("SD2: Unable to connect to Database. Load database aborted.");
         return;
     }
+
 }
 
 struct TSpellSummary {
@@ -275,7 +278,9 @@ bool GossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 
     if (!tmpscript || !tmpscript->pGossipSelect)
         return false;
 
-    pPlayer->PlayerTalkClass->ClearMenus();
+//    pPlayer->PlayerTalkClass->ClearMenus();
+//    this expression is wrong, where 'return false' from script's GossipSelect
+//    not return menu ID (cleared in this string) and not allow to work with database-based menus
 
     return tmpscript->pGossipSelect(pPlayer, pCreature, uiSender, uiAction);
 }
@@ -467,7 +472,7 @@ bool GOChooseReward(Player* pPlayer, GameObject* pGo, const Quest* pQuest, uint3
 }
 
 MANGOS_DLL_EXPORT
-bool AreaTrigger(Player* pPlayer, AreaTriggerEntry * atEntry)
+bool AreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry)
 {
     Script *tmpscript = m_scripts[GetAreaTriggerScriptId(atEntry->id)];
 
@@ -475,6 +480,17 @@ bool AreaTrigger(Player* pPlayer, AreaTriggerEntry * atEntry)
         return false;
 
     return tmpscript->pAreaTrigger(pPlayer, atEntry);
+}
+
+MANGOS_DLL_EXPORT
+bool ProcessEventId(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
+{
+    Script *tmpscript = m_scripts[GetEventIdScriptId(uiEventId)];
+    if (!tmpscript || !tmpscript->pProcessEventId)
+        return false;
+
+    // bIsStart may be false, when event is from taxi node events (arrival=false, departure=true)
+    return tmpscript->pProcessEventId(uiEventId, pSource, pTarget, bIsStart);
 }
 
 MANGOS_DLL_EXPORT
@@ -541,13 +557,6 @@ bool EffectAuraDummy(const Aura* pAura, bool apply)
         return false;
 
     return tmpscript->pEffectAuraDummy(pAura, apply);
-}
-
-MANGOS_DLL_EXPORT
-bool ProcessEventId(uint32 eventId, Object* source, Object* target, bool data)
-{
-    // just for compile, replace by clean version of sd2-team!!
-    return false;
 }
 
 MANGOS_DLL_EXPORT

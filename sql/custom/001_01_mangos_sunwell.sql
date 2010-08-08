@@ -23,7 +23,6 @@ DELETE FROM `creature_ai_scripts` WHERE `id` IN (2548403,2548404);
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`comment`) VALUES (2548403,25484,100,3,10000,10000,20000,25000,11,46460,4,"Shadowsword Assassin - Cast Aimed Shot");
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`comment`) VALUES (2548404,25484,100,3,100,100,35000,45000,11,46459,1,"Shadowsword Assassin - Cast Assassins Mark");
 
-
 # update loot values
 # npc 26101 (fire fiend) add loot item 22445 (arcane dust) 
 UPDATE `creature_template` SET `lootid`=26101 WHERE `entry`=26101;
@@ -107,7 +106,7 @@ UPDATE `creature_template` SET `ScriptName` = "mob_voidsentinel" WHERE `entry` =
 # update npc 25855 (singularity)
 UPDATE `creature_template` SET `ScriptName` = "mob_singularity" WHERE `entry` = 25855;
 # update npc 25770 (m'uru teleport target)
-UPDATE `creature_template` SET `flags_extra`= 0, `modelid_A`=25206, `modelid_H`=25206, `InhabitType`=4 WHERE `entry`= 25770;
+UPDATE `creature_template` SET `flags_extra`= 0, `modelid_1`=25206, `modelid_3`=25206, `InhabitType`=4 WHERE `entry`= 25770;
 
 # fixes for boss_kiljaeden fight
 # update npc 25608 (kil'jaeden controller)

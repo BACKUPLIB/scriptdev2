@@ -28,7 +28,7 @@ UPDATE creature_ai_scripts SET event_param1=4500, event_param2=5500 WHERE id=269
 UPDATE creature_ai_scripts SET event_type=2, event_param1=50, event_param2=5, event_param3=20000, event_param4=22000, action1_param2=0, action1_param3=1 WHERE id IN (2396003, 2396004);
 UPDATE creature_ai_scripts SET action1_param3=0 WHERE id IN (2396001, 2396002);
 
-UPDATE creature_template SET faction_A=35, modelid_A=13069 WHERE entry=24137;
+UPDATE creature_template SET faction_A=35, modelid_1=13069 WHERE entry=24137;
 
 DELETE FROM creature WHERE id=24137;
 INSERT INTO creature (id, map, spawnMask, position_x, position_y, position_z, orientation, spawntimesecs, curhealth) VALUES

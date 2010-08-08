@@ -2,8 +2,8 @@ UPDATE `creature_template` SET `ScriptName` = 'boss_nalorakk', `minhealth` = 170
 UPDATE `creature_template` SET `flags_extra` = 33 WHERE `entry` = 23576; /*no crush*/
 UPDATE `creature` SET `position_x` = '-77.4956', `position_y` = '1294.76', `position_z` = '48.487', `orientation` = '1.66278' WHERE `id` = 23576 LIMIT 1;
 
-UPDATE `creature_template` set `ScriptName` = 'boss_akilzon', `minhealth` = 1300000, `maxhealth` = 1300000 where entry = 23574;
-UPDATE `creature_template` set `ScriptName` = 'mob_akilzon_eagle' where `entry`=24858; /*default event ai*/
+UPDATE `creature_template` SET `ScriptName` = 'boss_akilzon', `minhealth` = 1300000, `maxhealth` = 1300000 WHERE entry = 23574;
+UPDATE `creature_template` SET `ScriptName` = 'mob_akilzon_eagle' WHERE `entry`=24858; /*default event ai*/
 
 UPDATE `creature_template` SET `ScriptName` = 'boss_halazzi', `minhealth` = 1700000, `maxhealth` = 1700000 WHERE `entry` = '23577';
 UPDATE `creature_template` SET `ScriptName` = 'mob_halazzi_lynx' WHERE `entry` = '24143';
@@ -32,6 +32,7 @@ UPDATE `creature_template` SET `ScriptName` = 'do_nothing' WHERE `entry` = '2418
 UPDATE `creature_template` SET `ScriptName` = 'mob_zuljin_vortex' WHERE `entry` = '24136';
 UPDATE `creature_template` SET `minlevel` = '73', `maxlevel` = '73' WHERE `entry` IN (24187, 24136);
 DELETE FROM `spell_proc_event` WHERE `entry` = 43983;
+# bad SQL style -> TODO: fix following line
 INSERT INTO `spell_proc_event` VALUES ('43983', '0', '0', '0', '0', '0', '0', '16384', '0', '0', '0');
 DELETE FROM `spell_script_target` WHERE `entry` = 42577;
 INSERT INTO `spell_script_target` VALUES ('42577', '1', '24136');
@@ -86,7 +87,7 @@ INSERT INTO `gameobject`  (`id`, `map`, `spawnMask`, `position_x`, `position_y`,
 	SELECT 186648, 568, 1, 124, 967, 65, 0.0546852, 0, 0, 0.0273392, 0.999626, 25, 0, 0
 	FROM `gameobject` WHERE NOT EXISTS(SELECT * FROM `gameobject` WHERE `id`=186648) LIMIT 1;*/
 
-# Setzt die Frösche auf npcflag 0 was bewirkt das sie keine Items verkaufen wie bisher.
+# Setzt die FrÃ¶sche auf npcflag 0 was bewirkt das sie keine Items verkaufen wie bisher.
 
 UPDATE creature_template SET npcflag=0 WHERE entry=24396;
 

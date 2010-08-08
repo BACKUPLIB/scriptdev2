@@ -33,6 +33,7 @@ npc_mana_bomb_exp_trigger
 go_mana_bomb
 npc_skyguard_handler_deesak
 npc_slim
+npc_skywing
 EndContentData */
 
 #include "precompiled.h"
@@ -873,9 +874,83 @@ bool GossipSelect_npc_slim(Player* pPlayer, Creature* pCreature, uint32 uiSender
     return true;
 }
 
+/*#####
+## npc_skywing
+#####*/
+
+enum
+{
+    SAY_START = -1999927,
+    SAY_SPAWN = -1999928,
+    SAY_END = -1999926,
+
+    QUEST_SKYWING = 10898,
+    NPC_LUANGA_THE_IMPRISONER = 18533
+};
+
+struct MANGOS_DLL_DECL npc_skywingAI : public npc_escortAI
+{
+    npc_skywingAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 43:
+                DoScriptText(SAY_SPAWN, m_creature, pPlayer);
+                DoSpawnCreature(NPC_LUANGA_THE_IMPRISONER, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                break;
+            case 44:
+                DoScriptText(SAY_END, m_creature, pPlayer);
+                pPlayer->GroupEventHappens(QUEST_SKYWING, m_creature);
+                break;
+        }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if(!pPlayer)
+            return;
+
+        pPlayer->SendQuestFailed(QUEST_SKYWING);
+    }
+
+    void Reset() { }
+};
+
+bool QuestAccept_npc_skywing(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_SKYWING)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_skywingAI* pEscortAI = dynamic_cast<npc_skywingAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+    }
+return true;
+}
+
+CreatureAI* GetAI_npc_skywing(Creature* pCreature)
+{
+return new npc_skywingAI(pCreature);
+}
+
+
 void AddSC_terokkar_forest()
 {
     Script *newscript;
+
+    newscript = new Script;
+    newscript->Name = "npc_skywing";
+    newscript->GetAI = &GetAI_npc_skywing;
+    newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "mob_unkor_the_ruthless";

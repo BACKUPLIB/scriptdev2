@@ -231,7 +231,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 {
                     m_uiPhase = 2;
                     m_creature->InterruptNonMeleeSpells(false);
-                    m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
+                    m_creature->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
                     m_creature->GetMotionMaster()->Clear(false);
                     m_creature->GetMotionMaster()->MoveIdle();
                     DoCastSpellIfCan(m_creature,11010);
@@ -286,7 +286,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                     if (m_uiLandTimer < uiDiff)
                     {
                         m_uiPhase = 1;
-                        m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                        m_creature->HandleEmote(EMOTE_ONESHOT_LAND);
                         m_creature->SetHover(false);
                         m_creature->GetMotionMaster()->Clear(false);
                         m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());

@@ -8,4 +8,4 @@ UPDATE `creature_template` SET `ScriptName`='npc_tempest_warder' WHERE `entry`=3
 
 UPDATE `creature_template` SET `ScriptName`='boss_koralon' WHERE `entry`=35013;
 
-UPDATE `instance_template` SET `script`='instance_vault_of_archavon' WHERE `map`=624;
+UPDATE `instance_template` SET `ScriptName`='instance_vault_of_archavon' WHERE `map`=624;

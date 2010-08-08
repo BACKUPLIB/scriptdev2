@@ -53,7 +53,7 @@ enum
 #define NPC_ADD2                        29349
 #define NPC_ELITE_ADD                   28732
 
-#define NPC_IMPALE_TRIGGER				31686
+#define NPC_IMPALE_TRIGGER				105000
 
 #define MIDDLE_CORD_X                   552.927734f
 #define MIDDLE_CORD_Y                   248.950851f
@@ -193,19 +193,9 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
             if (ImpaleTimer < uiDiff)
             {
 				if (Unit* pImpaleVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-				{
-					if (Unit* pTriggerTarget = m_creature->SummonCreature(NPC_IMPALE_TRIGGER, pImpaleVictim->GetPositionX(), pImpaleVictim->GetPositionY(), pImpaleVictim->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
-					{
-						// modifies this trigger that he is matched to the fight
-						pTriggerTarget->SetVisibility(VISIBILITY_ON);
-						pTriggerTarget->GetMotionMaster()->Clear();
-						pTriggerTarget->GetMotionMaster()->MoveIdle();
-						pTriggerTarget->setFaction(FAC_HOSTILE);
-                        DoCastSpellIfCan(pTriggerTarget, SPELL_EARTH_EXPLOSION);
-						ImpaleTriggerTimer = 3000;						
-					}
-				}                    
-                ImpaleTimer = 8000;
+					m_creature->SummonCreature(NPC_IMPALE_TRIGGER, pImpaleVictim->GetPositionX(), pImpaleVictim->GetPositionY(), pImpaleVictim->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 4000);
+
+				ImpaleTimer = 8000;
             }else ImpaleTimer -= uiDiff;
         }
         else 
@@ -228,17 +218,6 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
                 CarrionSwarmTimer = urand(23000, 31000);
             }else CarrionSwarmTimer -= uiDiff;
         }
-
-		if (ImpaleTriggerTimer < uiDiff)
-		{
-			if (pTriggerTarget && pTriggerTarget->isAlive())
-			{
-				pTriggerTarget->CastSpell(pTriggerTarget, m_bIsRegularMode ? SPELL_IMPALE : SPELL_IMPALE_H, true);
-				pTriggerTarget->RemoveAurasDueToSpell(SPELL_EARTH_EXPLOSION);
-				pTriggerTarget->setDeathState(JUST_DIED);
-			}
-			ImpaleTriggerTimer = 9999999;
-		}else ImpaleTriggerTimer -= uiDiff;
 
         if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.66 && !phase66Over)
         {

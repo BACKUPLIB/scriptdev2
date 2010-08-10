@@ -262,13 +262,17 @@ struct MANGOS_DLL_DECL boss_supremusAI : public ScriptedAI
 
             if (target)
             {
-                Creature* MoltenFlame = SummonCreature(CREATURE_STALKER, target);
-                if (MoltenFlame)
+                if (Creature* pMoltenFlame = SummonCreature(CREATURE_STALKER, target))
                 {
                     // Invisible model
-                    MoltenFlame->SetDisplayId(11686);
-                    ((molten_flameAI*)MoltenFlame->AI())->SetSupremusGUID(m_creature->GetGUID());
-                    ((molten_flameAI*)MoltenFlame->AI())->StalkTarget(target);
+                    pMoltenFlame->SetDisplayId(11686);
+
+                    if (molten_flameAI* pMoltenAI = dynamic_cast<molten_flameAI*>(pMoltenFlame->AI()))
+                    {
+                        pMoltenAI->SetSupremusGUID(m_creature->GetGUID());
+                        pMoltenAI->StalkTarget(target);
+                    }
+
                     SummonFlameTimer = 20000;
                 }
             }

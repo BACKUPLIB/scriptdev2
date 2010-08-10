@@ -308,7 +308,7 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
     {
         for(uint8 i = 0; i < 4; ++i)
         {
-            Creature *pCreature = ((Creature*)Unit::GetUnit((*m_creature), AddGUID[i]));
+            Creature *pCreature = m_creature->GetMap()->GetCreature(AddGUID[i]);
             if(!pCreature || !pCreature->isAlive())
             {
                 if(pCreature) pCreature->setDeathState(DEAD);
@@ -483,9 +483,8 @@ struct MANGOS_DLL_DECL boss_hexlord_addAI : public ScriptedAI
 		if(!pInstance)
             return;
 
-        Creature* HexLord = ((Creature*)Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_HEXLORDGUID)));
-        if(HexLord)
-			((boss_hex_lord_malacrassAI*)HexLord->AI())->AddDied();
+        if (Creature* HexLord = (m_creature->GetMap()->GetCreature(pInstance->GetData64(DATA_HEXLORDGUID))))
+			    ((boss_hex_lord_malacrassAI*)HexLord->AI())->AddDied();
 	}
 
     void UpdateAI(const uint32 diff)

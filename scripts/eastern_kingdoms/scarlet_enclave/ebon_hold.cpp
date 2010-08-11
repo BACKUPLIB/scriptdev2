@@ -179,7 +179,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
         {
             if (m_uiExecuteSpeech_Timer < uiDiff)
             {
-                Player* pPlayer = (Player*)Unit::GetUnit(*m_creature, m_uiPlayerGUID);
+                Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiPlayerGUID);
 
                 if (!pPlayer)
                 {
@@ -559,7 +559,7 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG && pCaster->GetTypeId() == TYPEID_PLAYER)) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
         {
             m_bIsDuelInProgress = true;
         }
@@ -590,8 +590,9 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
                 if (m_uiDuelTimer < uiDiff)
                 {
                     m_creature->setFaction(FACTION_HOSTILE);
-                    if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
-                        AttackStart(pUnit);
+
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_uiDuelerGUID))
+                        AttackStart(pPlayer);
                 }
                 else
                     m_uiDuelTimer -= uiDiff;

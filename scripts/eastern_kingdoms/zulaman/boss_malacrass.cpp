@@ -458,9 +458,20 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
 
         if (temp.size())
         {
+<<<<<<< HEAD
             j = temp.begin();
 		    advance(j, rand()%temp.size());
             return (*j);
+=======
+            Unit* pTarget = m_creature->GetMap()->GetUnit((*iter)->getUnitGuid());
+
+            if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER)
+            {
+                //if target further away than maxrange or closer than minrange, statement is false
+                if (m_creature->IsInRange(pTarget, pSpellRange->minRange, pSpellRange->maxRange))
+                    return true;
+            }
+>>>>>>> bcf4e8f... Update source still using Unit::GetUnit with new per-map functions GetUnit/GetPlayer. Requires Mangos rev 10338+
         }
         return NULL;
     }

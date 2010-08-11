@@ -291,7 +291,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
     {
         if(BombCount < 40)
         {
-            if(Unit *FireBomb = Unit::GetUnit((*m_creature), FireBombGUIDs[BombCount]))
+            if(Unit *FireBomb = m_creature->GetMap()->GetUnit(FireBombGUIDs[BombCount]))
             {
                 FireBomb->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 DoCast(FireBomb, SPELL_FIRE_BOMB_THROW, true);

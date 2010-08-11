@@ -1,5 +1,5 @@
 # fix quest 1043
-UPDATE gameobject_template SET flags = 32 WHERE entry = 19030
+UPDATE gameobject_template SET flags = 32 WHERE entry = 19030;
 
 # Spawnfix shadowstalker getry
 DELETE FROM creature WHERE id = 25729;

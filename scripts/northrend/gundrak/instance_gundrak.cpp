@@ -137,26 +137,17 @@ struct MANGOS_DLL_DECL instance_gundrak : public ScriptedInstance
             case GO_ALTAR_OF_SLADRAN:
                 m_uiAltarOfSladranGUID = pGo->GetGUID();
                 if (m_auiEncounter[0] == DONE)
-				{
-					bridgeCounter++;
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
-				}
                 break;
             case GO_ALTAR_OF_MOORABI:
                 m_uiAltarOfMoorabiGUID = pGo->GetGUID();
                 if (m_auiEncounter[1] == DONE)
-				{
-					bridgeCounter++;
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
-				}
                 break;
             case GO_ALTAR_OF_COLOSSUS:
                 m_uiAltarOfColossusGUID = pGo->GetGUID();
                 if (m_auiEncounter[2] == DONE)
-				{
-					bridgeCounter++;
                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
-				}
                     break;
             case GO_SNAKE_KEY: 
                 m_uiSnakeKeyGUID = pGo->GetGUID();
@@ -245,7 +236,6 @@ struct MANGOS_DLL_DECL instance_gundrak : public ScriptedInstance
 
 		if (bridgeCounter == 3 && !guardSpawnt)
 		{
-			DoUseDoorOrButton(m_uiBridgeGUID);
 			if (GameObject* pGo = instance->GetGameObject(m_uiAltarOfColossusGUID))
 				pGo->SummonCreature(NPC_BRIDGE_GUARD, BRIDGE_GUARD_X, BRIDGE_GUARD_Y, BRIDGE_GUARD_Z, BRIDGE_GUARD_O, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
 			guardSpawnt = true;

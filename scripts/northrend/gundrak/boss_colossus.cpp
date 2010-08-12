@@ -43,7 +43,14 @@ enum
 #define MOJO_ENTRY					29830
 #define ELEMENTAL_ENTRY				29573
 
-float distance = 10;
+float distance = 10.0f;
+
+#define START_POS_X					1672.959961f
+#define START_POS_Y					743.487976f
+#define START_POS_Z					143.337997f
+
+#define MODELID_FAKE				26592
+#define MODELID_RIGHT				26589
 
 /*######
 ## boss_colossus
@@ -63,25 +70,71 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 
 	bool m_bHasCreatedList;
 	bool m_bIsElementarPhase;
+	bool m_bIsSpawnt;
+	bool m_bIsDead;
+	bool m_bElementsHasMoved;
+	bool m_bEventStarted;
+	bool m_bModelChanged;
 
 	std::list<uint64> m_lLivingMojoGUIDList;
 
 	Creature* pElemental;
 
-	uint32 elementalLifepoints;
-	uint32 mightyBlowTimer;
-	uint32 emergeTimer;
-	uint32 spawnElementalTimer;
+	Player* pFirstTarget;
+
+	uint32 m_uielementalLifepoints;
+	uint32 m_uimightyBlowTimer;
+	uint32 m_uiemergeTimer;
+	uint32 m_uispawnElementalTimer;
+	uint32 m_uichangePhaseTimer;
+	uint32 m_uiElementalDeathTimer;
+	uint32 m_uiFirstModelChangeTimer;
 
     void Reset()
     {
 		m_bHasCreatedList = true;
 		m_bIsElementarPhase = false;
+		m_bIsSpawnt = false;
+		m_bIsDead = false;
+		m_bElementsHasMoved = false;
+		m_bEventStarted = false;
+		m_bModelChanged = false;
+
+		m_uiemergeTimer = 12000;
+		m_uispawnElementalTimer = 25000;
+		m_uiElementalDeathTimer = 4000;
+		m_uiFirstModelChangeTimer = 1000;
 
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_COLOSSUS, NOT_STARTED);
 
-		if (!m_lLivingMojoGUIDList.empty() && m_pInstance)
+        RespawnElementalsIfDeadOrEvade();
+
+		m_lLivingMojoGUIDList.clear();
+
+		m_creature->SetDisplayId(MODELID_FAKE);
+    }
+
+	void Aggro(Unit* pWho)
+	{
+		if (m_pInstance)
+            m_pInstance->SetData(TYPE_COLOSSUS, IN_PROGRESS);
+	}
+
+	void JustReachedHome()
+	{
+		m_creature->SetDisplayId(MODELID_RIGHT);
+	}
+
+	void JustDied(Unit* pWho)
+	{
+		if (m_pInstance)
+            m_pInstance->SetData(TYPE_COLOSSUS, DONE);
+	}
+
+	void RespawnElementalsIfDeadOrEvade()
+    {
+        if (!m_lLivingMojoGUIDList.empty() && m_pInstance)
         {
             for(std::list<uint64>::iterator itr = m_lLivingMojoGUIDList.begin(); itr != m_lLivingMojoGUIDList.end(); ++itr)
             {
@@ -91,67 +144,140 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
                         pMojo->Respawn();
                     else
                         pMojo->AI()->EnterEvadeMode();
+
+					if (pMojo->GetVisibility() == VISIBILITY_OFF)
+						pMojo->SetVisibility(VISIBILITY_ON);
                 }
             }
         }
-
-		m_lLivingMojoGUIDList.clear();
-		emergeTimer = 12000;
-
-		pElemental = NULL;
     }
 
-	void Aggro(Unit* pWho)
+	void MoveInLineOfSight(Unit* pUnit)
 	{
-		if (m_pInstance)
-            m_pInstance->SetData(TYPE_COLOSSUS, IN_PROGRESS);
+		if (pUnit->GetTypeId() == TYPEID_PLAYER && !m_bElementsHasMoved)
+		{
+			if (m_creature->GetDistance(pUnit) < 25.0f)
+			{
+				pFirstTarget = (Player*)pUnit;
+				PrepareElementals();
+				pUnit->SetInCombatWith(m_creature);
+				m_creature->GetMotionMaster()->Clear(false);
+				m_creature->GetMotionMaster()->MoveIdle();
+				m_bEventStarted = true;
+				m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
 
-		//		m_creature->RemoveFlag(CREATURE_FIELD_TYPE_FLAGS ,CREATURE_TYPEFLAGS_UNK22);
+				if (!m_lLivingMojoGUIDList.empty() && m_pInstance)
+				{
+					for(std::list<uint64>::iterator itr = m_lLivingMojoGUIDList.begin(); itr != m_lLivingMojoGUIDList.end(); ++itr)
+					{
+						if (Creature* pElemental = m_pInstance->instance->GetCreature(*itr))
+						{
+							if (pElemental->isAlive())
+								pElemental->GetMotionMaster()->MovePoint(0, START_POS_X, START_POS_Y, START_POS_Z);
+						}
+					}
+				}
+
+				m_bElementsHasMoved = true;
+			}
+		}
 	}
 
-	void JustDied(Unit* pWho)
+	void KillElementals()
 	{
-		if (m_pInstance)
-            m_pInstance->SetData(TYPE_COLOSSUS, DONE);
+		if (!m_lLivingMojoGUIDList.empty() && m_pInstance)
+			{
+				for(std::list<uint64>::iterator itr = m_lLivingMojoGUIDList.begin(); itr != m_lLivingMojoGUIDList.end(); ++itr)
+				{
+					if (Creature* pElemental = m_pInstance->instance->GetCreature(*itr))
+					{
+						if (pElemental->isAlive())
+						{
+							m_creature->DealDamage(pElemental, pElemental->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false); 
+							pElemental->SetVisibility(VISIBILITY_OFF);
+							pFirstTarget->SetInCombatWith(m_creature);
+							m_creature->AddThreat(pFirstTarget);
+							m_creature->GetMotionMaster()->MoveChase(pFirstTarget);
+						}
+					}
+				}
+			}
 	}
+
+	void PrepareElementals()
+    {
+        std::list<Creature*> lLivingMojoList;
+        GetCreatureListWithEntryInGrid(lLivingMojoList,m_creature, MOJO_ENTRY, 50.0f);
+
+        if (!lLivingMojoList.empty())
+        {
+            m_lLivingMojoGUIDList.clear();
+
+            for(std::list<Creature*>::iterator itr = lLivingMojoList.begin(); itr != lLivingMojoList.end(); ++itr)
+                m_lLivingMojoGUIDList.push_back((*itr)->GetGUID());;
+        }
+    }
 
     void UpdateAI(const uint32 uiDiff)
     {
-		if (m_bIsElementarPhase)
-			return;
+		if (m_bEventStarted)
+		{
+			if (!m_bIsDead)
+			{
+				if (m_uiElementalDeathTimer < uiDiff)
+				{
+					m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+					KillElementals();
+					m_creature->SetDisplayId(MODELID_RIGHT);
+					m_bIsDead = true;
+					m_bEventStarted = false;
+				}else m_uiElementalDeathTimer -= uiDiff;
+
+				return;
+			}
+		}
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+			return;
+
+		if (m_bIsElementarPhase)
 		{
-			if (m_bHasCreatedList)
+			if (m_uichangePhaseTimer < uiDiff)
 			{
-				std::list<Creature* > lMojoList;
-				GetCreatureListWithEntryInGrid(lMojoList, m_creature, MOJO_ENTRY, 20.0f);
-				m_bHasCreatedList = false;
-			}
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+				{
+					m_creature->GetMotionMaster()->MoveChase(pTarget);
+					m_creature->SetInCombatWith(pTarget);
+				}
+
+				m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+				
+				m_uichangePhaseTimer = 25000;
+				m_bIsElementarPhase = false;
+			}else m_uichangePhaseTimer -= uiDiff;
 
 			return;
 		}
 
-		if (mightyBlowTimer < uiDiff)
+		if (m_uimightyBlowTimer < uiDiff)
 		{
 			m_creature->CastSpell(m_creature->getVictim(), SPELL_MIGHTY_BLOW, false);
-			mightyBlowTimer = urand(14000, 18000);
-		}else mightyBlowTimer -= uiDiff;
+			m_uimightyBlowTimer = urand(14000, 18000);
+		}else m_uimightyBlowTimer -= uiDiff;
 
-		if (emergeTimer < uiDiff)
+		if (m_uiemergeTimer < uiDiff)
 		{
 			m_creature->CastSpell(m_creature, SPELL_EMERGE, true);
-			mightyBlowTimer += 3000;
-			emergeTimer = 9999999;
-			spawnElementalTimer = 2700;
-		}emergeTimer -= uiDiff;
+			m_uimightyBlowTimer += 3000;
+			m_uiemergeTimer = 9999999;
+			m_uispawnElementalTimer = 2700;
+		}m_uiemergeTimer -= uiDiff;
 
-		if (spawnElementalTimer < uiDiff)
+		if (m_uispawnElementalTimer < uiDiff)
 		{
 			m_bIsElementarPhase = true;
 			m_creature->GetMotionMaster()->Clear();
 			m_creature->GetMotionMaster()->MoveIdle();
-			m_creature->DeleteThreatList();
 			float x;
 			float y;
 			float winkel = m_creature->GetOrientation() / 0.01744444444444444f;
@@ -188,12 +314,27 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 				y = h*(-1);
 			}
 
-			if (pElemental = m_creature->SummonCreature(ELEMENTAL_ENTRY, m_creature->GetPositionX() + x, m_creature->GetPositionY() + y, m_creature->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1000000))
+			if (!m_bIsSpawnt)
 			{
-				pElemental->Attack(m_creature->getVictim(), true);
+				if (pElemental = m_creature->SummonCreature(ELEMENTAL_ENTRY, m_creature->GetPositionX() + x, m_creature->GetPositionY() + y, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 2000))
+				{
+					pElemental->SetInCombatWith(m_creature->getVictim());
+					m_bIsSpawnt = true;
+				}
 			}
-			spawnElementalTimer = 9999999;
-		}else spawnElementalTimer -= uiDiff;
+			else
+			{
+				pElemental->NearTeleportTo(m_creature->GetPositionX() + x, m_creature->GetPositionY() + y, m_creature->GetPositionZ(), 0);
+				pElemental->SetInCombatWith(m_creature->getVictim());
+				pElemental->GetMotionMaster()->MoveChase(m_creature->getVictim());
+				pElemental->SetVisibility(VISIBILITY_ON);
+			}
+
+			m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+			m_uispawnElementalTimer = 25000;
+			m_uichangePhaseTimer = 25000;
+			m_bIsElementarPhase = true;
+		}else m_uispawnElementalTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }
@@ -202,83 +343,6 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 CreatureAI* GetAI_boss_colossus(Creature* pCreature)
 {
     return new boss_colossusAI(pCreature);
-}
-
-struct MANGOS_DLL_DECL mob_colossus_living_mojoAI : public ScriptedAI
-{
-    mob_colossus_living_mojoAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
-        Reset();
-    }
-
-    ScriptedInstance* m_pInstance;
-    bool m_bIsRegularMode;
-
-	bool m_bHasMoved;
-	bool m_bIsDead;
-	
-	uint32 m_uiDeathTimer;
-	uint32 m_uiWaveTimer;
-
-    void Reset()
-    {
-		m_bHasMoved = false;
-		m_bIsDead = false;
-
-		m_uiWaveTimer = urand(10000, 13000);
-    }
-
-	void JustDied(Unit* who)
-	{
-		m_creature->CastSpell(m_creature, m_bIsRegularMode ? SPELL_MOJO_PUDDLE : SPELL_MOJO_PUDDLE_H, true);
-	}
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-		if (m_bIsDead && m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-		{
-			if (m_uiDeathTimer < uiDiff)
-			{
-				m_creature->setDeathState(JUST_DIED);
-				m_creature->SetVisibility(VISIBILITY_OFF);
-				m_bIsDead = false;
-			}else m_uiDeathTimer -= uiDiff;
-		}
-
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-		{
-			if (!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-				if (Unit* pColossus = Unit::GetUnit(*m_creature, m_pInstance->GetData64(TYPE_COLOSSUS)))
-					if (m_creature->IsWithinDistInMap(pColossus, 20.0f, true))
-						m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-
-			if (Unit* pColossus = Unit::GetUnit(*m_creature, m_pInstance->GetData64(TYPE_COLOSSUS)))
-				if (pColossus->isInCombat() && m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
-				{
-					m_creature->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
-					m_uiDeathTimer = 4000;
-					m_bIsDead = true;
-				}
-
-			 return;
-		}
-
-		if (m_uiWaveTimer < uiDiff)
-		{
-			m_creature->CastSpell(m_creature, m_bIsRegularMode ? SPELL_MOJO_WAVE : SPELL_MOJO_WAVE_H, true);
-			m_uiWaveTimer = urand(15000, 18000);
-		}else m_uiWaveTimer -= uiDiff;
-           
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_mob_colossus_living_mojo(Creature* pCreature)
-{
-    return new mob_colossus_living_mojoAI(pCreature);
 }
 
 struct MANGOS_DLL_DECL mob_colossus_elementalAI : public ScriptedAI
@@ -293,10 +357,38 @@ struct MANGOS_DLL_DECL mob_colossus_elementalAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
+	uint32 m_uiMergeTimer;
+
 	void Reset()
     {
-
+		m_uiMergeTimer = 25000;
     }
+
+	void Aggro(Unit* pWho)
+	{
+
+	}
+
+	void UpdateAI(const uint32 uiDiff)
+	{
+		if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+			return;
+		
+		if (m_creature->GetVisibility() == VISIBILITY_ON)
+		{
+			if (m_uiMergeTimer < uiDiff)
+			{
+				m_creature->SetVisibility(VISIBILITY_OFF);
+				m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+				m_creature->GetMotionMaster()->Clear();
+				m_creature->GetMotionMaster()->MoveIdle();
+
+				m_uiMergeTimer = 25000;
+			}else m_uiMergeTimer -= uiDiff;
+
+			DoMeleeAttackIfReady();
+		}
+	}
 };
 
 CreatureAI* GetAI_mob_colossus_elemental(Creature* pCreature)
@@ -311,11 +403,6 @@ void AddSC_boss_colossus()
     newscript = new Script;
     newscript->Name = "boss_colossus";
     newscript->GetAI = &GetAI_boss_colossus;
-    newscript->RegisterSelf();
-
-	newscript = new Script;
-    newscript->Name = "mob_colossus_living_mojo";
-    newscript->GetAI = &GetAI_mob_colossus_living_mojo;
     newscript->RegisterSelf();
 
 	newscript = new Script;

@@ -115,48 +115,48 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
         m_uiPlayerGUID = 0;
     }
 
-    bool MeetQuestCondition(Unit* pPlayer)
+    bool MeetQuestCondition(Player* pPlayer)
     {
         switch(m_creature->GetEntry())
         {
             case 29061:                                     // Ellen Stanbridge
-                if (((Player*)pPlayer)->GetQuestStatus(12742) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12742) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29072:                                     // Kug Ironjaw
-                if (((Player*)pPlayer)->GetQuestStatus(12748) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12748) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29067:                                     // Donovan Pulfrost
-                if (((Player*)pPlayer)->GetQuestStatus(12744) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12744) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29065:                                     // Yazmina Oakenthorn
-                if (((Player*)pPlayer)->GetQuestStatus(12743) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12743) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29071:                                     // Antoine Brack
-                if (((Player*)pPlayer)->GetQuestStatus(12750) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12750) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29032:                                     // Malar Bravehorn
-                if (((Player*)pPlayer)->GetQuestStatus(12739) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12739) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29068:                                     // Goby Blastenheimer
-                if (((Player*)pPlayer)->GetQuestStatus(12745) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12745) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29073:                                     // Iggy Darktusk
-                if (((Player*)pPlayer)->GetQuestStatus(12749) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12749) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29074:                                     // Lady Eonys
-                if (((Player*)pPlayer)->GetQuestStatus(12747) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12747) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
             case 29070:                                     // Valok the Righteous
-                if (((Player*)pPlayer)->GetQuestStatus(12746) == QUEST_STATUS_INCOMPLETE)
+                if (pPlayer->GetQuestStatus(12746) == QUEST_STATUS_INCOMPLETE)
                     return true;
                 break;
         }
@@ -169,7 +169,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
         if (m_uiPlayerGUID || pWho->GetTypeId() != TYPEID_PLAYER || !pWho->IsWithinDist(m_creature, INTERACTION_DISTANCE))
             return;
 
-        if (MeetQuestCondition(pWho))
+        if (MeetQuestCondition((Player*)pWho))
             m_uiPlayerGUID = pWho->GetGUID();
     }
 
@@ -1039,25 +1039,33 @@ struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_BLOOD_STRIKE);
                 m_uiBloodStrike_Timer = 9000;
-            }else m_uiBloodStrike_Timer -= uiDiff;
+            }
+            else
+                m_uiBloodStrike_Timer -= uiDiff;
 
             if (m_uiDeathCoil_Timer < uiDiff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_DEATH_COIL);
                 m_uiDeathCoil_Timer = 8000;
-            }else m_uiDeathCoil_Timer -= uiDiff;
+            }
+            else
+                m_uiDeathCoil_Timer -= uiDiff;
 
             if (m_uiIcyTouch_Timer < uiDiff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_ICY_TOUCH);
                 m_uiIcyTouch_Timer = 8000;
-            }else m_uiIcyTouch_Timer -= uiDiff;
+            }
+            else
+                m_uiIcyTouch_Timer -= uiDiff;
 
             if (m_uiPlagueStrike_Timer < uiDiff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_PLAGUE_STRIKE);
                 m_uiPlagueStrike_Timer = 8000;
-            }else m_uiPlagueStrike_Timer -= uiDiff;
+            }
+            else
+                m_uiPlagueStrike_Timer -= uiDiff;
 
             DoMeleeAttackIfReady();
         }
@@ -3441,101 +3449,101 @@ bool GOHello_go_eye_of_acherus(Player *player, GameObject* _GO)
 
 void AddSC_ebon_hold()
 {
-    Script *newscript;
+    Script *pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "npc_a_special_surprise";
-    newscript->GetAI = &GetAI_npc_a_special_surprise;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_a_special_surprise";
+    pNewScript->GetAI = &GetAI_npc_a_special_surprise;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_death_knight_initiate";
-    newscript->GetAI = &GetAI_npc_death_knight_initiate;
-    newscript->pGossipHello = &GossipHello_npc_death_knight_initiate;
-    newscript->pGossipSelect = &GossipSelect_npc_death_knight_initiate;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_death_knight_initiate";
+    pNewScript->GetAI = &GetAI_npc_death_knight_initiate;
+    pNewScript->pGossipHello = &GossipHello_npc_death_knight_initiate;
+    pNewScript->pGossipSelect = &GossipSelect_npc_death_knight_initiate;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_koltira_deathweaver";
-    newscript->GetAI = &GetAI_npc_koltira_deathweaver;
-    newscript->pQuestAccept = &QuestAccept_npc_koltira_deathweaver;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_koltira_deathweaver";
+    pNewScript->GetAI = &GetAI_npc_koltira_deathweaver;
+    pNewScript->pQuestAccept = &QuestAccept_npc_koltira_deathweaver;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_unworthy_initiate";
-    newscript->GetAI = &GetAI_npc_unworthy_initiate;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_unworthy_initiate";
+    pNewScript->GetAI = &GetAI_npc_unworthy_initiate;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_unworthy_initiate_anchor";
-    newscript->GetAI = &GetAI_npc_unworthy_initiate_anchor;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_unworthy_initiate_anchor";
+    pNewScript->GetAI = &GetAI_npc_unworthy_initiate_anchor;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "go_acherus_soul_prison";
-    newscript->pGOHello = &GOHello_go_acherus_soul_prison;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "go_acherus_soul_prison";
+    pNewScript->pGOHello = &GOHello_go_acherus_soul_prison;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_crusade_persuaded";
-    newscript->GetAI = &GetAI_npc_crusade_persuaded;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_crusade_persuaded";
+    pNewScript->GetAI = &GetAI_npc_crusade_persuaded;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_salanar_the_horseman";
-    newscript->pGossipHello =  &GossipHello_npc_salanar_the_horseman;
-    newscript->pGossipSelect = &GossipSelect_npc_salanar_the_horseman;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_salanar_the_horseman";
+    pNewScript->pGossipHello =  &GossipHello_npc_salanar_the_horseman;
+    pNewScript->pGossipSelect = &GossipSelect_npc_salanar_the_horseman;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_dark_rider_of_acherus";
-    newscript->GetAI = &GetAI_mob_dark_rider_of_acherus;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_dark_rider_of_acherus";
+    pNewScript->GetAI = &GetAI_mob_dark_rider_of_acherus;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_scarlet_miner";
-    newscript->GetAI = &GetAI_mob_scarlet_miner;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_scarlet_miner";
+    pNewScript->GetAI = &GetAI_mob_scarlet_miner;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_scarlet_ghoul";
-    newscript->GetAI = &GetAI_npc_scarlet_ghoul;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_scarlet_ghoul";
+    pNewScript->GetAI = &GetAI_npc_scarlet_ghoul;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_scarlet_courier_controller";
-    newscript->GetAI = &GetAI_mob_scarlet_courier_controller;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_scarlet_courier_controller";
+    pNewScript->GetAI = &GetAI_mob_scarlet_courier_controller;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_scarlet_courier";
-    newscript->GetAI = &GetAI_mob_scarlet_courier;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_scarlet_courier";
+    pNewScript->GetAI = &GetAI_mob_scarlet_courier;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_high_inquisitor_valroth";
-    newscript->GetAI = &GetAI_mob_high_inquisitor_valroth;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_high_inquisitor_valroth";
+    pNewScript->GetAI = &GetAI_mob_high_inquisitor_valroth;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_highlord_darion_mograine";
-    newscript->GetAI = &GetAI_npc_highlord_darion_mograine;
-    newscript->pGossipHello =  &GossipHello_npc_highlord_darion_mograine;
-    newscript->pGossipSelect = &GossipSelect_npc_highlord_darion_mograine;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_highlord_darion_mograine";
+    pNewScript->GetAI = &GetAI_npc_highlord_darion_mograine;
+    pNewScript->pGossipHello =  &GossipHello_npc_highlord_darion_mograine;
+    pNewScript->pGossipSelect = &GossipSelect_npc_highlord_darion_mograine;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_the_lich_king_tirion_dawn";
-    newscript->GetAI = &GetAI_npc_the_lich_king_tirion_dawn;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_the_lich_king_tirion_dawn";
+    pNewScript->GetAI = &GetAI_npc_the_lich_king_tirion_dawn;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_eye_of_acherus";
-    newscript->GetAI = &GetAI_npc_eye_of_acherus;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_eye_of_acherus";
+    pNewScript->GetAI = &GetAI_npc_eye_of_acherus;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "go_eye_of_acherus";
-    newscript->pGOHello = &GOHello_go_eye_of_acherus;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "go_eye_of_acherus";
+    pNewScript->pGOHello = &GOHello_go_eye_of_acherus;
+    pNewScript->RegisterSelf();
 }

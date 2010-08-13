@@ -463,7 +463,7 @@ scripts/northrend/violet_hold/boss_cyanigosa.cpp \
 scripts/northrend/violet_hold/boss_erekem.cpp \
 scripts/northrend/violet_hold/boss_ichoron.cpp \
 scripts/northrend/violet_hold/boss_lavanthor.cpp \
-scripts/northrend/violet_hold/boss_moragg \
+scripts/northrend/violet_hold/boss_moragg.cpp \
 scripts/northrend/violet_hold/boss_xevozz.cpp \
 scripts/northrend/violet_hold/boss_zuramat.cpp \
 scripts/northrend/violet_hold/instance_violet_hold.cpp \

@@ -7,27 +7,60 @@
 
 enum
 {
-    MAX_ENCOUNTER               = 3,
+    MAX_ENCOUNTER               = 10,
 
-    TYPE_MAIN                   = 1,
+    TYPE_MAIN                   = 0,
+    TYPE_PORTAL                 = 1,
     TYPE_SEAL                   = 2,
-    TYPE_PORTAL                 = 3,
+
+    TYPE_EREKEM                 = 3,
+    TYPE_MORAGG                 = 4,
+    TYPE_ICHORON                = 5,
+    TYPE_XEVOZZ                 = 6,
+    TYPE_LAVANTHOR              = 7,
+    TYPE_ZURAMAT                = 8,
+    TYPE_CYANIGOSA              = 9,
+
+    TYPE_LASTBOSS               = 11,
+    TYPE_DOOR                   = 12,
+    TYPE_SEAL_DMG_SAY           = 13,
+
+    TYPE_RAND_BOSS_ID           = 14,
+
+    DATA_EREKEM                 = 23,
+    DATA_MORAGG                 = 24,
+    DATA_ICHORON                = 25,
+    DATA_XEVOZZ                 = 26,
+    DATA_LAVANTHOR              = 27,
+    DATA_ZURAMAT                = 28,
+    DATA_SINCLARI               = 29,
+    DATA_NPC_SEAL_DOOR          = 31,
+
+    DATA_SEAL_DOOR              = 32,
+    DATA_EREKEM_DOOR            = 33,
+    DATA_MORAGG_DOOR            = 34,
+    DATA_ICHORON_DOOR           = 35,
+    DATA_XEVOZZ_DOOR            = 36,
+    DATA_LAVANTHOR_DOOR         = 37,
+    DATA_ZURAMAT_DOOR           = 38,
+    DATA_EREKEM_DOOR_L          = 39,
+    DATA_EREKEM_DOOR_R          = 40,
 
     WORLD_STATE_ID              = 3816,
     WORLD_STATE_SEAL            = 3815,
     WORLD_STATE_PORTALS         = 3810,
 
     GO_INTRO_CRYSTAL            = 193615,
-    GO_PRISON_SEAL_DOOR         = 191723,
 
-    GO_CELL_LAVANTHOR           = 191566,
-    GO_CELL_MORAGG              = 191606,
-    GO_CELL_ZURAMAT             = 191565,
-    GO_CELL_EREKEM              = 191564,
-    GO_CELL_EREKEM_GUARD_L      = 191563,
-    GO_CELL_EREKEM_GUARD_R      = 191562,
-    GO_CELL_XEVOZZ              = 191556,
-    GO_CELL_ICHORON             = 191722,
+    GO_DOOR_SEAL                = 191723,
+    GO_DOOR_EREKEM              = 191564,
+    GO_DOOR_EREKEM_RIGHT        = 191563,
+    GO_DOOR_EREKEM_LEFT         = 191562,
+    GO_DOOR_MORAGG              = 191606,
+    GO_DOOR_ICHORON             = 191722,
+    GO_DOOR_XEVOZZ              = 191556,
+    GO_DOOR_LAVANTHOR           = 191566,
+    GO_DOOR_ZURAMAT             = 191565,
 
     NPC_EVENT_CONTROLLER        = 30883,
     NPC_PORTAL_INTRO            = 31011,
@@ -149,6 +182,8 @@ class MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
         void UpdateCellForBoss(uint32 uiBossEntry);
         void UpdateWorldState(bool bEnable = true);
 
+        void OnPlayerEnter(Player* pPlayer);
+
         void SetIntroPortals(bool bDeactivate);
         void SpawnPortal();
 
@@ -183,9 +218,8 @@ class MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
 
         void SetRandomBosses();
 
-        void OnPlayerEnter(Player* pPlayer);
-
         void SetData(uint32 uiType, uint32 uiData);
+        uint32 GetData(uint32 uiType);
         uint64 GetData64(uint32 uiData);
 
         void Update(uint32 uiDiff);
@@ -206,10 +240,19 @@ class MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
         uint64 m_uiLavanthorGUID;
         uint64 m_uiZuramatGUID;
 
+        uint64 m_uiSealDoorGUID;
+        uint64 m_uiErekemDoorGUID;
+        uint64 m_uiErekemDoorLeftGUID;
+        uint64 m_uiErekemDoorRightGUID;
+        uint64 m_uiMoraggDoorGUID;
+        uint64 m_uiIchoronDoorGUID;
+        uint64 m_uiXevozzDoorGUID;
+        uint64 m_uiLavanthorDoorGUID;
+        uint64 m_uiZuramatDoorGUID;
+
         uint64 m_uiCellErekemGuard_LGUID;
         uint64 m_uiCellErekemGuard_RGUID;
         uint64 m_uiIntroCrystalGUID;
-        uint64 m_uiDoorSealGUID;
 
         uint32 m_uiWorldState;
         uint32 m_uiWorldStateSealCount;
@@ -218,12 +261,38 @@ class MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
         uint8 m_uiPortalId;
         uint32 m_uiPortalTimer;
         uint32 m_uiMaxCountPortalLoc;
-
-        BossToCellMap m_mBossToCellMap;
+        uint32 m_uiSealDmgSay;
+        uint32 m_uiChosenBoss;
 
         std::list<uint64> m_lIntroPortalList;
         std::list<uint64> m_lGuardsList;
-        std::list<uint32> m_lRandomBossList;
+};
+
+struct Locations
+{
+    float x, y, z;
+    uint32 id;
+};
+
+static Locations BossLoc[]=
+{
+    {1876.100f, 857.079f, 43.333f}, // Erekem
+    {1892.737f, 744.589f, 47.666f}, // Moragg
+    {1908.863f, 785.647f, 37.435f}, // Ichoron
+    {1905.364f, 840.607f, 38.670f}, // Xevozz
+    {1857.125f, 763.295f, 38.654f}, // Lavanthor
+    {1925.480f, 849.981f, 47.174f}, // Zuramat
+};
+
+static Locations PortalLoc[]=
+{
+    {1888.271f, 810.781f, 38.441f}, // 0 center
+    {1857.125f, 763.295f, 38.654f}, // 1 Lavanthor
+    {1925.480f, 849.981f, 47.174f}, // 2 Zuramat
+    {1892.737f, 744.589f, 47.666f}, // 3 Moragg
+    {1878.198f, 850.005f, 43.333f}, // 4 Portal in front of Erekem
+    {1909.381f, 806.796f, 38.645f}, // 5 Portal outside of Ichoron
+    {1936.101f, 802.950f, 52.417f}, // 6 at the highest platform
 };
 
 #endif

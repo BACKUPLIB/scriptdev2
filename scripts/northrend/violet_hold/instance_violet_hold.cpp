@@ -24,6 +24,17 @@ EndScriptData */
 #include "precompiled.h"
 #include "violet_hold.h"
 
+/* The Violet Hold encounters:
+1 Main Event
+2 Erekem
+3 Moragg
+4 Ichoron
+5 Xevozz
+6 Lavanthor
+7 Zuramat
+8 Cyanigosa
+*/
+
 instance_violet_hold::instance_violet_hold(Map* pMap) : ScriptedInstance(pMap),
     m_uiSinclariGUID(0),
     m_uiSinclariAltGUID(0),
@@ -33,6 +44,16 @@ instance_violet_hold::instance_violet_hold(Map* pMap) : ScriptedInstance(pMap),
     m_uiXevozzGUID(0),
     m_uiLavanthorGUID(0),
     m_uiZuramatGUID(0),
+
+    m_uiSealDoorGUID(0),
+    m_uiErekemDoorGUID(0),
+    m_uiErekemDoorLeftGUID(0),
+    m_uiErekemDoorRightGUID(0),
+    m_uiMoraggDoorGUID(0),
+    m_uiIchoronDoorGUID(0),
+    m_uiXevozzDoorGUID(0),
+    m_uiLavanthorDoorGUID(0),
+    m_uiZuramatDoorGUID(0),
 
     m_uiCellErekemGuard_LGUID(0),
     m_uiCellErekemGuard_RGUID(0),
@@ -44,21 +65,32 @@ instance_violet_hold::instance_violet_hold(Map* pMap) : ScriptedInstance(pMap),
 
     m_uiPortalId(0),
     m_uiPortalTimer(0),
-    m_uiMaxCountPortalLoc(0)
+    m_uiMaxCountPortalLoc(0),
+    m_uiSealDmgSay(0),
+    m_uiChosenBoss(0)
 {
     Initialize();
 }
+
+GameObject* pSealDoor;
+std::string m_strInstData;
 
 void instance_violet_hold::Initialize()
 {
     memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
     m_uiMaxCountPortalLoc = (sizeof(afPortalLocation)/sizeof(sPortalData)) - 1;
 }
-
+void instance_violet_hold::OnPlayerEnter(Player* pPlayer)
+{
+    if(m_auiEncounter[0] != NOT_STARTED)
+        pPlayer->SendUpdateWorldState(WORLD_STATE_ID,1);
+}
 void instance_violet_hold::ResetVariables()
 {
     m_uiWorldStateSealCount = 100;
     m_uiWorldStatePortalCount = 0;
+    m_uiSealDmgSay = 0;
+    m_uiChosenBoss = 0;
 }
 
 void instance_violet_hold::ResetAll()
@@ -75,35 +107,27 @@ void instance_violet_hold::OnCreatureCreate(Creature* pCreature)
     {
         case NPC_SINCLARI: m_uiSinclariGUID = pCreature->GetGUID(); break;
         case NPC_SINCLARI_ALT: m_uiSinclariAltGUID = pCreature->GetGUID(); break;
-        case NPC_DOOR_SEAL: m_uiDoorSealGUID = pCreature->GetGUID(); break;
+        case NPC_DOOR_SEAL: m_uiSealDoorGUID = pCreature->GetGUID(); break;
 
         case NPC_EREKEM:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiErekemGUID = pCreature->GetGUID();
             break;
         case NPC_MORAGG:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiMoraggGUID = pCreature->GetGUID();
             break;
         case NPC_ICHORON:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiIchoronGUID = pCreature->GetGUID();
             break;
         case NPC_XEVOZZ:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiXevozzGUID = pCreature->GetGUID();
             break;
         case NPC_LAVANTHOR:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiLavanthorGUID = pCreature->GetGUID();
             break;
         case NPC_ZURAMAT:
-            m_lRandomBossList.push_back(pCreature->GetEntry());
             m_uiZuramatGUID = pCreature->GetGUID();
             break;
-
         case NPC_PORTAL_INTRO:
-            m_lIntroPortalList.push_back(pCreature->GetGUID());
             break;
         case NPC_HOLD_GUARD:
             m_lGuardsList.push_back(pCreature->GetGUID());
@@ -115,50 +139,39 @@ void instance_violet_hold::OnObjectCreate(GameObject* pGo)
 {
     switch(pGo->GetEntry())
     {
-        case GO_CELL_LAVANTHOR:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_LAVANTHOR, pGo->GetGUID()));
+        case GO_DOOR_SEAL:
+            m_uiSealDoorGUID = pGo->GetGUID();
+            pSealDoor = pGo;
+            DoUseDoorOrButton(pGo->GetGUID());
             break;
-        case GO_CELL_MORAGG:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_MORAGG, pGo->GetGUID()));
+        case GO_DOOR_EREKEM:
+            m_uiErekemDoorGUID = pGo->GetGUID();
             break;
-        case GO_CELL_ZURAMAT:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_ZURAMAT, pGo->GetGUID()));
+        case GO_DOOR_EREKEM_LEFT:
+            m_uiErekemDoorLeftGUID = pGo->GetGUID();
             break;
-        case GO_CELL_XEVOZZ:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_XEVOZZ, pGo->GetGUID()));
+        case GO_DOOR_EREKEM_RIGHT:
+            m_uiErekemDoorRightGUID = pGo->GetGUID();
             break;
-        case GO_CELL_ICHORON:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_ICHORON, pGo->GetGUID()));
+        case GO_DOOR_MORAGG:
+            m_uiMoraggDoorGUID = pGo->GetGUID();
             break;
-        case GO_CELL_EREKEM:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_EREKEM, pGo->GetGUID()));
+        case GO_DOOR_ICHORON:
+            m_uiIchoronDoorGUID = pGo->GetGUID();
             break;
-        case GO_CELL_EREKEM_GUARD_L:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_EREKEM, pGo->GetGUID()));
+        case GO_DOOR_XEVOZZ:
+            m_uiXevozzDoorGUID = pGo->GetGUID();
             break;
-        case GO_CELL_EREKEM_GUARD_R:
-            m_mBossToCellMap.insert(BossToCellMap::value_type(NPC_EREKEM, pGo->GetGUID()));
+        case GO_DOOR_LAVANTHOR:
+            m_uiLavanthorDoorGUID = pGo->GetGUID();
             break;
-
+        case GO_DOOR_ZURAMAT:
+            m_uiZuramatDoorGUID = pGo->GetGUID();
+            break;
         case GO_INTRO_CRYSTAL:
             m_uiIntroCrystalGUID = pGo->GetGUID();
             break;
-        case GO_PRISON_SEAL_DOOR:
-            m_uiDoorSealGUID = pGo->GetGUID();
-            break;
     }
-}
-
-void instance_violet_hold::UpdateCellForBoss(uint32 uiBossEntry)
-{
-    BossToCellMap::const_iterator itrCellLower = m_mBossToCellMap.lower_bound(uiBossEntry);
-    BossToCellMap::const_iterator itrCellUpper = m_mBossToCellMap.upper_bound(uiBossEntry);
-
-    if (itrCellLower == itrCellUpper)
-        return;
-
-    for(BossToCellMap::const_iterator itr = itrCellLower; itr != itrCellUpper; ++itr)
-        DoUseDoorOrButton(itr->second);
 }
 
 void instance_violet_hold::UpdateWorldState(bool bEnable)
@@ -171,11 +184,6 @@ void instance_violet_hold::UpdateWorldState(bool bEnable)
     DoUpdateWorldState(WORLD_STATE_ID, m_uiWorldState);
     DoUpdateWorldState(WORLD_STATE_SEAL, m_uiWorldStateSealCount);
     DoUpdateWorldState(WORLD_STATE_PORTALS, m_uiWorldStatePortalCount);
-}
-
-void instance_violet_hold::OnPlayerEnter(Player* pPlayer)
-{
-    UpdateWorldState(m_auiEncounter[0] == IN_PROGRESS ? true : false);
 }
 
 void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
@@ -195,8 +203,10 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
                     ResetAll();
                     break;
                 case IN_PROGRESS:
-                    DoUseDoorOrButton(m_uiDoorSealGUID);
-                    SetRandomBosses();
+                    
+                    //DoUseDoorOrButton(m_uiSealDoorGUID); // is not working for unknown reason
+                    if(pSealDoor)
+                        pSealDoor->UseDoorOrButton();
                     UpdateWorldState();
                     m_uiPortalId = urand(0, 2);
                     m_uiPortalTimer = 15000;
@@ -204,9 +214,12 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
                 case FAIL:
                     if (Creature* pSinclari = instance->GetCreature(m_uiSinclariGUID))
                         pSinclari->Respawn();
-
-                    break;
+                        ResetAll();
                 case DONE:
+                    DoUpdateWorldState(WORLD_STATE_ID, 0);
+                    //DoUseDoorOrButton(m_uiSealDoorGUID);
+                    if(pSealDoor)
+                        pSealDoor->UseDoorOrButton();
                     break;
                 case SPECIAL:
                     break;
@@ -216,6 +229,31 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
         }
         case TYPE_SEAL:
             m_auiEncounter[1] = uiData;
+            if(uiData == SPECIAL) 
+            {
+                --m_uiWorldStateSealCount;
+                if(Creature* pSinclari = instance->GetCreature(m_uiSinclariGUID))
+                {
+                    if(m_uiSealDmgSay==0 && m_uiWorldStateSealCount<=75)
+                    {
+                        ++m_uiSealDmgSay;
+                        DoScriptText(SAY_SEAL_75,pSinclari);
+                    }
+                    else if(m_uiSealDmgSay==1 && m_uiWorldStateSealCount<=50)
+                    {
+                        ++m_uiSealDmgSay;
+                        DoScriptText(SAY_SEAL_50,pSinclari);
+                    }
+                    else if(m_uiSealDmgSay==2 && m_uiWorldStateSealCount<=5)
+                    {
+                        ++m_uiSealDmgSay;
+                        DoScriptText(SAY_SEAL_5,pSinclari);
+                    }
+                    UpdateWorldState();
+                    if(m_uiWorldStateSealCount <= 0)
+                        SetData(TYPE_MAIN,FAIL);
+                }
+            }
             break;
         case TYPE_PORTAL:
         {
@@ -231,9 +269,74 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
             m_auiEncounter[2] = uiData;
             break;
         }
+        case TYPE_EREKEM: 
+        case TYPE_MORAGG:
+        case TYPE_ICHORON:
+        case TYPE_XEVOZZ:
+        case TYPE_LAVANTHOR:
+        case TYPE_ZURAMAT:
+            m_auiEncounter[uiType] = uiData;
+            if(uiData == DONE)
+                m_uiPortalTimer = 20000;
+            break;
+        case TYPE_CYANIGOSA:
+            m_auiEncounter[uiType] = uiData;
+            if(uiType == DONE)
+                SetData(TYPE_MAIN,DONE);
+            break;
+    }
+    if (uiData == DONE)
+    {
+        //check if boss was completed
+        for(int i = TYPE_EREKEM;i<TYPE_CYANIGOSA+1;i++)
+            if(m_auiEncounter[i]==IN_PROGRESS || m_auiEncounter[i]==SPECIAL)
+                return;
+
+            OUT_SAVE_INST_DATA;
+
+            std::ostringstream saveStream;
+
+            for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                saveStream << m_auiEncounter[i] << " ";
+
+            m_strInstData = saveStream.str();
+
+            SaveToDB();
+            OUT_SAVE_INST_DATA_COMPLETE;
     }
 }
-
+uint32 instance_violet_hold::GetData(uint32 uiType)
+{
+    switch(uiType)
+    {
+        case TYPE_MAIN:
+            return m_auiEncounter[0];
+        case TYPE_EREKEM:
+            return m_auiEncounter[3];
+        case TYPE_MORAGG:
+            return m_auiEncounter[4];
+        case TYPE_ICHORON:
+            return m_auiEncounter[5];
+        case TYPE_XEVOZZ:
+            return m_auiEncounter[6];
+        case TYPE_LAVANTHOR:
+            return m_auiEncounter[7];
+        case TYPE_ZURAMAT:
+            return m_auiEncounter[8];
+        case TYPE_RAND_BOSS_ID:
+        {
+                uint8 m_uiBoss = 0;
+                do
+                {
+                    m_uiBoss = urand(3,8);
+                } while (m_uiBoss == m_uiChosenBoss);
+                m_uiChosenBoss = m_uiBoss;
+                return m_uiBoss;
+        }
+        case TYPE_SEAL: return m_uiWorldStateSealCount;
+    }
+    return 0;
+}
 void instance_violet_hold::SetIntroPortals(bool bDeactivate)
 {
     for(std::list<uint64>::iterator i = m_lIntroPortalList.begin(); i != m_lIntroPortalList.end(); ++i)
@@ -286,29 +389,6 @@ void instance_violet_hold::SetPortalId()
         debug_log("SD2: instance_violet_hold: SetPortalId %u (is boss), old was id %u.", m_uiMaxCountPortalLoc, m_uiPortalId);
         m_uiPortalId = m_uiMaxCountPortalLoc;
     }
-}
-
-void instance_violet_hold::SetRandomBosses()
-{
-    while (m_lRandomBossList.size() > 2)
-    {
-        uint32 uiPosition = urand(0, m_lRandomBossList.size()-1);
-
-        for(std::list<uint32>::iterator itr = m_lRandomBossList.begin(); itr != m_lRandomBossList.end(); ++itr, --uiPosition)
-        {
-            if (!*itr)
-                continue;
-
-            if (!uiPosition)
-            {
-                m_lRandomBossList.erase(itr);
-                break;
-            }
-        }
-    }
-
-    for(std::list<uint32>::iterator itr = m_lRandomBossList.begin(); itr != m_lRandomBossList.end(); ++itr)
-        debug_log("SD2: instance_violet_hold random boss is entry %u", *itr);
 }
 
 void instance_violet_hold::CallGuards(bool bRespawn)
@@ -370,12 +450,49 @@ uint32 instance_violet_hold::GetRandomMobForNormalPortal()
 
 uint64 instance_violet_hold::GetData64(uint32 uiData)
 {
+    switch(uiData)
+    {
+        case DATA_EREKEM:
+            return m_uiErekemGUID;
+        case DATA_MORAGG:
+            return m_uiMoraggGUID;
+        case DATA_ICHORON:
+            return m_uiIchoronGUID;
+        case DATA_XEVOZZ:
+            return m_uiXevozzGUID;
+        case DATA_LAVANTHOR:
+            return m_uiLavanthorGUID;
+        case DATA_ZURAMAT:
+            return m_uiZuramatGUID;
+        case DATA_SINCLARI:
+            return m_uiSinclariGUID;
+        case DATA_NPC_SEAL_DOOR:
+            return m_uiSealDoorGUID;
+        case DATA_SEAL_DOOR:
+            return m_uiSealDoorGUID;
+        case DATA_EREKEM_DOOR:
+            return m_uiErekemDoorGUID;
+        case DATA_EREKEM_DOOR_L:
+            return m_uiErekemDoorLeftGUID;
+        case DATA_EREKEM_DOOR_R:
+            return m_uiErekemDoorRightGUID;
+        case DATA_MORAGG_DOOR:
+            return m_uiMoraggDoorGUID;
+        case DATA_ICHORON_DOOR:
+            return m_uiIchoronDoorGUID;
+        case DATA_XEVOZZ_DOOR:
+            return m_uiXevozzDoorGUID;
+        case DATA_LAVANTHOR_DOOR:
+            return m_uiLavanthorDoorGUID;
+        case DATA_ZURAMAT_DOOR:
+            return m_uiZuramatDoorGUID;
+    }
     return 0;
 }
 
 void instance_violet_hold::Update(uint32 uiDiff)
 {
-    if (m_auiEncounter[0] != IN_PROGRESS)
+    if (!(m_auiEncounter[0] == IN_PROGRESS || m_auiEncounter[0] == SPECIAL))
         return;
 
     if (m_uiPortalTimer)
@@ -383,10 +500,8 @@ void instance_violet_hold::Update(uint32 uiDiff)
         if (m_uiPortalTimer <= uiDiff)
         {
             DoUpdateWorldState(WORLD_STATE_PORTALS, ++m_uiWorldStatePortalCount);
-
             SetPortalId();
             SpawnPortal();
-
             m_uiPortalTimer = 0;
         }
         else

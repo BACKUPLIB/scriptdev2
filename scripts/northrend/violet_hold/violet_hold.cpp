@@ -87,6 +87,8 @@ struct MANGOS_DLL_DECL npc_sinclariAI : public npc_escortAI
         Reset();
     }
 
+    uint8 m_uiSealWeakenCount;
+
     instance_violet_hold* m_pInstance;
 
     void Reset()
@@ -111,7 +113,6 @@ struct MANGOS_DLL_DECL npc_sinclariAI : public npc_escortAI
             case 2:
                 DoScriptText(SAY_LOCK_DOOR, m_creature);
                 m_pInstance->SetData(TYPE_MAIN, IN_PROGRESS);
-                break;
         }
     }
 
@@ -149,7 +150,7 @@ bool GossipSelect_npc_sinclari(Player* pPlayer, Creature* pCreature, uint32 uiSe
         else
             pPlayer->CLOSE_GOSSIP_MENU();
     }
-
+    else 
     if (uiAction == GOSSIP_ACTION_INFO_DEF+2)
     {
         if (instance_violet_hold* pInstance = (instance_violet_hold*)pCreature->GetInstanceData())
@@ -197,7 +198,7 @@ struct MANGOS_DLL_DECL npc_teleportation_portalAI : public ScriptedAI
     {
         m_bNeedInvisible = false;
         m_bIntro = false;
-        m_uiIntroTimer = 10000;
+        m_uiIntroTimer = 6000;
 
         if (m_pInstance)
             m_uiMyPortalNumber = m_pInstance->GetCurrentPortalNumber();
@@ -236,7 +237,10 @@ struct MANGOS_DLL_DECL npc_teleportation_portalAI : public ScriptedAI
         }
         else
         {
-            m_creature->SummonCreature(NPC_AZURE_SABOTEUR, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600*IN_MILLISECONDS);
+            if(m_uiMyPortalNumber < 18)
+                m_creature->SummonCreature(NPC_AZURE_SABOTEUR, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600*IN_MILLISECONDS);
+            else
+                m_creature->SummonCreature(NPC_CYANIGOSA, PortalLoc[0].x, PortalLoc[0].y, PortalLoc[0].z, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000);
             m_bNeedInvisible = true;
         }
     }
@@ -359,6 +363,104 @@ bool EffectDummyCreature_npc_teleportation_portal(Unit* pCaster, uint32 uiSpellI
     return false;
 }
 
+/*######
+## npc_azure_saboteur
+######*/
+struct MANGOS_DLL_DECL npc_azure_saboteurAI : public ScriptedAI
+{
+    npc_azure_saboteurAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = ((ScriptedInstance*)pCreature->GetInstanceData());
+        Reset();
+    }
+    ScriptedInstance *m_pInstance;
+
+    bool m_bIsActiving;
+
+    uint32 m_uiDisruption_Timer;
+    uint32 m_uiDisruptionCounter;
+    uint32 m_uiDisruptionsCount;
+
+    uint8 m_uiBossID;
+    uint8 m_bIsRegular;
+    uint64 m_uiBossGUID;
+    uint64 m_uiDoorGUID;
+
+    void AttackStart(Unit* pWho)
+    {
+        return;
+    }
+
+    void Reset()
+    {
+        m_bIsActiving = false;
+
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+        m_uiDisruptionCounter = 0;
+        m_uiDisruptionsCount = 0;
+        m_uiDisruption_Timer = 1000;
+
+        if (m_pInstance)
+        {
+            m_uiBossID = m_pInstance->GetData(TYPE_RAND_BOSS_ID);
+
+            m_uiBossGUID = m_pInstance->GetData64(m_uiBossID);
+            m_uiDoorGUID = m_pInstance->GetData64(m_uiBossID+30);
+            m_creature->GetMotionMaster()->MovePoint(0, BossLoc[m_uiBossID].x,  BossLoc[m_uiBossID].y,  BossLoc[m_uiBossID].z);
+            //else  m_creature->GetMotionMaster()->MovePoint(0, 1827.960, 804.208, 44.364);
+        }
+    }
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+        if(uiType != POINT_MOTION_TYPE)
+                return;
+
+        switch(uiPointId)
+        {
+            case 0:
+                m_bIsActiving = true;
+                break;
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_bIsActiving)
+        {
+            if(!m_pInstance)
+                return;
+            if (m_uiDisruption_Timer < uiDiff)
+            {
+                DoCast(m_creature, SPELL_SHIELD_DISRUPTION);
+                if(Creature* pBoss = (Creature*) Unit::GetUnit(*m_creature,m_uiBossGUID))
+                {
+                    pBoss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+                    pBoss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
+                }
+
+                m_pInstance->DoUseDoorOrButton(m_uiDoorGUID);
+                m_pInstance->SetData(m_uiBossID,SPECIAL);
+
+                if (m_uiBossID == TYPE_EREKEM)
+                {
+                    m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_EREKEM_DOOR_L));
+                    m_pInstance->DoUseDoorOrButton(m_pInstance->GetData64(DATA_EREKEM_DOOR_R));
+                }
+                m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                m_bIsActiving = false;
+            }
+            else m_uiDisruption_Timer -= uiDiff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_azure_saboteur(Creature* pCreature)
+{
+    return new npc_azure_saboteurAI (pCreature);
+}
+
 void AddSC_violet_hold()
 {
     Script *newscript;
@@ -384,5 +486,10 @@ void AddSC_violet_hold()
     newscript->Name = "npc_teleportation_portal";
     newscript->GetAI = &GetAI_npc_teleportation_portal;
     newscript->pEffectDummyCreature = &EffectDummyCreature_npc_teleportation_portal;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_azure_saboteur";
+    newscript->GetAI = &GetAI_npc_azure_saboteur;
     newscript->RegisterSelf();
 }

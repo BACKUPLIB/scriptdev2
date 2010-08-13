@@ -339,7 +339,14 @@ extern void AddSC_boss_skadi();
 extern void AddSC_boss_svala();
 extern void AddSC_boss_ymiron();
 extern void AddSC_instance_pinnacle();
-extern void AddSC_instance_violet_hold();                   //violet_hold
+extern void AddSC_boss_erekem();                           //violet_hold
+extern void AddSC_boss_ichoron();
+extern void AddSC_boss_lavanthor();
+extern void AddSC_boss_moragg();
+extern void AddSC_boss_xevozz();
+extern void AddSC_boss_zuramat();
+extern void AddSC_boss_cyanigosa();
+extern void AddSC_instance_violet_hold();                   
 extern void AddSC_violet_hold();
 
 //Forge of Souls
@@ -773,7 +780,14 @@ void AddScripts()
     AddSC_boss_svala();
     AddSC_boss_ymiron();
     AddSC_instance_pinnacle();
-    AddSC_instance_violet_hold();                           //violet_hold
+    AddSC_boss_erekem();                                    //violet_hold
+    AddSC_boss_ichoron();
+    AddSC_boss_lavanthor();
+    AddSC_boss_moragg();
+    AddSC_boss_xevozz();
+    AddSC_boss_zuramat();
+    AddSC_boss_cyanigosa();
+    AddSC_instance_violet_hold();
     AddSC_violet_hold();
 
     AddSC_instance_forge_of_souls();                        //Forge of Souls

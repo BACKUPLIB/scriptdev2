@@ -112,7 +112,7 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 
 		m_lLivingMojoGUIDList.clear();
 
-		m_creature->SetDisplayId(MODELID_FAKE);
+		m_creature->RemoveAllAuras();
     }
 
 	void Aggro(Unit* pWho)
@@ -123,7 +123,7 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 
 	void JustReachedHome()
 	{
-		m_creature->SetDisplayId(MODELID_RIGHT);
+		m_creature->RemoveAllAuras();
 	}
 
 	void JustDied(Unit* pWho)
@@ -228,7 +228,6 @@ struct MANGOS_DLL_DECL boss_colossusAI : public ScriptedAI
 				{
 					m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
 					KillElementals();
-					m_creature->SetDisplayId(MODELID_RIGHT);
 					m_bIsDead = true;
 					m_bEventStarted = false;
 				}else m_uiElementalDeathTimer -= uiDiff;

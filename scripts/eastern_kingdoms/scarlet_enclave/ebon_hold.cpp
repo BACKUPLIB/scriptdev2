@@ -1375,6 +1375,8 @@ enum scarletminer
 {
     SPELL_GIFT_OF_THE_HARVESTER_MISSILE = 52481,
     NPC_SCARLET_GHOUL                   = 28845,
+    NPC_SCARLET_GHOST                   = 28846,
+    NPC_GOTHIC                          = 28658,
     QUEST_GIFT_KEEPS_GIVING             = 12698
 };
 
@@ -1401,8 +1403,10 @@ struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
             if(((Player*)pCaster)->GetQuestStatus(QUEST_GIFT_KEEPS_GIVING) == QUEST_STATUS_INCOMPLETE)
             {
                 // spell 52490 Scarlet Miner Ghoul Transform doesn't work, hack it
-                Unit* pGhoul = pCaster->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 60000);
-                ((Player*)pCaster)->KilledMonsterCredit(NPC_SCARLET_GHOUL,pGhoul->GetGUID());
+                if(rand()%5 > 2)
+                    pCaster->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 60000);
+                else
+                    pCaster->SummonCreature(NPC_SCARLET_GHOST, m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
                 m_creature->setDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();
             }
@@ -1413,26 +1417,37 @@ struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
 /*######
 ## Mob scarlet ghoul
 ######*/
+
+const char* SCARLET_GHOUL_SAY[5] = {"Mommy!","Poppy!","GIVE ME BRAINS!","Must feed...","So hungry..."};
+
 struct MANGOS_DLL_DECL npc_scarlet_ghoulAI : public FollowerAI
 {
+    Player *plyr;
+
     npc_scarlet_ghoulAI(Creature* pCreature) : FollowerAI(pCreature) 
     { 
-        Player *plyr;
         if (pCreature->isTemporarySummon())
             plyr =(Player*)(pCreature->GetUnit(*pCreature, ((TemporarySummon*)pCreature)->GetSummonerGuid().GetRawValue()));
 
         if (plyr)
-        {
             StartFollow(plyr);
-        }
+
+        m_creature->MonsterYell(SCARLET_GHOUL_SAY[urand(0,4)],LANG_UNIVERSAL,0);
         Reset(); 
     }
 
     void Reset(){}
 
-    void JustDied(Unit* pKiller)
+    void UpdateAI(const uint32 diff) 
     {
-        m_creature->ForcedDespawn();
+        FollowerAI::UpdateAI(diff);
+
+        if(Creature* pGothic = GetClosestCreatureWithEntry(m_creature, NPC_GOTHIC, 10.0f))
+        {
+            if(plyr)
+                plyr->KilledMonsterCredit(NPC_SCARLET_GHOUL,m_creature->GetGUID());
+            m_creature->ForcedDespawn();
+        }
     }
 };
 

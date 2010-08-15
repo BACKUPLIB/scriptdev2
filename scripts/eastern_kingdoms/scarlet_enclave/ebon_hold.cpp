@@ -559,7 +559,7 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG && pCaster->GetTypeId() == TYPEID_PLAYER)) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG && pCaster->GetTypeId() == TYPEID_PLAYER) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
         {
             m_bIsDuelInProgress = true;
         }

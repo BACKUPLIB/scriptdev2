@@ -27,7 +27,7 @@
 #define SD2_CONF_VERSION    2009040501
 
 #ifndef _DISTRIBUTION
-    #define _DISTRIBUTION "OVscript [167]"
+    #define _DISTRIBUTION "OVscript [169]"
 #endif
 
 #ifdef WIN32

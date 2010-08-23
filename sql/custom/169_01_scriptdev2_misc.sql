@@ -1,4 +1,5 @@
-REPLACE INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) VALUES ('-1999929', 'Es ist am besten, wenn wir uns nun aufteilen, für den Fall, dass man uns mehr Leute nach schickt. Hoffentlich schafft es einer von uns zurück zu Arechron. Macht''s gut, Fremder.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);
+REPLACE INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
+('-1999930', 'Es ist am besten, wenn wir uns nun aufteilen, für den Fall, dass man uns mehr Leute nach schickt. Hoffentlich schafft es einer von uns zurück zu Arechron. Macht''s gut, Fremder.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);
 
 UPDATE `script_texts` SET `content_default` = 'Achtung!' WHERE `entry` = -1000482;
 UPDATE `script_texts` SET `content_default` = 'Lasst sie nicht entkommen! Tötet den Starken zuerst!' WHERE `entry` = -1000483;

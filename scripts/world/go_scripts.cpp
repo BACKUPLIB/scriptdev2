@@ -42,6 +42,7 @@ go_shaffars_stasis
 go_mana_tomb_stasis
 go_zuluheds_chain
 go_beacon_torch
+go_scourge_enclosure
 EndContentData */
 
 #include "precompiled.h"
@@ -534,6 +535,32 @@ bool GOHello_go_beacon_torch(Player* pPlayer, GameObject* pGo)
     return true;
 }
 
+/*######
+## go_scourge_enclosure
+######*/
+
+enum
+{
+    SPELL_GYMER_LOCK_EXPLOSION      = 55529,
+    NPC_GYMER_LOCK_DUMMY            = 29928
+
+};
+
+bool GOHello_go_scourge_enclosure(Player* pPlayer, GameObject* pGo)
+{
+    std::list<Creature*> m_lResearchersList;
+    GetCreatureListWithEntryInGrid(m_lResearchersList, pGo, NPC_GYMER_LOCK_DUMMY, 15.0f);
+    if (!m_lResearchersList.empty())
+    {
+        for(std::list<Creature*>::iterator itr = m_lResearchersList.begin(); itr != m_lResearchersList.end(); ++itr)
+        {
+            (*itr)->CastSpell((*itr),SPELL_GYMER_LOCK_EXPLOSION,true);
+        }
+    }
+    pPlayer->KilledMonsterCredit(NPC_GYMER_LOCK_DUMMY, 0);
+    return true;
+}
+
 void AddSC_go_scripts()
 {
     Script* pNewScript;
@@ -651,5 +678,10 @@ void AddSC_go_scripts()
     pNewScript = new Script;
     pNewScript->Name = "go_beacon_torch";
     pNewScript->pGOHello =          &GOHello_go_beacon_torch;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "go_scourge_enclosure";
+    pNewScript->pGOHello =          &GOHello_go_scourge_enclosure;
     pNewScript->RegisterSelf();
 }

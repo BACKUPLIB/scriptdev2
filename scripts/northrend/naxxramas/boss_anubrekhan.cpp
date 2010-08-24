@@ -242,7 +242,7 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
     {
         if (m_pInstance)
         {
-            if (Creature* pAnubRekhan = ((Creature*)Unit::GetUnit((*m_creature), m_pInstance->GetData64(NPC_ANUB_REKHAN))))
+            if (Creature* pAnubRekhan = ((Creature*)m_creature->GetMap()->GetUnit( m_pInstance->GetData64(NPC_ANUB_REKHAN))))
                 if (pAnubRekhan->isAlive() && !pAnubRekhan->getVictim())
                     pAnubRekhan->AI()->AttackStart(who);
         }

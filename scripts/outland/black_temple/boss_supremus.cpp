@@ -97,7 +97,7 @@ struct MANGOS_DLL_DECL molten_flameAI : public ScriptedAI
                 if (SupremusGUID)
                 {
                     Unit* Supremus = NULL;
-                    Supremus = Unit::GetUnit((*m_creature), SupremusGUID);
+                    Supremus = m_creature->GetMap()->GetUnit( SupremusGUID);
                     if (Supremus && (!Supremus->isAlive()))
                         m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL npc_volcanoAI : public ScriptedAI
             if (SupremusGUID)
             {
                 Unit* Supremus = NULL;
-                Supremus = Unit::GetUnit((*m_creature), SupremusGUID);
+                Supremus = m_creature->GetMap()->GetUnit( SupremusGUID);
                 if (Supremus && (!Supremus->isAlive()))
                     m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }

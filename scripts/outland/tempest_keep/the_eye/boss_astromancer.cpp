@@ -236,7 +236,7 @@ struct MANGOS_DLL_DECL boss_high_astromancer_solarianAI : public ScriptedAI
                 std::list<Unit*> pThreatList;
                 for (ThreatList::const_iterator itr = threatList.begin(); itr != threatList.end(); ++itr)
                 {
-                    if (Unit* target = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+                    if (Unit* target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid()))
                         if (target->GetTypeId() ==TYPEID_PLAYER)
                             pThreatList.push_back(target);
                 }

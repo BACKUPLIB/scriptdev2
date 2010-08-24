@@ -434,7 +434,7 @@ struct MANGOS_DLL_DECL npc_azure_saboteurAI : public ScriptedAI
             if (m_uiDisruption_Timer < uiDiff)
             {
                 DoCast(m_creature, SPELL_SHIELD_DISRUPTION);
-                if(Creature* pBoss = (Creature*) Unit::GetUnit(*m_creature,m_uiBossGUID))
+                if(Creature* pBoss = (Creature*) m_creature->GetMap()->GetUnit(m_uiBossGUID))
                 {
                     pBoss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
                     pBoss->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);

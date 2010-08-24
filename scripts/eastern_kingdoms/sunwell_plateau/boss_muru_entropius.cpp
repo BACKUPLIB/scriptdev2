@@ -213,7 +213,7 @@ struct MANGOS_DLL_DECL boss_muruAI : public ScriptedAI
             if(SummonVoidTimer < diff)
             {
 				//m_creature->MonsterYell("try open portal",LANG_UNIVERSAL,0);
-				if(pPortalTarget = Unit::GetUnit(*m_creature,pInstance->GetData64(DATA_SHADOW_PORTAL)))
+				if(pPortalTarget = m_creature->GetMap()->GetUnit(pInstance->GetData64(DATA_SHADOW_PORTAL)))
 				{
 					//pPortalTarget->MonsterYell("portal opened",LANG_UNIVERSAL,0);
 					pPortalTarget->CastSpell(pPortalTarget,SUMMON_VOID_SENTINEL_PORTAL,false);

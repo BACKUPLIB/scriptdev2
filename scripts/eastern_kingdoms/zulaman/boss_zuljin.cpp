@@ -247,7 +247,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
         DoScriptText(SAY_DEATH, m_creature);
         DespawnSummons(CREATURE_COLUMN_OF_FIRE);
 
-        if(Unit *Temp = Unit::GetUnit(*m_creature, SpiritGUID[3]))
+        if(Unit *Temp = m_creature->GetMap()->GetUnit( SpiritGUID[3]))
             Temp->SetUInt32Value(UNIT_FIELD_BYTES_1, UNIT_STAND_STATE_DEAD);
     }
 
@@ -319,7 +319,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
             Unit* Temp = NULL;
             if(SpiritGUID[i])
             {
-                if(Temp = Unit::GetUnit(*m_creature, SpiritGUID[i]))
+                if(Temp = m_creature->GetMap()->GetUnit( SpiritGUID[i]))
                 {
                     Temp->SetVisibility(VISIBILITY_OFF);
                     Temp->setDeathState(DEAD);
@@ -377,10 +377,10 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
             DoScriptText(Transform[Phase].id, m_creature);
             if(Phase > 0)
             {
-                if(Unit *Temp = Unit::GetUnit(*m_creature, SpiritGUID[Phase - 1]))
+                if(Unit *Temp = m_creature->GetMap()->GetUnit( SpiritGUID[Phase - 1]))
                     Temp->SetUInt32Value(UNIT_FIELD_BYTES_1,UNIT_STAND_STATE_DEAD);
             }
-            if(Unit *Temp = Unit::GetUnit(*m_creature, SpiritGUID[NextPhase - 1]))
+            if(Unit *Temp = m_creature->GetMap()->GetUnit( SpiritGUID[NextPhase - 1]))
                 Temp->CastSpell(m_creature, SPELL_SIPHON_SOUL, false); // should m cast on temp
             if(NextPhase == 2)
             {
@@ -497,7 +497,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
                     if(Claw_Loop_Timer < diff)
                     {
                         Unit* target = m_creature->getVictim();
-                        if(!target || !target->isTargetableForAttack()) target = Unit::GetUnit(*m_creature, TankGUID);
+                        if(!target || !target->isTargetableForAttack()) target = m_creature->GetMap()->GetUnit( TankGUID);
                         if(!target || !target->isTargetableForAttack()) target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
                         if(target)
                         {
@@ -510,7 +510,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
                                 {
                                     Claw_Rage_Timer = 15000 + rand()%5000;
                                     m_creature->SetSpeedRate(MOVE_RUN, 1.2f, true);
-                                    AttackStart(Unit::GetUnit(*m_creature, TankGUID));
+                                    AttackStart(m_creature->GetMap()->GetUnit( TankGUID));
                                     TankGUID = 0;
                                     return;
                                 }
@@ -553,7 +553,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
                             {
                                 Lynx_Rush_Timer = 15000 + rand()%5000;
                                 m_creature->SetSpeedRate(MOVE_RUN, 1.2f, true);
-                                AttackStart(Unit::GetUnit(*m_creature, TankGUID));
+                                AttackStart(m_creature->GetMap()->GetUnit( TankGUID));
                                 TankGUID = 0;
                             }
                             else

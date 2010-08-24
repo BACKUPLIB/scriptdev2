@@ -105,7 +105,7 @@ struct MANGOS_DLL_DECL npc_anubisath_sentinelAI : public ScriptedAI
     {
         for(std::list<uint64>::iterator itr = m_lAssistList.begin(); itr != m_lAssistList.end(); ++itr)
         {
-            if (Unit* pBuddy = Unit::GetUnit(*m_creature, *itr))
+            if (Unit* pBuddy = m_creature->GetMap()->GetUnit( *itr))
             {
                 if (*itr == m_creature->GetGUID())
                     continue;

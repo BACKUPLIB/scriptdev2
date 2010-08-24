@@ -108,7 +108,7 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
         /* Prüft ob ein Spieler 0 Mana hat und lässt ihn die Explosion wirken und wirkt auf ihn eine Aura, damit nicht wieder */
         for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
-            if (Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+            if (Unit* pUnit = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid()))
             {
                 if (pUnit->GetTypeId() == TYPEID_PLAYER && pUnit->GetPower(POWER_MANA) == 0 && pUnit->HasAura(SPELL_MANA_MARK)
                     && pUnit->isAlive() && pUnit->GetMaxPower(POWER_MANA) > 10 && !pUnit->HasAura(SPELL_DARKNESS))
@@ -138,7 +138,7 @@ struct MANGOS_DLL_DECL boss_kazrogalAI : public ScriptedAI
 
             for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
             {
-                if (Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid()))
+                if (Unit* pUnit = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid()))
                 {
 		            if (pUnit->HasAura(SPELL_DARKNESS))
                         pUnit->RemoveAurasDueToSpell(SPELL_DARKNESS);

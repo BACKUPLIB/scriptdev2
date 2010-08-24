@@ -646,7 +646,7 @@ struct MANGOS_DLL_DECL mob_deathcloudAI : public Scripted_NoMovementAI
         {
             for(uint8 i=0; i<m_uiImageCount; ++i)
 			{
-                if(Unit* cImage = Unit::GetUnit((*m_creature), m_uiImageGUID[i][0]))
+                if(Unit* cImage =m_creature->GetMap()->GetUnit(m_uiImageGUID[i][0]))
 				{
 					if(!cImage->isDead())
 					{
@@ -665,7 +665,7 @@ struct MANGOS_DLL_DECL mob_deathcloudAI : public Scripted_NoMovementAI
             std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
             for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
             {
-                if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid()))
+                if(Unit *target = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()))
                     if(target && target->GetTypeId() == TYPEID_PLAYER && target->IsWithinDistInMap(m_creature, 15))
                     {
 						//Kill Player & Summon Image
@@ -689,7 +689,7 @@ struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
 
         // workaround, to select a close victim (== summoner in this case)
         if (m_creature->isTemporarySummon())
-            AttackStart(m_creature->GetUnit(*m_creature, ((TemporarySummon*)m_creature)->GetSummonerGuid().GetRawValue()));
+            AttackStart(m_creature->GetMap()->GetUnit(((TemporarySummon*)m_creature)->GetSummonerGuid()));
 
         // force felmyst to cast visual beam
         DoCast(m_creature, SPELL_FELMYST_FORCE_BEAM, true);

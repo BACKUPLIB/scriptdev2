@@ -256,7 +256,7 @@ struct MANGOS_DLL_DECL npc_zulaman_hostageAI : public ScriptedAI
     void Aggro(Unit *who) {}
     /*void JustDied(Unit *)
     {
-        Player* player = (Player*)Unit::GetUnit(*m_creature, PlayerGUID);
+        Player* player = (Player*)m_creature->GetMap()->GetUnit( PlayerGUID);
         if(player) player->SendLoot(m_creature->GetGUID(), LOOT_CORPSE);
     }*/
     void UpdateAI(const uint32 diff)

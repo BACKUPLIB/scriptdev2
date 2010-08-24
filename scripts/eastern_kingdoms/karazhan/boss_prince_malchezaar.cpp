@@ -129,7 +129,7 @@ struct MANGOS_DLL_DECL netherspite_infernalAI : public ScriptedAI
 
     void KilledUnit(Unit *who)
     {
-        if (Creature *pMalchezaar = m_creature->GetMap()->GetCreature(malchezaar))
+        if (Creature *pMalchezaar = m_creature->GetMap()->GetCreature(ObjectGuid(HIGHGUID_UNIT, malchezaar)))
             pMalchezaar->AI()->KilledUnit(who);
     }
 
@@ -606,7 +606,7 @@ struct MANGOS_DLL_DECL boss_malchezaarAI : public ScriptedAI
 
 void netherspite_infernalAI::Cleanup()
 {
-    Creature* pMalchezaar = m_creature->GetMap()->GetCreature(malchezaar);
+    Creature* pMalchezaar = m_creature->GetMap()->GetCreature(ObjectGuid(HIGHGUID_UNIT, malchezaar));
 
     if (pMalchezaar && pMalchezaar->isAlive())
     {

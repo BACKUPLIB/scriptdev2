@@ -151,7 +151,7 @@ struct MANGOS_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
 			{
                 EatTimer -= diff;
 				if(!bCanEat && bIsEating){
-					if(Unit* pUnit = Unit::GetUnit(*m_creature, uiPlayerGUID))
+					if(Unit* pUnit = m_creature->GetMap()->GetUnit( uiPlayerGUID))
 						if(pUnit->GetPositionX()!=x || pUnit->GetPositionZ()!=z)
 						{
 							m_creature->Attack(pUnit,true);

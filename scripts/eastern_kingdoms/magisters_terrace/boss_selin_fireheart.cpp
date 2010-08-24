@@ -310,7 +310,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
         {
             if (IsDraining)
             {
-				Unit* CrystalChosen = Unit::GetUnit(*m_creature, CrystalGUID);
+                Unit* CrystalChosen = m_creature->GetMap()->GetUnit(CrystalGUID);
 				if (DrainManaFromCrystalTimer < diff)
 				{	
 					DoCast(CrystalChosen, 25755);

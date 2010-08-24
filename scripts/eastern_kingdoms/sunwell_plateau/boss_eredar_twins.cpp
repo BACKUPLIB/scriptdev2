@@ -261,7 +261,7 @@ struct MANGOS_DLL_DECL boss_alythessAI : public ScriptedAI
 				m_creature->SetVisibility(VISIBILITY_OFF);
 				m_bIsBanished = true;
 
-				if (Unit* Sacrolash = Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_SACROLASH)))
+				if (Unit* Sacrolash = m_creature->GetMap()->GetUnit(pInstance->GetData64(DATA_SACROLASH)))
 				{
 					DoCast(Sacrolash,SPELL_EMPOWER,true);
 					Sacrolash->SetHealthPercent(100);
@@ -312,7 +312,7 @@ struct MANGOS_DLL_DECL boss_alythessAI : public ScriptedAI
 			if(m_bIsConf) 
 				if(m_uiConfTimer < diff)
 				{
-					if(Unit *victim = Unit::GetUnit(*m_creature,m_uiConfTargetGUID))
+					if(Unit *victim = m_creature->GetMap()->GetUnit(m_uiConfTargetGUID))
 					{
 						if(m_bIsConfDone)
 						{
@@ -347,7 +347,7 @@ struct MANGOS_DLL_DECL boss_alythessAI : public ScriptedAI
 			if(m_bIsNova) 
 				if(m_uiNovaTimer < diff)
 				{
-					if(Unit *victim = Unit::GetUnit(*m_creature,m_uiNovaTargetGUID))
+					if(Unit *victim = m_creature->GetMap()->GetUnit(m_uiNovaTargetGUID))
 					{
 						if(m_bIsNovaDone)
 						{
@@ -389,7 +389,7 @@ struct MANGOS_DLL_DECL boss_alythessAI : public ScriptedAI
 		if(m_bIsBlaze) 
 			if(m_uiBlaTimer < diff)
 			{
-				if(Unit *victim = Unit::GetUnit(*m_creature,m_uiBlazeTargetGUID))
+				if(Unit *victim = m_creature->GetMap()->GetUnit(m_uiBlazeTargetGUID))
 				{
 					if(m_bIsBlazeDone)
 					{
@@ -576,7 +576,7 @@ struct MANGOS_DLL_DECL boss_sacrolashAI : public ScriptedAI
 				DoCast(m_creature, SPELL_BANISH, true);
 				m_creature->SetVisibility(VISIBILITY_OFF);
 				m_bIsBanished = true;
-				if (Unit* Alythess = Unit::GetUnit(*m_creature, pInstance->GetData64(DATA_ALYTHESS)))
+				if (Unit* Alythess = m_creature->GetMap()->GetUnit( pInstance->GetData64(DATA_ALYTHESS)))
 				{
 					DoCast(Alythess,SPELL_EMPOWER,true);
 					Alythess->SetHealthPercent(100);
@@ -609,7 +609,7 @@ struct MANGOS_DLL_DECL boss_sacrolashAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
                 for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
                 {		
-					Unit *victim = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
+					Unit *victim = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid());
 					if (victim && victim->GetTypeId() == TYPEID_PLAYER && victim->IsWithinDistInMap(m_creature, 20.0))
                     {
 						if(victim->HasAura(SPELL_FLAME_TOUCHED,EFFECT_INDEX_0))
@@ -645,7 +645,7 @@ struct MANGOS_DLL_DECL boss_sacrolashAI : public ScriptedAI
 			if(m_bIsNova)
 				if(m_uiNovaTimer < diff)
 				{
-					if(Unit *victim = Unit::GetUnit(*m_creature,m_uiNovaTargetGUID))
+					if(Unit *victim = m_creature->GetMap()->GetUnit(m_uiNovaTargetGUID))
 					{
 						if(m_bIsNovaDone)
 						{
@@ -682,7 +682,7 @@ struct MANGOS_DLL_DECL boss_sacrolashAI : public ScriptedAI
 			if(m_bIsConf) 
 				if(m_uiConfTimer < diff)
 				{
-					if(Unit *victim = Unit::GetUnit(*m_creature,m_uiConfTargetGUID))
+					if(Unit *victim = m_creature->GetMap()->GetUnit(m_uiConfTargetGUID))
 					{
 						if(m_bIsConfDone)
 						{

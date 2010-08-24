@@ -325,7 +325,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
             case EVENT_RECAST_BEAM_2:
             case EVENT_RECAST_BEAM_3:
             {
-                Unit* portal = m_creature->GetUnit(*m_creature, pPortals[ev-9].GUID);
+                Unit* portal = m_creature->GetMap()->GetUnit(pPortals[ev-9].GUID);
                 if (!portal)
                 {
                     // portal lost!?
@@ -335,7 +335,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
                     return false;
                 }
 
-                Unit* target = m_creature->GetUnit(*m_creature, pPortals[ev-9].targetGUID);
+                Unit* target = m_creature->GetMap()->GetUnit(pPortals[ev-9].targetGUID);
 
                 if (!target)
                 {
@@ -395,7 +395,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
     {
         for (uint8 i=0;i<(MAX_PORTAL);i++)
         {
-            Unit* portal = m_creature->GetUnit(*m_creature, pPortals[i].GUID);
+            Unit* portal = m_creature->GetMap()->GetUnit(pPortals[i].GUID);
             // portals are always TemporarySummons
             if (portal)
                 ((TemporarySummon*)portal)->UnSummon();
@@ -409,7 +409,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
 
     void updateBeam(Portals beam)
     {
-        Unit* portal = m_creature->GetUnit(*m_creature, pPortals[beam].GUID);
+        Unit* portal = m_creature->GetMap()->GetUnit(pPortals[beam].GUID);
         if (!portal)
         {
             // portal lost!?
@@ -463,7 +463,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
         // ignore aggrotable etc. if in BEAM_PAHSE and somebody is standing in the perseverance beam
         if (activePhase == BEAM_PHASE && pPortals[PORTAL_PERSEVERANCE].targetGUID && pPortals[PORTAL_PERSEVERANCE].targetGUID != m_creature->GetGUID())
         {
-            AttackStart(m_creature->GetUnit(*m_creature, pPortals[PORTAL_PERSEVERANCE].targetGUID));
+            AttackStart(m_creature->GetMap()->GetUnit(pPortals[PORTAL_PERSEVERANCE].targetGUID));
         }
         else if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;

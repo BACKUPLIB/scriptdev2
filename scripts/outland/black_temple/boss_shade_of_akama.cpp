@@ -199,7 +199,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         RespawnChannelersIfDeadOrEvade();
         DespawnAdds();
         
-        if (Unit* pAkama = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_AKAMA_SHADE)))
+        if (Unit* pAkama = m_creature->GetMap()->GetUnit( m_pInstance->GetData64(DATA_AKAMA_SHADE)))
             m_creature->DealDamage(pAkama, pAkama->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
 
     }

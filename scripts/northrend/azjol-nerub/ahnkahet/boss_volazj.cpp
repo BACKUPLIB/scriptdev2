@@ -206,7 +206,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 		std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 		for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 		{ 
-			if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+			if(Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 			{ 
 				if(target && target->GetTypeId() == TYPEID_PLAYER) 
 				{
@@ -243,7 +243,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 			std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 			for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 			{ 
-				if(Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+				if(Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 				{ 
 					if(target && target->GetTypeId() == TYPEID_PLAYER) 
 					{
@@ -548,7 +548,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 				{ 
-					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					if (Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 					{ 
 						if (target && target->GetTypeId() == TYPEID_PLAYER) 
 						{
@@ -576,7 +576,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 				{ 
-					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					if (Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 					{ 
 						if (target && target->GetTypeId() == TYPEID_PLAYER) 
 						{
@@ -604,7 +604,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 				{ 
-					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					if (Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 					{ 
 						if (target && target->GetTypeId() == TYPEID_PLAYER) 
 						{
@@ -632,7 +632,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 				{ 
-					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					if (Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 					{ 
 						if (target && target->GetTypeId() == TYPEID_PLAYER) 
 						{
@@ -660,7 +660,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 				std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
 				for (std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
 				{ 
-					if (Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid())) 
+					if (Unit *target = m_creature->GetMap()->GetUnit( (*itr)->getUnitGuid())) 
 					{ 
 						if (target && target->GetTypeId() == TYPEID_PLAYER) 
 						{

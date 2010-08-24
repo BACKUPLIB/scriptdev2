@@ -423,14 +423,14 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
 		//dragon cast blue shield
         for(uint8 i=0; i<4; ++i)
         {
-            if(Unit* Dragon = Unit::GetUnit(*m_creature, DragonGUID[i]))
+            if(Unit* Dragon = m_creature->GetMap()->GetUnit(DragonGUID[i]))
                 if(Dragon && Dragon->HasAura(SPELL_SHIELD_OF_BLUE))
                 {
                     m_uiCancelShieldTimer = 5000;
                     std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
                     for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
                     {
-                        Unit *TargetedPlayer = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());  
+                        Unit *TargetedPlayer = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid());  
                         if (TargetedPlayer && TargetedPlayer->GetTypeId() == TYPEID_PLAYER && TargetedPlayer->IsWithinDistInMap(Dragon, 10) && !TargetedPlayer->HasAura(AURA_BLUESHIELD))
                             TargetedPlayer->CastSpell(TargetedPlayer,AURA_BLUESHIELD,true);
                     }
@@ -443,7 +443,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList();
             for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
             {
-                Unit *ShieldedPlayer1 = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
+                Unit *ShieldedPlayer1 = m_creature->GetMap()->GetUnit((*itr)->getUnitGuid());
                 if (ShieldedPlayer1 && ShieldedPlayer1->GetTypeId() == TYPEID_PLAYER && ShieldedPlayer1->HasAura(AURA_BLUESHIELD))
                 {
                     ShieldedPlayer1->RemoveAurasDueToSpell(AURA_BLUESHIELD);
@@ -525,7 +525,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
                 m_uiSinisterCount = 12;*/
             for(uint8 i=0; i<m_uiSinisterCount; ++i)
 			{
-                if(Unit* Sinister = Unit::GetUnit(*m_creature, m_uiSinisterGUID[i][0]))
+                if(Unit* Sinister = m_creature->GetMap()->GetUnit(m_uiSinisterGUID[i][0]))
 				{
 					if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
 						Sinister->CastSpell(target, m_uiSinisterGUID[i][1], true);
@@ -628,7 +628,7 @@ struct MANGOS_DLL_DECL boss_kiljadenAI : public Scripted_NoMovementAI
             if(m_uiFireBloomCount < 10)
                 for(uint8 i=0; i<5; ++i)
                 {
-                    if(Unit* FireTarget = Unit::GetUnit(*m_creature, m_uiFireBloomTarget[i]))
+                    if(Unit* FireTarget = m_creature->GetMap()->GetUnit(m_uiFireBloomTarget[i]))
                         FireTarget->CastSpell(FireTarget, SPELL_FIREBLOOM_EFF, true);
                 }
             ++m_uiFireBloomCount;
@@ -810,7 +810,7 @@ struct MANGOS_DLL_DECL mob_deceiverAI : public ScriptedAI
 			if(pInstance)
 			{
 				pInstance->SetData(DATA_KILJAEDEN, IN_PROGRESS);
-				if(Unit* pKilJaeden = Unit::GetUnit(*m_creature,pInstance->GetData64(DATA_KILJAEDEN)))
+				if(Unit* pKilJaeden = m_creature->GetMap()->GetUnit(pInstance->GetData64(DATA_KILJAEDEN)))
 				{
 					pKilJaeden->setFaction(14);
 					pKilJaeden->SetVisibility(VISIBILITY_ON);

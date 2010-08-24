@@ -138,7 +138,7 @@ struct MANGOS_DLL_DECL boss_nalorakkAI : public ScriptedAI
     {
         if(ChargeTargetGUID)
         {
-            if(Unit* target = Unit::GetUnit(*m_creature, ChargeTargetGUID))
+            if(Unit* target = m_creature->GetMap()->GetUnit( ChargeTargetGUID))
                 m_creature->CastSpell(target, SPELL_SURGE, true);
             ChargeTargetGUID = 0;
         }

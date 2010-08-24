@@ -132,7 +132,7 @@ struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
     {
         for(uint8 i = 0; i < 8; ++i)
         {
-            Creature *pCreature = ((Creature*)Unit::GetUnit((*m_creature), AddGUID[i]));
+            Creature *pCreature = (Creature*)m_creature->GetMap()->GetUnit(AddGUID[i]);
             if(!pCreature || !pCreature->isAlive())
             {
                 if(pCreature) pCreature->setDeathState(DEAD);
@@ -194,7 +194,7 @@ struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
 
 		for(uint8 i = 0; i < 8; ++i)
         {
-            Unit* Temp = Unit::GetUnit((*m_creature),AddGUID[i]);
+            Unit* Temp = m_creature->GetMap()->GetUnit(AddGUID[i]);
             if(Temp && Temp->isAlive())
                 ((Creature*)Temp)->AI()->AttackStart(m_creature->getVictim());
             else

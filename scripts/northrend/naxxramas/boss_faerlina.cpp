@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
 
         for(int i=0;i<4;i++)
             {
-                if(Creature* worshipper = (Creature*) Unit::GetUnit(*m_creature,m_pInstance->GetData64(m_uiWorshippers[i])))
+                if(Creature* worshipper = (Creature*) m_creature->GetMap()->GetUnit(m_pInstance->GetData64(m_uiWorshippers[i])))
                 {
                     worshipper->Respawn();
                 }
@@ -153,7 +153,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
             // look how many worshippers are dead
             for(int i=0;i<4;i++)
             {
-                if(Unit* worshipper = Unit::GetUnit(*m_creature,m_pInstance->GetData64(m_uiWorshippers[i])))
+                if(Unit* worshipper = m_creature->GetMap()->GetUnit(m_pInstance->GetData64(m_uiWorshippers[i])))
                 {
                     if(!worshipper->isAlive())
                     {

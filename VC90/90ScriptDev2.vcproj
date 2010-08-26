@@ -452,6 +452,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\scripts\eastern_kingdoms\hillsbrad_foothills.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\scripts\eastern_kingdoms\hinterlands.cpp"
 					>
 				</File>

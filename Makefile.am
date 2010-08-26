@@ -61,6 +61,7 @@ scripts/eastern_kingdoms/eastern_plaguelands.cpp \
 scripts/eastern_kingdoms/elwynn_forest.cpp \
 scripts/eastern_kingdoms/eversong_woods.cpp \
 scripts/eastern_kingdoms/ghostlands.cpp \
+scripts/eastern_kingdoms/hillsbrad_foothills.cpp \
 scripts/eastern_kingdoms/hinterlands.cpp \
 scripts/eastern_kingdoms/ironforge.cpp \
 scripts/eastern_kingdoms/isle_of_queldanas.cpp \

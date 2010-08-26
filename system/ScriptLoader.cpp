@@ -135,6 +135,7 @@ extern void AddSC_boss_dathrohan_balnazzar();
 extern void AddSC_boss_order_of_silver_hand();
 extern void AddSC_instance_stratholme();
 extern void AddSC_stratholme();
+extern void AddSC_hillsbrad_foothills();
 extern void AddSC_instance_sunken_temple();                 //sunken_temple
 extern void AddSC_sunken_temple();
 extern void AddSC_boss_brutallus();                         //sunwell_plateau
@@ -577,6 +578,7 @@ void AddScripts()
     AddSC_boss_order_of_silver_hand();
     AddSC_instance_stratholme();
     AddSC_stratholme();
+    AddSC_hillsbrad_foothills();
     AddSC_instance_sunken_temple();                         //sunken_temple
     AddSC_sunken_temple();
     AddSC_boss_brutallus();                                 //sunwell_plateau

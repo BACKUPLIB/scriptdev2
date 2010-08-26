@@ -950,6 +950,7 @@ void AddSC_terokkar_forest()
     newscript = new Script;
     newscript->Name = "npc_skywing";
     newscript->GetAI = &GetAI_npc_skywing;
+    newscript->pQuestAccept = &QuestAccept_npc_skywing;
     newscript->RegisterSelf();
 
     newscript = new Script;

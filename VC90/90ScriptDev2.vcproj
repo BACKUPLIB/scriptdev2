@@ -1807,6 +1807,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\scripts\northrend\gundrak\boss_eck_the_ferocious.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\scripts\northrend\gundrak\boss_galdarah.cpp"
 						>
 					</File>

@@ -143,6 +143,7 @@ bool GossipSelect_npc_sinclari(Player* pPlayer, Creature* pCreature, uint32 uiSe
         {
             if (pInstance->GetData(TYPE_MAIN) == NOT_STARTED)
             {
+                pPlayer->PlayerTalkClass->ClearMenus();
                 pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                 pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID_START, pCreature->GetGUID());
             }

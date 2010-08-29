@@ -47,6 +47,8 @@ enum
 #define SPELL_LEECHING_SWARM_H          59430
 #define SPELL_POUND                     53472
 #define SPELL_POUND_H                   59433
+#define SPELL_POUND_DMG					53509
+#define SPELL_POUND_DMG_H				59432	
 #define SPELL_BURROW                    26381
 
 #define NPC_ADD1                        28736
@@ -160,19 +162,19 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         m_pInstance->SetData(TYPE_ANUBARAK, DONE);
     }
 
-    void SpellHit(Unit* pTarget, const SpellEntry* pSpell)
+    void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
     {
-        if (pSpell->Id == SPELL_POUND || pSpell->Id == 53474 || pSpell->Id == 53473)
+        if (pSpell->Id == SPELL_POUND)
         {
             if (pTarget)
-                m_creature->DealDamage(pTarget, pTarget->CalcArmorReducedDamage(pTarget, urand(9000, 9700)), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                pTarget->CastSpell(pTarget, SPELL_POUND_DMG, true);
         }
 
         if (pSpell->Id == SPELL_POUND_H)
         {
             if (pTarget)
-                m_creature->DealDamage(pTarget, pTarget->CalcArmorReducedDamage(pTarget, urand(46125, 48000)), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }     
+				pTarget->CastSpell(pTarget, SPELL_POUND_DMG_H, true); 
+		}     
     }
 
     void UpdateAI(const uint32 uiDiff)

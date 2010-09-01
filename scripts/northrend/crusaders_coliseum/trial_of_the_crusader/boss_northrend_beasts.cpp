@@ -613,6 +613,7 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public BSWScriptedAI
         case 4: {
                 if (MovementStarted)
                     {
+                    Map* pMap = m_creature->GetMap();
                     Map::PlayerList const &lPlayers = pMap->GetPlayers();
                     for(Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
                     {

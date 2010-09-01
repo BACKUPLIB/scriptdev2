@@ -357,6 +357,22 @@
 			Name="base"
 			>
 			<File
+				RelativePath="..\base\BSW_ai.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\base\BSW_ai.h"
+				>
+			</File>
+			<File
+				RelativePath="..\base\BSW_instance.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\base\BSW_instance.h"
+				>
+			</File>
+			<File
 				RelativePath="..\base\escort_ai.cpp"
 				>
 			</File>
@@ -2906,14 +2922,6 @@
 			</File>
 			<File
 				RelativePath="..\include\precompiled.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\sc_boss_spell_worker.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\include\sc_boss_spell_worker.h"
 				>
 			</File>
 			<File

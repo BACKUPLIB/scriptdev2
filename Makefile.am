@@ -38,10 +38,12 @@ base/guard_ai.cpp \
 base/guard_ai.h \
 base/simple_ai.cpp \
 base/simple_ai.h \
+base/BSW_instance.cpp \
+base/BSW_instance.h \
+base/BSW_ai.cpp \
+base/BSW_ai.h \
 include/precompiled.cpp \
 include/precompiled.h \
-include/sc_boss_spell_worker.cpp \
-include/sc_boss_spell_worker.h \
 include/sc_creature.cpp \
 include/sc_creature.h \
 include/sc_gossip.h \

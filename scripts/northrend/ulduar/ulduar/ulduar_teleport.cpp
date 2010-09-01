@@ -23,7 +23,7 @@ EndScriptData */
 
 #include "precompiled.h"
 #include "ulduar.h"
-#include "sc_boss_spell_worker.h"
+#include "BSW_ai.h"
 
 enum
 {

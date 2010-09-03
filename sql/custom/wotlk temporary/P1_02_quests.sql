@@ -17,7 +17,7 @@ INSERT INTO `creature_questrelation` (`id`,`quest`) VALUES
 (20735, 13256);
 
 --quest end
-DELETE FROM `creature_involvedrelation` WHERE `entry` =20735;
+DELETE FROM `creature_involvedrelation` WHERE `id` = 20735;
 INSERT INTO `creature_involvedrelation`(`id`,`quest`) VALUES
 (20735, 13245),
 (20735, 13246),

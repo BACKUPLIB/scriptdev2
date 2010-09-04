@@ -114,7 +114,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             m_pInstance->SetData(TYPE_SAPPHIRON, IN_PROGRESS);
 
         m_creature->SetInCombatWithZone();
-        DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FROST_AURA : H_SPELL_FROST_AURA);
+        DoCastSpellIfCan(pWho, m_bIsRegularMode ? SPELL_FROST_AURA : H_SPELL_FROST_AURA);
 
         pFrostBreathTarget = m_creature->SummonCreature(NPC_FROST_BREATH_TARGET,
                                             frostBreathTargetCoord[0],

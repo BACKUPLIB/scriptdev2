@@ -69,7 +69,7 @@ DELETE FROM `creature` where `id` IN (34092, 34087);
 INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint, curhealth, curmana, DeathState, MovementType) VALUES
 /* 3.3.2 version, already in UDB 392 (88397, 34095, 571, 1, 3, 29076, 0, 5761.32, 578.753, 615.052, 2.09439, 180, 0, 0, 6986, 0, 0, 0),*/
 /* 3.2.0 version */ (NULL, 34092, 571, 0, 3, 29076, 0, 5761.32, 578.753, 615.052, 2.09439, 180, 0, 0, 6986, 0, 0, 0),
-/* 3.2.0 version */ (NULL, 34087, 571, 0, 3, 29076, 0, 5761.32, 578.753, 615.052, 2.09439, 180, 0, 0, 6986, 0, 0, 0);
+/* 3.1.1 version */ (NULL, 34087, 571, 0, 3, 29076, 0, 5761.32, 578.753, 615.052, 2.09439, 180, 0, 0, 6986, 0, 0, 0);
 
 
 /*          Kezzik the Striker
@@ -86,7 +86,7 @@ INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_
 /* 3.3.2 version */(NULL, 33940, 530, 0, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0),
 /* 3.2.0 version, already in UDB 392 (88318, 33931, 530, 1, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0),*/
 /* 3.1.1 version */(NULL, 33918, 530, 0, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0),
-/* 3.3.2 version, non vendor, we don't need this guy. (NULL, 32405, 530, 0, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0),*/
+/* 3.0.2 version, non vendor, we don't need this guy. (NULL, 32405, 530, 0, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0),*/
 /* 3.0.2 version */(NULL, 32356, 530, 0, 1, 0, 0, 3075.46, 3641.53, 143.779, 3.95074, 180, 0, 0, 6986, 0, 0, 0);
 
 
@@ -100,9 +100,9 @@ INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_
     3.0.2 -> "lower s5" (Hateful Gladiator)
     2.4.2 -> s4
 */
-DELETE FROM `creature` where `id` IN (33932, 33916, 3355);
+DELETE FROM `creature` where `id` IN (33933, 33916, 32355);
 INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint, curhealth, curmana, DeathState, MovementType) VALUES
-/* 3.3.2 version */(NULL, 33932, 530, 0, 1, 0, 0, 3076.22, 3632.76, 143.781, 2.35717, 180, 0, 0, 6986, 0, 0, 0),
+/* 3.3.2 version */(NULL, 33933, 530, 0, 1, 0, 0, 3076.22, 3632.76, 143.781, 2.35717, 180, 0, 0, 6986, 0, 0, 0),
 /* 3.2.0 version, already in UDB 392 (88319, 33932, 530, 1, 1, 0, 0, 3076.22, 3632.76, 143.781, 2.35717, 180, 0, 0, 6986, 0, 0, 0),*/
 /* 3.1.1 version */(NULL, 33916, 530, 0, 1, 0, 0, 3076.22, 3632.76, 143.781, 2.35717, 180, 0, 0, 6986, 0, 0, 0),
 /* 3.0.2 version */(NULL, 32355, 530, 0, 1, 0, 0, 3076.22, 3632.76, 143.781, 2.35717, 180, 0, 0, 6986, 0, 0, 0);
@@ -149,7 +149,7 @@ INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_
 
 /*          Evee Copperspring
 
-    Arena set and weapon vendor in Area52: Sells set items of last season.
+    Arena set and weapon vendor in Gadgetzan: Sells set items of last season.
 
     3.3.2 -> s7
     3.2.0 -> s6

@@ -158,7 +158,7 @@ INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_
     2.4.2 -> s4
     2.3.0 -> s3
 */
-DELETE FROM `creature` where `id` IN (33928, 33920, 31862);
+DELETE FROM `creature` where `id` IN (33928, 33920, 32362);
 INSERT INTO `creature` (guid, id, map, spawnMask, phaseMask, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint, curhealth, curmana, DeathState, MovementType) VALUES
 /* Future patch!? We don't need him. (NULL, 40214, 1, 0, 1, 22438, 0, -7122.35, -3770.56, 9.35682, 0, 180, 0, 0, 6986, 0, 0, 0),*/
 /* 3.3.2 version, already in UDB 392 (90186, 33935, 1, 1, 1, 22438, 0, -7122.35, -3770.56, 9.35682, 0, 180, 0, 0, 6986, 0, 0, 0),*/

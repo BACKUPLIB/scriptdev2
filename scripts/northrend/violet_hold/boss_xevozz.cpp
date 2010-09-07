@@ -186,17 +186,19 @@ struct MANGOS_DLL_DECL boss_xevozzAI : public ScriptedAI
             }
             else m_uiArcaneBuffet_Timer -= uiDiff;
 
-        if (m_uiSummonEtherealSphere_Timer < uiDiff)
-        {
-            DoScriptText(SAY_SPAWN, m_creature);
-            DoCast(m_creature, SPELL_SUMMON_ETHEREAL_SPHERE_1);
-            if (m_bIsRegularMode) // extra one for heroic
-                m_creature->SummonCreature(NPC_ETHEREAL_SPHERE, m_creature->GetPositionX()-5+rand()%10, m_creature->GetPositionY()-5+rand()%10, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 40000);
+        if(m_uiSummonEtherealSphere_Timer)
+            if (m_uiSummonEtherealSphere_Timer < uiDiff)
+            {
+                DoScriptText(SAY_SPAWN, m_creature);
+                DoCast(m_creature, SPELL_SUMMON_ETHEREAL_SPHERE_1);
+                if (!m_bIsRegularMode) // extra one for heroic
+                    m_creature->SummonCreature(NPC_ETHEREAL_SPHERE, m_creature->GetPositionX()-5+rand()%10, m_creature->GetPositionY()-5+rand()%10, m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 40000);
 
-            m_uiSummonEtherealSphere_Timer = urand(45000, 47000);
-            m_uiArcaneBuffet_Timer = urand(5000, 6000);
-        }
-        else m_uiSummonEtherealSphere_Timer -= uiDiff;
+                //m_uiSummonEtherealSphere_Timer = urand(45000, 47000);
+                m_uiSummonEtherealSphere_Timer = 0;
+                m_uiArcaneBuffet_Timer = urand(5000, 6000);
+            }
+            else m_uiSummonEtherealSphere_Timer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }
@@ -208,6 +210,16 @@ struct MANGOS_DLL_DECL boss_xevozzAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_XEVOZZ, DONE);
+    }
+
+    void JustReachedHome()
+    {
+        if(m_pInstance)
+        {
+            m_pInstance->SetData(TYPE_MAIN,FAIL);
+            m_pInstance->SetData(TYPE_XEVOZZ,FAIL);
+            m_creature->ForcedDespawn();
+        }
     }
 
     void KilledUnit(Unit* pVictim)

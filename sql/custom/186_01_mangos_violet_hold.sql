@@ -20,5 +20,7 @@ DELETE FROM `spell_script_target` WHERE `entry` IN (54160,59474);
 INSERT INTO `spell_script_target` VALUES (54160, 1, 29266);
 INSERT INTO `spell_script_target` VALUES (59474, 1, 29266);
 
+UPDATE `creature_template` SET `minhealth` = 500, `maxhealth` = 700, `minlevel` = 77, `maxlevel` = 77, `mindmg` = 220, `maxdmg` = 270, `minrangedmg` = 170, `maxrangedmg` = 260, `attackpower` = 350, `rangedattackpower` = 60 WHERE `entry` = 29364;
+
 -- not known if needed
 -- UPDATE `creature_template` SET `unit_flags`=33816580 WHERE `entry`=30896;

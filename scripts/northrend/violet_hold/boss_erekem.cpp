@@ -232,6 +232,16 @@ struct MANGOS_DLL_DECL boss_erekemAI : public ScriptedAI
         }
     }
 
+    void JustReachedHome()
+    {
+        if(m_pInstance)
+        {
+            m_pInstance->SetData(TYPE_MAIN,FAIL);
+            m_pInstance->SetData(TYPE_EREKEM,FAIL);
+            m_creature->ForcedDespawn();
+        }
+    }
+
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);

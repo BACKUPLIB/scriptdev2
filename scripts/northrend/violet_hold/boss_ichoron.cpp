@@ -266,6 +266,16 @@ struct MANGOS_DLL_DECL boss_ichoronAI : public ScriptedAI
             m_pInstance->SetData(TYPE_ICHORON, DONE);
     }
 
+    void JustReachedHome()
+    {
+        if(m_pInstance)
+        {
+            m_pInstance->SetData(TYPE_MAIN,FAIL);
+            m_pInstance->SetData(TYPE_ICHORON,FAIL);
+            m_creature->ForcedDespawn();
+        }
+    }
+
     void KilledUnit(Unit* pVictim)
     {
         switch(urand(0, 2))

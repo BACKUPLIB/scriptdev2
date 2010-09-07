@@ -131,6 +131,7 @@ void instance_violet_hold::OnCreatureCreate(Creature* pCreature)
             break;
         case NPC_HOLD_GUARD:
             m_lGuardsList.push_back(pCreature->GetGUID());
+            pCreature->setFaction(35);
             break;
     }
 }
@@ -212,11 +213,12 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
                     m_uiPortalTimer = 15000;
                     break;
                 case FAIL:
-                    if (Creature* pSinclari = instance->GetCreature(m_uiSinclariGUID))
+                    /*if (Creature* pSinclari = instance->GetCreature(m_uiSinclariGUID))
                         pSinclari->Respawn();
-                        ResetAll();
+                        ResetAll();*/
                 case DONE:
-                    DoUpdateWorldState(WORLD_STATE_ID, 0);
+                    UpdateWorldState(false);
+                    //DoUpdateWorldState(WORLD_STATE_ID, 0);
                     //DoUseDoorOrButton(m_uiSealDoorGUID);
                     if(pSealDoor)
                         pSealDoor->UseDoorOrButton();

@@ -559,7 +559,7 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_FLAG && pCaster->GetTypeId() == TYPEID_PLAYER) //use spell_duel_flag instead of SPELL_DUEL_TRIGGERED
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_TRIGGERED && pCaster->GetTypeId() == TYPEID_PLAYER)
         {
             m_bIsDuelInProgress = true;
         }
@@ -641,7 +641,7 @@ bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature
         int32 uiSayId = rand()% (sizeof(m_auiRandomSay)/sizeof(int32));
         DoScriptText(m_auiRandomSay[uiSayId], pCreature, pPlayer);
 
-        //pCreature->CastSpell(pPlayer, SPELL_DUEL, false); //spell buggy? doesn't work
+        pCreature->CastSpell(pPlayer, SPELL_DUEL, false);
         pCreature->CastSpell(pPlayer, SPELL_DUEL_FLAG, true);
         m_uiDuelerGUID = pPlayer->GetGUID();
     }

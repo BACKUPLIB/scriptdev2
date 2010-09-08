@@ -128,6 +128,7 @@ void instance_violet_hold::OnCreatureCreate(Creature* pCreature)
             m_uiZuramatGUID = pCreature->GetGUID();
             break;
         case NPC_PORTAL_INTRO:
+            m_lIntroPortalList.push_back(pCreature->GetGUID());
             break;
         case NPC_HOLD_GUARD:
             m_lGuardsList.push_back(pCreature->GetGUID());
@@ -218,10 +219,11 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
                         ResetAll();*/
                 case DONE:
                     UpdateWorldState(false);
-                    //DoUpdateWorldState(WORLD_STATE_ID, 0);
                     //DoUseDoorOrButton(m_uiSealDoorGUID);
                     if(pSealDoor)
-                        pSealDoor->UseDoorOrButton();
+                        pSealDoor->ResetDoorOrButton();
+                    if(Creature* pDoorSeal = instance->GetCreature(m_uiSealDoorGUID))
+                        pDoorSeal->ForcedDespawn();
                     break;
                 case SPECIAL:
                     break;
@@ -231,7 +233,7 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
         }
         case TYPE_SEAL:
             m_auiEncounter[1] = uiData;
-            if(uiData == SPECIAL) 
+            if(uiData == SPECIAL && m_auiEncounter[TYPE_MAIN] == IN_PROGRESS) 
             {
                 --m_uiWorldStateSealCount;
                 if(Creature* pSinclari = instance->GetCreature(m_uiSinclariGUID))
@@ -259,15 +261,16 @@ void instance_violet_hold::SetData(uint32 uiType, uint32 uiData)
             break;
         case TYPE_PORTAL:
         {
-            switch(uiData)
-            {
-                case SPECIAL:                               // timer to next
-                    m_uiPortalTimer = 90000;
-                    break;
-                case DONE:                                  // portal done, set timer to 5 secs
-                    m_uiPortalTimer = 5000;
-                    break;
-            }
+            if(m_auiEncounter[TYPE_MAIN] == IN_PROGRESS)
+                switch(uiData)
+                {
+                    case SPECIAL:                               // timer to next
+                        m_uiPortalTimer = 90000;
+                        break;
+                    case DONE:                                  // portal done, set timer to 5 secs
+                        m_uiPortalTimer = 5000;
+                        break;
+                }
             m_auiEncounter[2] = uiData;
             break;
         }

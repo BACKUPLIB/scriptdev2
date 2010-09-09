@@ -41,7 +41,7 @@ static uint32 TriggerOrphanSpell[6][3] =
     {3549, 14444, 65058},                                   // Gateway to the Frontier
     {3550, 14444, 65057},                                   // Down at the Docks
     {3552, 14305, 65054}                                    // Spooky Lighthouse
-}
+};
 
 bool AreaTrigger_at_childrens_week_spot(Player* pPlayer, AreaTriggerEntry const* pAt)
 {

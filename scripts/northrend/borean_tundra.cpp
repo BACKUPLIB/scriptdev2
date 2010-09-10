@@ -17,16 +17,20 @@
 /* ScriptData
 SDName: Borean_Tundra
 SD%Complete: 100
-SDComment: Quest support: 11708, 11692, 11961. Taxi vendors. 11570
+SDComment: Quest support: 11708, 11692, 11611, 11961, 11865, 11878. Taxi vendors. 11570
 SDCategory: Borean Tundra
 EndScriptData */
 
 /* ContentData
 npc_fizzcrank_fullthrottle
 npc_iruk
+npc_nerubar_victim
 npc_kara_thricestar
 npc_surristrasz
 npc_tiare
+npc_nesingwary_trapper
+go_caribou_trap
+npc_orphaned_calf
 npc_lurgglbr
 EndContentData */
 
@@ -145,6 +149,52 @@ bool GossipSelect_npc_iruk(Player* pPlayer, Creature* pCreature, uint32 uiSender
     return true;
 }
 
+
+/*######
+## npc_nerubar_victim
+######*/
+
+#define WARSONG_PEON            25270
+#define QUEST_TAKEN_BY_SCOURGE  11611
+#define SPELL_SUMMON_PEON       45532
+
+
+const uint32 nerubarVictims[3] =
+{
+    45526, 45527, 45514
+};
+
+
+struct MANGOS_DLL_DECL npc_nerubar_victimAI : public ScriptedAI
+{
+    npc_nerubar_victimAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset (); }
+
+    void Reset() {}
+
+    void JustDied(Unit* Killer)
+    {
+        if (Killer->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (((Player*)Killer)->GetQuestStatus(QUEST_TAKEN_BY_SCOURGE) == QUEST_STATUS_INCOMPLETE)
+            {
+                uint8 uiRand = urand(0,3);
+                if (!uiRand)
+                {
+                    Killer->CastSpell(m_creature,SPELL_SUMMON_PEON,true);
+                    ((Player*)Killer)->KilledMonsterCredit(WARSONG_PEON);
+                }
+                else if (uiRand <= 2)
+                    Killer->CastSpell(m_creature, nerubarVictims[urand(0,2)], true);
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_nerubar_victim(Creature* pCreature)
+{
+    return new npc_nerubar_victimAI(pCreature);
+}
+
 /*######
 ## npc_kara_thricestar
 ######*/
@@ -257,6 +307,10 @@ bool GossipSelect_npc_tiare(Player* pPlayer, Creature* pCreature, uint32 uiSende
     return true;
 }
 
+/*######
+## go_caribou_trap
+######*/
+
 //FIXME: saving Player & GO like this is not a good way
 GameObject *pTrap = 0;
 Player *pPlyr = 0;
@@ -274,6 +328,10 @@ bool GOHello_go_caribou_trap(Player* pPlayer, GameObject* pGo)
     pPlayer->SummonCreature(NPC_TRAPPER,pGo->GetPositionX()+rand()%7,pGo->GetPositionY()+rand()%7,pGo->GetPositionZ(),0,TEMPSUMMON_DEAD_DESPAWN,0);
     return false;
 }
+
+/*######
+## npc_nesingwary_trapper
+######*/
 
 struct MANGOS_DLL_DECL npc_nesingwary_trapperAI : public ScriptedAI
 {
@@ -353,32 +411,6 @@ CreatureAI* GetAI_npc_orphaned_calf(Creature* pCreature)
 {
     return new npc_orphaned_calfAI(pCreature);
 }
-/*
-#define GOSSIP_ITEM_RELEASE     "[Give the the orphaned calf to Khu'nok]"
-
-bool GossipHello_npc_orphaned_calf(Player* pPlayer, Creature* pCreature)
-{
-     if (pPlayer->GetQuestStatus(QUEST_KHUNOK_WILL_KNOW) == QUEST_STATUS_INCOMPLETE)
-         if (GetClosestCreatureWithEntry(pCreature, NPC_KHUNOK, INTERACTION_DISTANCE+5))
-         {
-             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_RELEASE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-         }
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-    return true;
-}
-
-bool GossipSelect_npc_orphaned_calf(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
-    {
-        pPlayer->CLOSE_GOSSIP_MENU();
-
-        pPlayer->AreaExploredOrEventHappens(QUEST_KHUNOK_WILL_KNOW);
-        pCreature->ForcedDespawn();
-    }
-
-    return true;
-}*/
 
 /*######
 ## npc_lurgglbr
@@ -528,8 +560,6 @@ void AddSC_borean_tundra()
     newscript = new Script;
     newscript->Name = "npc_orphaned_calf";
     newscript->GetAI = &GetAI_npc_orphaned_calf;
-    //newscript->pGossipHello = &GossipHello_npc_orphaned_calf;
-    //newscript->pGossipSelect = &GossipSelect_npc_orphaned_calf;
     newscript->RegisterSelf();
 
     newscript = new Script;
@@ -552,6 +582,11 @@ void AddSC_borean_tundra()
     newscript->Name = "npc_iruk";
     newscript->pGossipHello = &GossipHello_npc_iruk;
     newscript->pGossipSelect = &GossipSelect_npc_iruk;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_nerubar_victim";
+    newscript->GetAI = &GetAI_npc_nerubar_victim;
     newscript->RegisterSelf();
 
     newscript = new Script;

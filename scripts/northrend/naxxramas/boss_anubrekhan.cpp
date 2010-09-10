@@ -61,7 +61,6 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
     {
         m_pInstance = (instance_naxxramas*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
-        m_uiInstanceMode = pCreature->GetMap()->GetDifficulty();
         m_bHasTaunted = false;
         Reset();
     }
@@ -106,7 +105,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ANUB_REKHAN, IN_PROGRESS);
 
-        if (m_uiInstanceMode == RAID_DIFFICULTY_10MAN_NORMAL || m_uiInstanceMode == RAID_DIFFICULTY_10MAN_HEROIC)
+        if (m_bIsRegularMode)
             m_uiCryptGuardTimer = 20000;
         else
         {
@@ -178,7 +177,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LOCUSTSWARM :SPELL_LOCUSTSWARM_H);
             m_uiLocustSwarmTimer = 90000;
             //spawn crypt guards with swarm on 10man mode
-            if(m_uiInstanceMode == RAID_DIFFICULTY_10MAN_NORMAL || m_uiInstanceMode == RAID_DIFFICULTY_10MAN_HEROIC)
+            if(m_bIsRegularMode)
                 m_uiCryptGuardTimer = 2000;
         }
         else

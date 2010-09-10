@@ -76,6 +76,8 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
     m_uiHeigExitDoorGUID(0),
     m_uiLoathebDoorGUID(0),
 
+    m_uiSapphironBirthGUID(0),
+
     m_uiKelthuzadDoorGUID(0),
     m_uiKelthuzadExitDoorGUID(0),
 
@@ -251,6 +253,9 @@ void instance_naxxramas::OnObjectCreate(GameObject* pGo)
         case GO_CONS_PORTAL:
             m_uiConsPortalGUID = pGo->GetGUID();
             break;
+        case GO_SAPPHIRON_BIRTH:
+            m_uiSapphironBirthGUID = pGo->GetGUID();
+            break;
     }
 }
 
@@ -300,7 +305,8 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
                 DoUseDoorOrButton(m_uiNothExitDoorGUID);
                 DoUseDoorOrButton(m_uiHeigEntryDoorGUID);
             }
-            break;
+            else    //as long as heigan is despawned
+                break; 
         case TYPE_HEIGAN:
             m_auiEncounter[4] = uiData;
             DoUseDoorOrButton(m_uiHeigEntryDoorGUID);
@@ -402,7 +408,8 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
                 DoUseDoorOrButton(m_uiGlutExitDoorGUID);
                 DoUseDoorOrButton(m_uiThadDoorGUID);
             }
-            break;
+            else    //as long as thaddius despawned
+                break; 
         case TYPE_THADDIUS:
             m_auiEncounter[12] = uiData;
             DoUseDoorOrButton(m_uiThadDoorGUID, uiData);
@@ -411,6 +418,7 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
                 DoUseDoorOrButton(m_uiConsEyeRampGUID);
                 DoRespawnGameObject(m_uiConsPortalGUID, 30*MINUTE);
                 DoTaunt();
+                
             }
             break;
         case TYPE_SAPPHIRON:
@@ -543,6 +551,8 @@ uint64 instance_naxxramas::GetData64(uint32 uiData)
             return m_uiWorshipperGUID[2];
         case NPC_WORSHIPPER_4:
             return m_uiWorshipperGUID[3];
+        case GO_SAPPHIRON_BIRTH:
+            return m_uiSapphironBirthGUID;
     }
     return 0;
 }

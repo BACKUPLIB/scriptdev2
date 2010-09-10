@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Sapphiron
-SD%Complete: 60
+SD%Complete: 90
 SDComment: Place Holder
 SDCategory: Naxxramas
 EndScriptData */
@@ -84,6 +84,8 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
     uint32 m_uiBeserkTimer;
     uint32 m_uiPhase;
     uint32 m_uiLandTimer;
+    uint32 m_uiBirthTimer;
+    uint8 m_uiBirthState;
     bool m_bLandoff;
     std::vector<Unit*> targets;
     std::vector<Player*> immunePlayers;
@@ -99,6 +101,8 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         m_uiFlyTimer = 45000;
         m_uiIceboltTimer = 4000;
         m_uiLandTimer = 2000;
+        m_uiBirthTimer = 19000;
+        m_uiBirthState = 0;
         m_uiBeserkTimer = 15*MINUTE*IN_MILLISECONDS;
         m_uiPhase = 1;
         m_uiIceboltCount = 0;
@@ -106,6 +110,21 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         pFrostBreathTarget;
         targets.clear();
         immunePlayers.clear();
+        m_creature->SetVisibility(VISIBILITY_OFF);
+        m_creature->setFaction(35);
+        if(m_pInstance)
+            if(GameObject* pGo = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_SAPPHIRON_BIRTH)))
+                pGo->Respawn();
+    }
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if(m_uiBirthState == 0 && m_pInstance)
+        {
+            if(GameObject* pGo = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_SAPPHIRON_BIRTH)))
+                pGo->Respawn();
+            m_uiBirthState = 1;
+        }
     }
 
     void Aggro(Unit* pWho)
@@ -171,6 +190,16 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if(m_uiBirthState == 1)
+            if(m_uiBirthTimer < uiDiff)
+            {
+                m_creature->SetVisibility(VISIBILITY_ON);
+                m_creature->setFaction(21);
+                m_uiBirthState = 2;
+            }
+            else
+                m_uiBirthTimer -= uiDiff;
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 

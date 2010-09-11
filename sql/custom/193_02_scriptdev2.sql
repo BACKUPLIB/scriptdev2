@@ -1,0 +1,6 @@
+insert into `script_texts` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values
+('-1594190','Also hat das Orakel beschlossen, Euch zu helfen, Fremder. Nun gut, ich werde mein Wissen mit Euch teilen.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0','SAY_NOZRONN1'),
+('-1594191','Euer Gefährte sucht den Splitterhornpatriarchen Farunn, der sich von seinen Brüdern fernhält.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0','SAY_NOZRONN2'),
+('-1594192','Farunn durchstreift die Länder nördlich dessen, was Euer Volk die Bittertidenfälle nennt. Ihr werdet ihn allein vorfinden, aber Ihr werdet sehen, dass er keiner Verteidiger bedarf.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0','SAY_NOZRONN3'),
+('-1594193','Kehrt zu Eurem Gefährten zurück. Sagt ihm, dass er losgehen und in Farunn seinen Preis einfordern soll.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0','SAY_NOZRONN4'),
+('-1594194','Sobald er dies getan hat, sagt ihm, dass er dieses Land friedlich verlassen soll. Er gehört hier nicht her.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0','SAY_NOZRONN5');

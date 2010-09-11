@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Sholazar_Basin
 SD%Complete: 100
-SDComment: Quest support: 12573
+SDComment: Quest support: 12573, 12544
 SDCategory: Sholazar Basin
 EndScriptData */
 
@@ -81,6 +81,85 @@ bool GossipSelect_npc_vekjik(Player* pPlayer, Creature* pCreature, uint32 uiSend
     return true;
 }
 
+/*######
+## mob_voiceofnozronn
+######*/
+enum nozronnsay
+{
+SAY_NOZRONN1 = -1594190,
+SAY_NOZRONN2 = -1594191,
+SAY_NOZRONN3 = -1594192,
+SAY_NOZRONN4 = -1594193,
+SAY_NOZRONN5 = -1594194,
+QUEST_BONES_OF_NOZRONN = 12544
+};
+
+
+struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
+{
+    mob_voiceofnozronnAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+
+    uint32 saytimer;
+    uint32 step;
+    Player* pPlayer;
+    void Reset()
+    {
+     saytimer = 1000;
+     step = 0;
+    }
+
+	void UpdateAI(const uint32 diff)
+	{
+        if(saytimer < diff)
+	    {
+            switch(step)
+            {
+                case 0:
+                    pPlayer = GetPlayerAtMinimumRange(20.0f);
+					if(pPlayer)
+					{
+                    DoScriptText(SAY_NOZRONN1, m_creature);
+                    saytimer += 5000;
+                    step++;
+					break;
+					} else break;
+                    break;
+                case 1:
+                    DoScriptText(SAY_NOZRONN2, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 2:
+                    DoScriptText(SAY_NOZRONN3, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 3:
+                    DoScriptText(SAY_NOZRONN4, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 4:
+                    if (pPlayer->GetQuestStatus(QUEST_BONES_OF_NOZRONN) == QUEST_STATUS_INCOMPLETE)
+					{
+                    pPlayer->KilledMonsterCredit(28256, m_creature->GetGUID());
+                    //pPlayer->CompleteQuest(QUEST_BONES_OF_NOZRONN);
+                    DoScriptText(SAY_NOZRONN5, m_creature);
+                    step++;
+                    break;
+					} else break;
+            }
+
+	    } else saytimer -= diff;
+
+	}
+
+};
+CreatureAI* GetAI_mob_voiceofnozronnAI(Creature* pCreature)
+{
+    return new mob_voiceofnozronnAI(pCreature);
+}
+
 void AddSC_sholazar_basin()
 {
     Script *newscript;
@@ -89,5 +168,10 @@ void AddSC_sholazar_basin()
     newscript->Name = "npc_vekjik";
     newscript->pGossipHello = &GossipHello_npc_vekjik;
     newscript->pGossipSelect = &GossipSelect_npc_vekjik;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_voiceofnozronn";
+    newscript->GetAI = &GetAI_mob_voiceofnozronnAI;
     newscript->RegisterSelf();
 }

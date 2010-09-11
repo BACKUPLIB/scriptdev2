@@ -17,12 +17,13 @@
 /* ScriptData
 SDName: Azuremyst_Isle
 SD%Complete: 75
-SDComment: Quest support: 9283, 9537, 9582, 9554(special flight path, proper model for mount missing). Injured Draenei cosmetic only
+SDComment: Quest support: 9283, 9531, 9537, 9582, 9554(special flight path, proper model for mount missing). Injured Draenei cosmetic only
 SDCategory: Azuremyst Isle
 EndScriptData */
 
 /* ContentData
 npc_draenei_survivor
+npc_geezle
 npc_engineer_spark_overgrind
 npc_injured_draenei
 npc_magwin
@@ -31,6 +32,7 @@ EndContentData */
 
 #include "precompiled.h"
 #include "escort_ai.h"
+#include "TemporarySummon.h"
 #include <cmath>
 
 /*######
@@ -174,6 +176,113 @@ CreatureAI* GetAI_npc_draenei_survivor(Creature* pCreature)
 }
 
 /*######
+## npc_geezle
+######*/
+
+enum
+{
+    C_SPARK                 = 17243,
+
+    GO_NAGA_FLAG            = 181694,
+
+    AREA_COVE               = 3579,
+    AREA_ISLE               = 3639,
+
+    SAY_GEEZLE1             = -1002050,
+    SAY_GEEZLE2             = -1002051,
+    SAY_GEEZLE3             = -1002052,
+
+    Q_TREE_COMPANY          = 9531,
+
+    AURA_TREE_DISGUISE      = 30298
+};
+
+float SparkSpawnPoint[]={-5046.07f,-11258.55f,7.508f};
+
+struct MANGOS_DLL_DECL npc_geezleAI : public npc_escortAI
+{
+    npc_geezleAI(Creature* pCreature) : npc_escortAI(pCreature)
+    {
+        Reset();
+    }
+
+    bool EventStarted;
+    uint8 Phase;
+    uint16 RPTimer;
+    Creature* EngSpark;
+
+    void Reset()
+    {
+        Phase=0;
+        RPTimer=23000;
+        EventStarted=false;
+        EngSpark=NULL;
+    }
+
+    void WaypointReached(uint32)
+    {
+    }
+
+    void UpdateEscortAI(const uint32 diff)
+    {
+        if (!EventStarted)
+        {
+            Creature* Spark = GetClosestCreatureWithEntry(m_creature,C_SPARK,1000.0f);
+            if (Spark)
+            {
+                if ((Spark->GetAreaId()==AREA_COVE) || (Spark->GetAreaId()==AREA_ISLE)) //tree event already active
+                {
+                    ((TemporarySummon*)m_creature)->UnSummon();
+                    error_log("SD2 : npc_geezle - Tree event is already active!");
+                    return;
+                }
+            }
+            if (Spark = m_creature->SummonCreature(C_SPARK,SparkSpawnPoint[0],SparkSpawnPoint[1],SparkSpawnPoint[2],0,TEMPSUMMON_TIMED_DESPAWN,150000))
+            {
+                EngSpark=Spark;
+                EventStarted=true;
+                Start(false);
+            }
+            return;
+        }
+
+        if (RPTimer<diff)
+        {
+            switch (Phase)
+            {
+            case 0:
+                if (EngSpark)
+                {
+                    m_creature->SetInFront(EngSpark);
+                    EngSpark->SetInFront(m_creature);
+                }
+                DoScriptText(SAY_GEEZLE1,m_creature);
+                RPTimer=20000;
+                Phase++;
+                break;
+            case 1:
+                DoScriptText(SAY_GEEZLE2,m_creature);
+                RPTimer=26000;
+                Phase++;
+                break;
+            case 2:
+                DoScriptText(SAY_GEEZLE3,m_creature);
+                RPTimer=65000;
+                Phase++;
+                break;
+            default: break;
+            }
+        }
+        else RPTimer-=diff;
+    }
+};
+
+CreatureAI* GetAI_npc_geezleAI(Creature* pCreature)
+{
+    return new npc_geezleAI(pCreature);
+}
+
+/*######
 ## npc_engineer_spark_overgrind
 ######*/
 
@@ -183,8 +292,12 @@ enum
     EMOTE_SHELL             = -1000185,
     SAY_ATTACK              = -1000186,
 
-    AREA_COVE               = 3579,
-    AREA_ISLE               = 3639,
+    SAY_SPARK1              = -1002053,
+    SAY_SPARK2              = -1002054,
+    SAY_SPARK3              = -1002055,
+    SAY_SPARK4              = -1002056,
+    SAY_SPARK0              = -1002057,
+
     QUEST_GNOMERCY          = 9537,
     FACTION_HOSTILE         = 14,
     SPELL_DYNAMITE          = 7978
@@ -192,9 +305,9 @@ enum
 
 #define GOSSIP_FIGHT        "Traitor! You will be brought to justice!"
 
-struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
+struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public npc_escortAI
 {
-    npc_engineer_spark_overgrindAI(Creature* pCreature) : ScriptedAI(pCreature)
+    npc_engineer_spark_overgrindAI(Creature* pCreature) : npc_escortAI(pCreature)
     {
         m_uiNormFaction = pCreature->getFaction();
         m_uiNpcFlags = pCreature->GetUInt32Value(UNIT_NPC_FLAGS);
@@ -210,7 +323,12 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
     uint32 m_uiDynamiteTimer;
     uint32 m_uiEmoteTimer;
 
+    uint8 Phase;
+
+    uint16 RPTimer;
+
     bool m_bIsTreeEvent;
+    bool EventStarted;
 
     void Reset()
     {
@@ -221,6 +339,9 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
         m_uiEmoteTimer = urand(120000, 150000);
 
         m_bIsTreeEvent = false;
+        EventStarted=false;
+        Phase=255;
+        RPTimer=21000;
     }
 
     void Aggro(Unit *who)
@@ -228,7 +349,27 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
         DoScriptText(SAY_ATTACK, m_creature, who);
     }
 
-    void UpdateAI(const uint32 diff)
+    void DoComplete()
+    {
+        std::list<Player*> players;
+        MaNGOS::AnyPlayerInObjectRangeCheck checker(m_creature,50.0f);
+        MaNGOS::PlayerListSearcher<MaNGOS::AnyPlayerInObjectRangeCheck> searcher(m_creature,players,checker);
+        Cell::VisitAllObjects(m_creature,searcher,50.0f);
+        for (std::list<Player*>::const_iterator i=players.begin();i!=players.end();++i)
+        {
+            if ((*i)->GetQuestStatus(Q_TREE_COMPANY) == QUEST_STATUS_INCOMPLETE &&(*i)->HasAura(AURA_TREE_DISGUISE))
+            {
+            (*i)->KilledMonsterCredit(C_SPARK,0);
+            }
+        }
+    }
+
+
+    void WaypointReached(uint32)
+    {
+    }
+
+    void UpdateEscortAI(const uint32 diff)
     {
         if (!m_creature->isInCombat() && !m_bIsTreeEvent)
         {
@@ -242,7 +383,59 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
         }
         else if (m_bIsTreeEvent)
         {
-            //nothing here yet
+            if (!EventStarted)
+            {
+                m_creature->GetMotionMaster()->MoveIdle();
+                m_creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                Start(false);
+                EventStarted=true;
+            }
+            else
+            {
+                if (RPTimer<diff)
+                {
+                    GameObject* flag=NULL;
+                    switch (Phase)
+                    {                   
+                    case 0:
+                        DoScriptText(SAY_SPARK1,m_creature);
+                        Phase++;
+                        RPTimer=8000;
+                        break;
+                    case 1:
+                        DoScriptText(SAY_SPARK2,m_creature);
+                        Phase++;
+                        RPTimer=15000;
+                        break;
+                    case 2:
+                        DoScriptText(SAY_SPARK3,m_creature);
+                        Phase++;
+                        RPTimer=9000;
+                        break;
+                    case 3:
+                        DoScriptText(SAY_SPARK4,m_creature);
+                        Phase++;
+                        RPTimer=20000;
+                        break;
+                    case 4:
+                        DoComplete();
+                        Phase++;
+                        RPTimer=50000;
+                        break;
+                    case 255:
+                        DoScriptText(SAY_SPARK0,m_creature);
+                        flag = GetClosestGameObjectWithEntry(m_creature,GO_NAGA_FLAG,1000.0f);
+                        if (flag)
+                            flag->SetLootState(GO_JUST_DEACTIVATED);
+                        Phase++;
+                        RPTimer=7000;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                else RPTimer-=diff;
+            }
             return;
         }
 
@@ -460,5 +653,10 @@ void AddSC_azuremyst_isle()
     newscript->Name = "npc_susurrus";
     newscript->pGossipHello =  &GossipHello_npc_susurrus;
     newscript->pGossipSelect = &GossipSelect_npc_susurrus;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_geezle";
+    newscript->GetAI = &GetAI_npc_geezleAI;
     newscript->RegisterSelf();
 }

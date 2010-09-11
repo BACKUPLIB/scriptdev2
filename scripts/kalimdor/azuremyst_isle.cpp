@@ -359,7 +359,7 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public npc_escortAI
         {
             if ((*i)->GetQuestStatus(Q_TREE_COMPANY) == QUEST_STATUS_INCOMPLETE &&(*i)->HasAura(AURA_TREE_DISGUISE))
             {
-            (*i)->KilledMonsterCredit(C_SPARK,0);
+            (*i)->KilledMonsterCredit(C_SPARK);
             }
         }
     }

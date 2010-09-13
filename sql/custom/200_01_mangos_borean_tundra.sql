@@ -37,3 +37,6 @@ UPDATE `quest_template` SET `ReqItemId1` = 35125, `ReqItemCount1` = 1 WHERE `ent
 
 # fix quest 11608 (Bury Those Cockroaches)
 UPDATE `creature_template` SET `ScriptName` = "npc_seaforium_depth_charge" WHERE `entry` = 25401;
+
+# make gameobject for quest 11956 despawn after using it
+UPDATE `gameobject_template` SET `data5` = 1 WHERE `entry` = 188141;

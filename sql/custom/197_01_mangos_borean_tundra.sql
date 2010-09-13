@@ -34,3 +34,6 @@ UPDATE `quest_template` SET `SrcSpell` = 46233 WHERE `entry` = 11878;
 
 # partially fix quest 11794 (The Hunt Is On)
 UPDATE `quest_template` SET `ReqItemId1` = 35125, `ReqItemCount1` = 1 WHERE `entry` = 11794;
+
+# fix quest 11608 (Bury Those Cockroaches)
+UPDATE `creature_template` SET `ScriptName` = "npc_seaforium_depth_charge" WHERE `entry` = 25401;

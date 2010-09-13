@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Borean_Tundra
 SD%Complete: 100
-SDComment: Quest support: 11708, 11692, 11611, 11961, 11865, 11878. Taxi vendors. 11570
+SDComment: Quest support: 11708, 11692, 11611, 11961, 11865, 11878, 11608. Taxi vendors. 11570
 SDCategory: Borean Tundra
 EndScriptData */
 
@@ -32,6 +32,7 @@ npc_nesingwary_trapper
 go_caribou_trap
 npc_orphaned_calf
 npc_lurgglbr
+npc_seaforium_depth_charge
 EndContentData */
 
 #include "precompiled.h"
@@ -556,6 +557,65 @@ bool QuestAccept_npc_lurgglbr(Player* pPlayer, Creature* pCreature, const Quest*
     return true;
 }
 
+/*######
+## npc_seaforium_depth_charge
+######*/
+
+enum
+{
+    SPELL_CHARGE_EXPLODE            = 45502,
+};
+
+const uint32 holes[4] =
+{
+    25402, 25403, 25404, 25405
+};
+
+struct MANGOS_DLL_DECL npc_seaforium_depth_chargeAI : public ScriptedAI
+{
+    npc_seaforium_depth_chargeAI(Creature* pCreature) : ScriptedAI(pCreature){ Reset(); }
+
+    uint32 m_uiExplosionTimer;
+
+    void Reset()
+    {
+        m_uiExplosionTimer = 5000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(m_uiExplosionTimer)
+        {
+            if(m_uiExplosionTimer < uiDiff)
+            {
+                m_creature->CastSpell(m_creature,SPELL_CHARGE_EXPLODE,true);  
+                //maybe not nice but works
+                std::list<Creature*> list;
+                for(int i=0;i<4;i++)
+                {
+                    //check wich hole was destroyed
+                    GetCreatureListWithEntryInGrid(list,m_creature,holes[i],15.0f);
+                    if(!list.empty())
+                    {
+                        if(Player* pPlayer = (Player*) m_creature->GetOwner())
+                            pPlayer->KilledMonsterCredit(holes[i]);
+                        list.clear();
+                    }
+                }
+                m_uiExplosionTimer = 0;
+                m_creature->ForcedDespawn();
+            }
+            else 
+                m_uiExplosionTimer -= uiDiff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_seaforium_depth_charge(Creature* pCreature)
+{
+    return new npc_seaforium_depth_chargeAI(pCreature);
+}
+
 CreatureAI* GetAI_npc_lurgglbr(Creature* pCreature)
 {
     return new npc_lurgglbrAI(pCreature);
@@ -619,5 +679,10 @@ void AddSC_borean_tundra()
     newscript->Name = "npc_lurgglbr";
     newscript->GetAI = &GetAI_npc_lurgglbr;
     newscript->pQuestAccept = &QuestAccept_npc_lurgglbr;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_seaforium_depth_charge";
+    newscript->GetAI = &GetAI_npc_seaforium_depth_charge;
     newscript->RegisterSelf();
 }

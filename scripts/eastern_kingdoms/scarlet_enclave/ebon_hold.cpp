@@ -1401,6 +1401,7 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
     uint32 uiPlague_strike_timer;
     uint32 uiThrow_timer;
     uint64 uiPlayerGUID;
+    uint32 uiGoBackTimer;
 
     void Reset()
     {
@@ -1409,6 +1410,7 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
         uiPlague_strike_timer = 5000;
         uiThrow_timer = 10000;
         uiPlayerGUID = 0;
+        uiGoBackTimer = 0;
     }
 
     void Aggro(Unit* who)
@@ -1418,6 +1420,17 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff) 
     {
+        if(uiGoBackTimer)
+            if(uiGoBackTimer < diff)
+            {
+                pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
+                uiGoBackTimer = 0; 
+            }
+                uiGoBackTimer -= diff;
+
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
         if (uiBlood_strike_timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_BLOOD_STRIKE);
@@ -1450,7 +1463,7 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
         if (Unit* pPlayer = m_creature->GetMap()->GetUnit(uiPlayerGUID))
         {
             pPlayer->CastSpell(pPlayer, SPELL_DEATH_RACE_COMPLETE, true);
-            pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
+            uiGoBackTimer = 15000;
         }
     }
 };
@@ -1464,40 +1477,34 @@ enum scarletminer
     NPC_SCARLET_GHOUL                   = 28845,
     NPC_SCARLET_GHOST                   = 28846,
     NPC_GOTHIC                          = 28658,
-    QUEST_GIFT_KEEPS_GIVING             = 12698
+    QUEST_GIFT_KEEPS_GIVING             = 12698,
+    GO_GIFT_OF_THE_HARVESTER            = 190769
 };
 
 struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
 {
-    mob_scarlet_minerAI(Creature *pCreature) : ScriptedAI(pCreature)
-    {
-        // hack spell 52481
-        SpellEntry *TempSpell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_GIFT_OF_THE_HARVESTER_MISSILE);
-        if (TempSpell && TempSpell->EffectImplicitTargetB[0] != 16)
-        {
-            TempSpell->EffectImplicitTargetB[0] = 16;
-            TempSpell->EffectImplicitTargetB[1] = 87;
-            TempSpell->EffectImplicitTargetB[2] = 16;
-        }
-    }
+    mob_scarlet_minerAI(Creature *pCreature) : ScriptedAI(pCreature){ Reset(); }
 
     void Reset() {}
 
-    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    void UpdateAI(const uint32 uiDiff) 
     {
-        if (pCaster->GetTypeId() == TYPEID_PLAYER && m_creature->isAlive() && pSpell->Id == SPELL_GIFT_OF_THE_HARVESTER_MISSILE)
-        {
-            if(((Player*)pCaster)->GetQuestStatus(QUEST_GIFT_KEEPS_GIVING) == QUEST_STATUS_INCOMPLETE)
+        ScriptedAI::UpdateAI(uiDiff);
+
+        GameObject* pGift = GetClosestGameObjectWithEntry(m_creature,GO_GIFT_OF_THE_HARVESTER,4.0f);
+
+        if(pGift && pGift->GetOwner())       
+            if(((Player*)pGift->GetOwner())->GetQuestStatus(QUEST_GIFT_KEEPS_GIVING) == QUEST_STATUS_INCOMPLETE)
             {
                 // spell 52490 Scarlet Miner Ghoul Transform doesn't work, hack it
                 if(rand()%5 > 2)
-                    pCaster->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 60000);
+                    pGift->GetOwner()->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 60000);
                 else
-                    pCaster->SummonCreature(NPC_SCARLET_GHOST, m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
+                    pGift->GetOwner()->SummonCreature(NPC_SCARLET_GHOST, m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
+                pGift->Delete();
                 m_creature->setDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();
             }
-        }
     }
 };
 

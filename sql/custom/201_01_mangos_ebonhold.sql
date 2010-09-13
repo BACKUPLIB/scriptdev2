@@ -3,7 +3,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_salanar_the_horseman',ainame=""
 UPDATE `creature_template` SET `ScriptName`='mob_dark_rider_of_acherus',ainame="" WHERE `entry`='28768';
 
 -- The Gift That Keeps On Giving
-UPDATE `creature_template` SET `ScriptName`='mob_scarlet_miner',ainame="" WHERE `entry`='28822';
+UPDATE `creature_template` SET `ScriptName`='mob_scarlet_miner',ainame="" WHERE `entry` IN ('28822','28819','28841');
 
 -- How To Win Friends And Influence Enemies
 UPDATE `creature_template` SET `ScriptName`='npc_crusade_persuaded',ainame="" WHERE `entry` IN (28939,28940,28610);
@@ -34,11 +34,11 @@ UPDATE creature_template SET AIName='EventAI',unit_flags=0,type_flags=8 WHERE en
 DELETE FROM `spell_script_target` WHERE `entry` IN (53658, 53679, 53701, 53705, 53706, 53677, 53685);
 -- insert into spell_script_target values (53658, 1, 29173);
 INSERT INTO spell_script_target VALUES (53679, 1, 29183);
-insert into spell_script_target values (53701, 1, 29175);
-insert into spell_script_target values (53705, 1, 29183);
-insert into spell_script_target values (53706, 1, 29183);
-insert into spell_script_target values (53677, 1, 29227);
-insert into spell_script_target values (53685, 1, 29175);
+INSERT INTO spell_script_target VALUES (53701, 1, 29175);
+INSERT INTO spell_script_target VALUES (53705, 1, 29183);
+INSERT INTO spell_script_target VALUES (53706, 1, 29183);
+INSERT INTO spell_script_target VALUES (53677, 1, 29227);
+INSERT INTO spell_script_target VALUES (53685, 1, 29175);
 
 DELETE FROM `gameobject` WHERE `id` IN (191330);
 INSERT INTO `gameobject` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES

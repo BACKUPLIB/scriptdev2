@@ -1444,10 +1444,14 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
+
     void JustDied(Unit* killer)
     {
         if (Unit* pPlayer = m_creature->GetMap()->GetUnit(uiPlayerGUID))
+        {
             pPlayer->CastSpell(pPlayer, SPELL_DEATH_RACE_COMPLETE, true);
+            pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
+        }
     }
 };
 

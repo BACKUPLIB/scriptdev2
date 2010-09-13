@@ -512,6 +512,11 @@ enum
     SPELL_DUEL_VICTORY          = 52994,
     SPELL_DUEL_FLAG             = 52991,
 
+    SPELL_BLOOD_STRIKE          = 52374,
+    SPELL_DEATH_COIL            = 52375,
+    SPELL_ICY_TOUCH             = 52372,
+    SPELL_PLAGUE_STRIKE         = 52373,
+
     QUEST_DEATH_CHALLENGE       = 12733,
     FACTION_HOSTILE             = 2068,
     NPC_EBON_HOLD_DUEL          = 29025
@@ -531,6 +536,10 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     uint32 m_uiDuelTimer;
     bool m_bIsDuelInProgress;
+    uint32 m_uiBloodStrike_Timer;
+    uint32 m_uiDeathCoil_Timer;
+    uint32 m_uiIcyTouch_Timer;
+    uint32 m_uiPlagueStrike_Timer;
 
     void Reset()
     {
@@ -544,6 +553,10 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
         m_uiDuelerGUID = 0;
         m_uiDuelTimer = 3000;
         m_bIsDuelInProgress = false;
+        m_uiBloodStrike_Timer = 4000;
+        m_uiDeathCoil_Timer = 6000;
+        m_uiIcyTouch_Timer = 2000;
+        m_uiPlagueStrike_Timer = 5000;
     }
 
     void AttackedBy(Unit* pAttacker)
@@ -600,7 +613,37 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
             return;
         }
 
-        // TODO: spells
+        if (m_uiBloodStrike_Timer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_BLOOD_STRIKE);
+            m_uiBloodStrike_Timer = 9000;
+        }
+        else
+            m_uiBloodStrike_Timer -= uiDiff;
+
+        if (m_uiDeathCoil_Timer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_DEATH_COIL);
+            m_uiDeathCoil_Timer = 8000;
+        }
+        else
+            m_uiDeathCoil_Timer -= uiDiff;
+
+        if (m_uiIcyTouch_Timer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_ICY_TOUCH);
+            m_uiIcyTouch_Timer = 8000;
+        }
+        else
+            m_uiIcyTouch_Timer -= uiDiff;
+
+        if (m_uiPlagueStrike_Timer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_PLAGUE_STRIKE);
+            m_uiPlagueStrike_Timer = 8000;
+        }
+        else
+            m_uiPlagueStrike_Timer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }
@@ -850,11 +893,6 @@ enum
     SPELL_CHAINED_PESANT_CHEST      = 54612,
     SPELL_CHAINED_PESANT_BREATH     = 54613,
     SPELL_INITIATE_VISUAL           = 51519,
-
-    SPELL_BLOOD_STRIKE              = 52374,
-    SPELL_DEATH_COIL                = 52375,
-    SPELL_ICY_TOUCH                 = 52372,
-    SPELL_PLAGUE_STRIKE             = 52373,
 
     NPC_ANCHOR                      = 29521,
     FACTION_MONSTER                 = 16,

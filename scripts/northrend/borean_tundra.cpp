@@ -33,6 +33,7 @@ go_caribou_trap
 npc_orphaned_calf
 npc_lurgglbr
 npc_seaforium_depth_charge
+npc_mootoo
 EndContentData */
 
 #include "precompiled.h"
@@ -621,6 +622,66 @@ CreatureAI* GetAI_npc_lurgglbr(Creature* pCreature)
     return new npc_lurgglbrAI(pCreature);
 }
 
+
+/*#####
+## npc_mootoo
+#####*/
+
+enum
+{
+    SAY_START                     = -1999954,
+    SAY_MIDDLE                    = -1999955,
+    SAY_END                       = -1999956,
+
+    QUEST_ESCAPE_DUST             = 11664
+};
+
+struct MANGOS_DLL_DECL npc_mootooAI : public npc_escortAI
+{
+    npc_mootooAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 10:
+                DoScriptText(SAY_MIDDLE, m_creature, pPlayer);
+                break;
+            case 15:
+	            DoScriptText(SAY_END, m_creature, pPlayer);
+                pPlayer->GroupEventHappens(QUEST_ESCAPE_DUST, m_creature);
+                break;
+        }
+    }
+
+    void Reset() { }
+};
+
+bool QuestAccept_npc_mootoo(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ESCAPE_DUST)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_mootooAI* pEscortAI = dynamic_cast<npc_mootooAI*>(pCreature->AI()))
+        {
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+            pCreature->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_mootoo(Creature* pCreature)
+{
+    return new npc_mootooAI(pCreature);
+}
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -684,5 +745,11 @@ void AddSC_borean_tundra()
     newscript = new Script;
     newscript->Name = "npc_seaforium_depth_charge";
     newscript->GetAI = &GetAI_npc_seaforium_depth_charge;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_mootoo";
+    newscript->GetAI = &GetAI_npc_mootoo;
+    newscript->pQuestAccept = &QuestAccept_npc_mootoo;
     newscript->RegisterSelf();
 }

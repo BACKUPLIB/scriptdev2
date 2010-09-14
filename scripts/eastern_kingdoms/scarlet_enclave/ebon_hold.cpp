@@ -34,7 +34,8 @@ EndContentData */
 #include "follower_ai.h"
 #include "WorldPacket.h"
 #include "../../../game/TemporarySummon.h"
-#define LESS_MOB // if you do not have a good server and do not want it to be laggy as hell
+// let's try mode with more mobs
+//#define LESS_MOB // if you do not have a good server and do not want it to be laggy as hell
 
 /*######
 ## npc_a_special_surprise
@@ -1423,7 +1424,8 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
         if(uiGoBackTimer)
             if(uiGoBackTimer < diff)
             {
-                pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
+                if (Unit* pPlayer = m_creature->GetMap()->GetUnit(uiPlayerGUID))
+                    pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
                 uiGoBackTimer = 0; 
             }
                 uiGoBackTimer -= diff;
@@ -2070,23 +2072,12 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             uiSpawncheck = 1000;
             uiTargetcheck = 10000;
 
-            ((Unit*)m_creature)->SetStandState(UNIT_STAND_STATE_STAND);
+            m_creature->SetStandState(UNIT_STAND_STATE_STAND);
             m_creature->Mount(25279);
 
             UpdateWorldState(m_creature->GetMap(), WORLD_STATE_REMAINS, 0);
             //UpdateWorldState(m_creature->GetMap(), WORLD_STATE_COUNTDOWN, 0);
             UpdateWorldState(m_creature->GetMap(), WORLD_STATE_EVENT_BEGIN, 0);
-
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiTirionGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKorfaxGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiMaxwellGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEligorGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiRayneGUID))
-                pTemp->setDeathState(JUST_DIED);
 
             uiTirionGUID = NULL;
             uiKorfaxGUID = NULL;
@@ -2096,52 +2087,38 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
             for(uint8 i = 0; i < ENCOUNTER_DEFENDER_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiDefenderGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiDefenderGUID[i]);
                 uiDefenderGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_EARTHSHATTER_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEarthshatterGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiEarthshatterGUID[i]);
                 uiEarthshatterGUID[i] = 0;
             }
-
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKoltiraGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiOrbazGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiThassarianGUID))
-                pTemp->setDeathState(JUST_DIED);
-            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiLichKingGUID))
-                pTemp->setDeathState(JUST_DIED);
 
             uiKoltiraGUID = NULL;
             uiOrbazGUID = NULL;
             uiThassarianGUID = NULL;
             uiLichKingGUID = NULL;
+
             for(uint8 i = 0; i < ENCOUNTER_ABOMINATION_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiAbominationGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiAbominationGUID[i]);
                 uiAbominationGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_BEHEMOTH_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiBehemothGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiBehemothGUID[i]);
                 uiBehemothGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_GHOUL_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiGhoulGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiGhoulGUID[i]);
                 uiGhoulGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_WARRIOR_NUMBER; ++i)
             {
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiWarriorGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                DespawnNPC(uiWarriorGUID[i]);
                 uiWarriorGUID[i] = 0;
             }
         }
@@ -2269,7 +2246,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             } break;
             case 4:
                 DoScriptText(SAY_LIGHT_OF_DAWN27, m_creature);
-                ((Unit*)m_creature)->SetStandState(UNIT_STAND_STATE_KNEEL);
+                m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
 
                 if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKoltiraGUID))
                     pTemp->SetStandState(UNIT_STAND_STATE_KNEEL);
@@ -2613,7 +2590,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                         break;
 
                     case 31:
-                        ((Unit*)m_creature)->SetStandState(UNIT_STAND_STATE_STAND);
+                        m_creature->SetStandState(UNIT_STAND_STATE_STAND);
                         DoScriptText(EMOTE_LIGHT_OF_DAWN10, m_creature);
                         DoScriptText(SAY_LIGHT_OF_DAWN44, m_creature);
                         JumpToNextStep(3000);
@@ -3011,14 +2988,26 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                                         i->getSource()->CastSpell(i->getSource(), SPELL_THE_LIGHT_OF_DAWN_Q, false);
                             }
                         }
-                        m_creature->SetVisibility(VISIBILITY_OFF); // respawns another Darion for quest turn in
+                        //m_creature->SetVisibility(VISIBILITY_OFF); // respawns another Darion for quest turn in
                         m_creature->SummonCreature(NPC_HIGHLORD_DARION_MOGRAINE, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 180000);
                         JumpToNextStep(1000);
                         break;
 
                     case 72:
                         SetHoldState(false); // Escort ends
-                        JumpToNextStep(0);
+                        uiStep = 0;
+
+                        DespawnNPC(uiKoltiraGUID);
+                        DespawnNPC(uiOrbazGUID);
+                        DespawnNPC(uiThassarianGUID);
+
+                        DespawnNPC(uiTirionGUID);
+                        DespawnNPC(uiKorfaxGUID);
+                        DespawnNPC(uiMaxwellGUID);
+                        DespawnNPC(uiEligorGUID);
+                        DespawnNPC(uiRayneGUID);
+
+                        DespawnNPC(m_creature->GetGUID());
                         break;
                 }
 
@@ -3104,7 +3093,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 NPCChangeTarget(uiOrbazGUID);
                 NPCChangeTarget(uiThassarianGUID);
 
-                uiTargetcheck = 10000;
+                uiTargetcheck = 4000;
             }else uiTargetcheck -= diff;
 
             // Battle end
@@ -3145,7 +3134,8 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 for(uint8 i = 0; i < ENCOUNTER_WARRIOR_NUMBER; ++i)
                     DespawnNPC(uiWarriorGUID[i]);
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKorfaxGUID))
+                Creature* pTemp;
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKorfaxGUID))
                 {
                     pTemp->RemoveAllAuras();
                     pTemp->DeleteThreatList();
@@ -3154,9 +3144,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     pTemp->setFaction(m_creature->getFaction());
                     pTemp->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                     pTemp->GetMotionMaster()->MovePoint(0, LightofDawnLoc[9].x, LightofDawnLoc[9].y, LightofDawnLoc[9].z);
+                    pTemp = NULL;
                 }
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiMaxwellGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiMaxwellGUID))
                 {
                     pTemp->RemoveAllAuras();
                     pTemp->DeleteThreatList();
@@ -3165,9 +3156,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     pTemp->setFaction(m_creature->getFaction());
                     pTemp->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                     pTemp->GetMotionMaster()->MovePoint(0, LightofDawnLoc[12].x, LightofDawnLoc[12].y, LightofDawnLoc[12].z);
+                    pTemp = NULL;
                 }
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEligorGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEligorGUID))
                 {
                     pTemp->RemoveAllAuras();
                     pTemp->DeleteThreatList();
@@ -3176,10 +3168,12 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     pTemp->setFaction(m_creature->getFaction());
                     pTemp->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                     pTemp->GetMotionMaster()->MovePoint(0, LightofDawnLoc[15].x, LightofDawnLoc[15].y, LightofDawnLoc[15].z);
+                    pTemp = NULL;
                 }
+
                 DespawnNPC(uiRayneGUID);
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKoltiraGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKoltiraGUID))
                 {
                     pTemp->RemoveAllAuras();
                     pTemp->DeleteThreatList();
@@ -3189,12 +3183,16 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     pTemp->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                     pTemp->GetMotionMaster()->MovePoint(0, LightofDawnLoc[18].x, LightofDawnLoc[18].y, LightofDawnLoc[18].z);
                     pTemp->CastSpell(pTemp, SPELL_THE_LIGHT_OF_DAWN, false);
+                    pTemp = NULL;
                 }
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiOrbazGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiOrbazGUID))
+                {
                     DoScriptText(EMOTE_LIGHT_OF_DAWN04, pTemp);
+                    pTemp = NULL;
+                }
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiThassarianGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiThassarianGUID))
                 {
                     pTemp->RemoveAllAuras();
                     pTemp->DeleteThreatList();
@@ -3204,13 +3202,13 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                     pTemp->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
                     pTemp->GetMotionMaster()->MovePoint(0, LightofDawnLoc[20].x, LightofDawnLoc[20].y, LightofDawnLoc[20].z);
                     pTemp->CastSpell(pTemp, SPELL_THE_LIGHT_OF_DAWN, false);
+                    pTemp = NULL;
                 }
 
-                if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiTirionGUID))
+                if (pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiTirionGUID))
                     DoScriptText(SAY_LIGHT_OF_DAWN26, pTemp);
 
                 SetHoldState(false);
-
             }else uiFight_duration -= diff;
 
             DoMeleeAttackIfReady();
@@ -3226,15 +3224,23 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
     void NPCChangeTarget(uint64 ui_GUID)
     {
         if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(ui_GUID))
+        {
+            bool m_bNoTarget = true;
+
             if (pTemp->isAlive())
-                if (Unit* pTarger = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                    if (pTarger->isAlive())
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                    if (pTarget->isAlive())
                     {
-                        ((Creature*)pTemp)->AddThreat(pTarger, 0.0f);
-                        ((Creature*)pTemp)->AI()->AttackStart(pTarger);
-                        ((Creature*)pTemp)->SetInCombatWith(pTarger);
-                        pTarger->SetInCombatWith(pTemp);
+                        ((Creature*)pTemp)->AddThreat(pTarget, 0.0f);
+                        ((Creature*)pTemp)->AI()->AttackStart(pTarget);
+                        ((Creature*)pTemp)->SetInCombatWith(pTarget);
+                        pTarget->SetInCombatWith(pTemp);
+                        m_bNoTarget = false;
                     }
+
+            if(m_bNoTarget)
+                pTemp->GetMotionMaster()->MovePoint(0,LightofDawnLoc[0].x+rand()%25,LightofDawnLoc[0].y+rand()%25,LightofDawnLoc[0].z);
+        }
     }
 
     void SpawnNPC()
@@ -3244,38 +3250,66 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
         // Death
         for(uint8 i = 0; i < ENCOUNTER_GHOUL_NUMBER; ++i)
         {
-            if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiGhoulGUID[i])))
+            pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiGhoulGUID[i]);
+            if (!pTemp)
             {
                 pTemp = m_creature->SummonCreature(NPC_ACHERUS_GHOUL, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 300000);
                 pTemp->setFaction(2084);
                 uiGhoulGUID[i] = pTemp->GetGUID();
             }
+            else if(pTemp->isAlive() && pTemp->GetDistance2d(m_creature) > 55.0f)
+            {   //bringt NPC back to fight if he ran away
+                pTemp->Relocate(LightofDawnLoc[0].x+rand()%30,LightofDawnLoc[0].y+rand()%30,LightofDawnLoc[0].z,pTemp->GetOrientation());
+                NPCChangeTarget(pTemp->GetGUID());
+                pTemp = NULL;
+            }
         }
         for(uint8 i = 0; i < ENCOUNTER_ABOMINATION_NUMBER; ++i)
         {
-            if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiAbominationGUID[i])))
+            pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiAbominationGUID[i]);
+            if (!pTemp)
             {
                 pTemp = m_creature->SummonCreature(NPC_WARRIOR_OF_THE_FROZEN_WASTES, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 300000);
                 pTemp->setFaction(2084);
                 uiAbominationGUID[i] = pTemp->GetGUID();
             }
+                else if(pTemp->isAlive() && pTemp->GetDistance2d(m_creature) > 55.0f)
+            {   //bringt NPC back to fight if he ran away
+                pTemp->Relocate(LightofDawnLoc[0].x+rand()%30,LightofDawnLoc[0].y+rand()%30,LightofDawnLoc[0].z,pTemp->GetOrientation());
+                NPCChangeTarget(pTemp->GetGUID());
+                pTemp = NULL;
+            }
         }
         for(uint8 i = 0; i < ENCOUNTER_WARRIOR_NUMBER; ++i)
         {
-            if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiWarriorGUID[i])))
+            pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiWarriorGUID[i]);
+            if (!pTemp)
             {
                 pTemp = m_creature->SummonCreature(NPC_RAMPAGING_ABOMINATION, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 300000);
                 pTemp->setFaction(2084);
                 uiWarriorGUID[i] = pTemp->GetGUID();
             }
+            else if(pTemp->isAlive() && pTemp->GetDistance2d(m_creature) > 55.0f)
+            {   //bringt NPC back to fight if he ran away
+                pTemp->Relocate(LightofDawnLoc[0].x+rand()%30,LightofDawnLoc[0].y+rand()%30,LightofDawnLoc[0].z,pTemp->GetOrientation());
+                NPCChangeTarget(pTemp->GetGUID());
+                pTemp = NULL;
+            }
         }
         for(uint8 i = 0; i < ENCOUNTER_BEHEMOTH_NUMBER; ++i)
         {
-            if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiBehemothGUID[i])))
+            pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiBehemothGUID[i]);
+            if (!pTemp)
             {
                 pTemp = m_creature->SummonCreature(NPC_FLESH_BEHEMOTH, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 300000);
                 pTemp->setFaction(2084);
                 uiBehemothGUID[i] = pTemp->GetGUID();
+            }
+            else if(pTemp->isAlive() && pTemp->GetDistance2d(m_creature) > 55.0f)
+            {   //bringt NPC back to fight if he ran away
+                pTemp->Relocate(LightofDawnLoc[0].x+rand()%30,LightofDawnLoc[0].y+rand()%30,LightofDawnLoc[0].z,pTemp->GetOrientation());
+                NPCChangeTarget(pTemp->GetGUID());
+                pTemp = NULL;
             }
         }
 
@@ -3288,8 +3322,10 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 pTemp->setFaction(2089);
                 m_creature->AddThreat(pTemp, 0.0f);
                 uiDefenderGUID[i] = pTemp->GetGUID();
+                pTemp = NULL;
             }
         }
+
         for(uint8 i = 0; i < ENCOUNTER_EARTHSHATTER_NUMBER; ++i)
         {
             if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEarthshatterGUID[i])))
@@ -3298,46 +3334,51 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 pTemp->setFaction(2089);
                 m_creature->AddThreat(pTemp, 0.0f);
                 uiEarthshatterGUID[i] = pTemp->GetGUID();
+                pTemp = NULL;
             }
         }
+
         if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKorfaxGUID)))
         {
             pTemp = m_creature->SummonCreature(NPC_KORFAX_CHAMPION_OF_THE_LIGHT, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 600000);
             pTemp->setFaction(2089);
             m_creature->AddThreat(pTemp, 0.0f);
             uiKorfaxGUID = pTemp->GetGUID();
+            pTemp = NULL;
         }
+
         if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiMaxwellGUID)))
         {
             pTemp = m_creature->SummonCreature(NPC_LORD_MAXWELL_TYROSUS, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 600000);
             pTemp->setFaction(2089);
             m_creature->AddThreat(pTemp, 0.0f);
             uiMaxwellGUID = pTemp->GetGUID();
+            pTemp = NULL;
         }
+
         if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiEligorGUID)))
         {
             pTemp = m_creature->SummonCreature(NPC_COMMANDER_ELIGOR_DAWNBRINGER, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 600000);
             pTemp->setFaction(2089);
             m_creature->AddThreat(pTemp, 0.0f);
             uiEligorGUID = pTemp->GetGUID();
+            pTemp = NULL;
         }
+
         if (!(pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiRayneGUID)))
         {
             pTemp = m_creature->SummonCreature(NPC_RAYNE, LightofDawnLoc[0].x+rand()%30, LightofDawnLoc[0].y+rand()%30, LightofDawnLoc[0].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 300000);
             pTemp->setFaction(2089);
             m_creature->AddThreat(pTemp, 0.0f);
             uiRayneGUID = pTemp->GetGUID();
+            pTemp = NULL;
         }
     }
 
     void DespawnNPC(uint64 pGUID)
     {
         if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(pGUID))
-            if (pTemp->isAlive())
-            {
-                pTemp->SetVisibility(VISIBILITY_OFF);
-                pTemp->DealDamage(pTemp, pTemp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            }
+            pTemp->ForcedDespawn();
     }
 };
 
@@ -3347,7 +3388,7 @@ bool GossipHello_npc_highlord_darion_mograine(Player* pPlayer, Creature* pCreatu
         pPlayer->PrepareQuestMenu( pCreature->GetGUID() );
 
     if (pPlayer->GetQuestStatus(12801) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->ADD_GOSSIP_ITEM( 0, "I am ready.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM( 0, "Ich bin bereit.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
     pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 

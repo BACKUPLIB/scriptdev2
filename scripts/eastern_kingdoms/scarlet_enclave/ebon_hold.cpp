@@ -1345,11 +1345,12 @@ struct MANGOS_DLL_DECL npc_crusade_persuadedAI : public ScriptedAI
 ######*/
 enum salanar
 {
-    SPELL_REALM_OF_SHADOWS          = 52275,
-    //SPELL_DEATH_RACE_COMPLETE       = 52361,
-    SPELL_HORSEMANS_CALL            = 52362, // not working
+    SPELL_REALM_OF_SHADOWS          = 52693,
+    SPELL_DEATH_RACE_COMPLETE       = 52361,
     NPC_ACHERUS_DEATHCHARGER        = 28782,
-    NPC_DARK_RIDER_OF_ACHERUS       = 28768
+    NPC_DARK_RIDER_OF_ACHERUS       = 28768,
+    QUEST_INTO_THE_REALM_OF_SHADOWS = 12687,
+    SAY_SUMMONER                    = -1999957
 };
 
 bool GossipHello_npc_salanar_the_horseman(Player* pPlayer, Creature* pCreature)
@@ -1357,7 +1358,7 @@ bool GossipHello_npc_salanar_the_horseman(Player* pPlayer, Creature* pCreature)
     if (pCreature->isQuestGiver())
         pPlayer->PrepareQuestMenu( pCreature->GetGUID() );
 
-    if (pPlayer->GetQuestStatus(12687) == QUEST_STATUS_INCOMPLETE)
+    if (pPlayer->GetQuestStatus(QUEST_INTO_THE_REALM_OF_SHADOWS) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM( 0, "Send me into the Realm of Shadows.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
@@ -1372,10 +1373,89 @@ bool GossipSelect_npc_salanar_the_horseman(Player* pPlayer, Creature *pCreature,
         case GOSSIP_ACTION_INFO_DEF+1:
             pPlayer->CLOSE_GOSSIP_MENU();
             pPlayer->CastSpell(pPlayer, SPELL_REALM_OF_SHADOWS, true);
-            pPlayer->SummonCreature(NPC_DARK_RIDER_OF_ACHERUS, pCreature->GetPositionX(), pCreature->GetPositionY(), pCreature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 180000);
             break;
     }
     return true;
+}
+
+/*######
+## npc_salanar_the_horseman_shadow_realm
+######*/
+
+struct MANGOS_DLL_DECL npc_salanar_the_horseman_shadow_realmAI : public ScriptedAI
+{
+    npc_salanar_the_horseman_shadow_realmAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        Reset();
+        if (Unit* summoner = ((TemporarySummon*)pCreature)->GetSummoner())
+        {
+            float angle = pCreature->GetAngle(summoner);
+            float radius = pCreature->GetDistance2d(summoner);
+
+            Map const *map = m_creature->GetMap();
+            float x = pCreature->GetPositionX() + cos(angle)*0.7*radius;
+            float y = pCreature->GetPositionY() + sin(angle)*0.7*radius;
+            float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+            pCreature->GetMotionMaster()->MovePoint(1, x, y,z);
+        }
+    }
+
+    uint32 m_timer;
+    bool m_say, m_completeQuest;
+
+    void Reset()
+    {
+        m_timer = 0;
+        m_say = false;
+        m_completeQuest = false;
+    }
+
+    void MovementInform(uint32 uiMoveType, uint32 uiPointId)
+    {
+        if (uiMoveType != POINT_MOTION_TYPE)
+            return;
+
+        if (uiPointId == 1)
+        {
+            m_timer = 1500;
+            m_say = true;
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (m_say || m_completeQuest)
+        {
+            if (m_timer < diff)
+            {
+                if (m_say)
+                {
+                    DoScriptText(SAY_SUMMONER, m_creature, ((TemporarySummon*)m_creature)->GetSummoner());
+                    m_say = false;
+                    m_completeQuest = true;
+                    m_timer = 4000;
+                }
+                else //if (m_completeQuest)
+                {
+                    // For any reason EffectQuestComplete completes the quest of the caster,
+                    // not the target. Don't know if this is intended...
+                    if (Unit* pSummoner = ((TemporarySummon*)m_creature)->GetSummoner())
+                        pSummoner->CastSpell(pSummoner, SPELL_DEATH_RACE_COMPLETE, true);
+                    ((TemporarySummon*)m_creature)->UnSummon();
+                }
+            }
+            else
+                m_timer -= diff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_salanar_the_horseman_shadow_realmAI(Creature* pCreature)
+{
+    if (pCreature->isTemporarySummon())
+        return new npc_salanar_the_horseman_shadow_realmAI(pCreature);
+    else
+        return NULL;
 }
 
 /*######
@@ -1387,7 +1467,6 @@ enum darkrider
     //SPELL_BLOOD_STRIKE          = 52374,
     SPELL_PLAGUE_STRIKE2        = 50688,
     SPELL_THROW                 = 52356,
-    SPELL_DEATH_RACE_COMPLETE   = 52361
 };
 // 52693
 struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
@@ -1401,8 +1480,6 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
     uint32 uiIcy_touch_timer;
     uint32 uiPlague_strike_timer;
     uint32 uiThrow_timer;
-    uint64 uiPlayerGUID;
-    uint32 uiGoBackTimer;
 
     void Reset()
     {
@@ -1410,26 +1487,10 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
         uiIcy_touch_timer = 4000;
         uiPlague_strike_timer = 5000;
         uiThrow_timer = 10000;
-        uiPlayerGUID = 0;
-        uiGoBackTimer = 0;
-    }
-
-    void Aggro(Unit* who)
-    {
-        uiPlayerGUID = who->GetGUID();
     }
 
     void UpdateAI(const uint32 diff) 
     {
-        if(uiGoBackTimer)
-            if(uiGoBackTimer < diff)
-            {
-                if (Unit* pPlayer = m_creature->GetMap()->GetUnit(uiPlayerGUID))
-                    pPlayer->RemoveAurasDueToSpell(SPELL_REALM_OF_SHADOWS);
-                uiGoBackTimer = 0; 
-            }
-                uiGoBackTimer -= diff;
-
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -1462,11 +1523,9 @@ struct MANGOS_DLL_DECL mob_dark_rider_of_acherusAI : public ScriptedAI
 
     void JustDied(Unit* killer)
     {
-        if (Unit* pPlayer = m_creature->GetMap()->GetUnit(uiPlayerGUID))
-        {
-            pPlayer->CastSpell(pPlayer, SPELL_DEATH_RACE_COMPLETE, true);
-            uiGoBackTimer = 15000;
-        }
+        m_creature->Unmount();
+        m_creature->SummonCreature(28782,m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(),
+            m_creature->GetOrientation(), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60*1000);
     }
 };
 
@@ -3677,5 +3736,10 @@ void AddSC_ebon_hold()
     pNewScript = new Script;
     pNewScript->Name = "npc_death_comes_from_on_high_dummy_targetsAI";
     pNewScript->GetAI = &GetAI_npc_death_comes_from_on_high_dummy_targets;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_salanar_the_horseman_shadow_realm";
+    pNewScript->GetAI = &GetAI_npc_salanar_the_horseman_shadow_realmAI;
     pNewScript->RegisterSelf();
 }

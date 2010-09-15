@@ -1906,6 +1906,56 @@ CreatureAI* GetAI_npc_mirror_image(Creature* pCreature)
     return new npc_mirror_imageAI(pCreature);
 };
 
+/*######
+## npc_amphitheater_of_anguish
+######*/
+
+enum
+{
+	QUEST_FROM_BEYOND = 12934,
+	QUEST_KORRAK_THE_BLOODRAGER = 12936,
+	QUEST_MAGNATAUR = 12933,
+	QUEST_TUSKARRMAGEDDON = 12935,
+	QUEST_YGGDRAS = 12932,
+	QUEST_YGGDRAS_2 = 12954,
+	QUEST_THE_CHAMPION_OF_ANGUISH = 12948,
+};
+
+struct MANGOS_DLL_DECL npc_amphitheater_of_anguishAI : public ScriptedAI
+{
+    npc_amphitheater_of_anguishAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+
+	}
+
+	void Reset() { }
+
+	void JustDied(Unit* pKiller)
+	{
+		if (Player* pPlayer = pKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
+		{
+			if (pPlayer->GetQuestStatus(QUEST_FROM_BEYOND) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_FROM_BEYOND);
+			else if (pPlayer->GetQuestStatus(QUEST_KORRAK_THE_BLOODRAGER) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_KORRAK_THE_BLOODRAGER);
+			else if (pPlayer->GetQuestStatus(QUEST_MAGNATAUR) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_MAGNATAUR);
+			else if (pPlayer->GetQuestStatus(QUEST_TUSKARRMAGEDDON) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_TUSKARRMAGEDDON);
+			else if (pPlayer->GetQuestStatus(QUEST_YGGDRAS) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_YGGDRAS);
+			else if (pPlayer->GetQuestStatus(QUEST_YGGDRAS_2) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_YGGDRAS_2);
+			else if (pPlayer->GetQuestStatus(QUEST_THE_CHAMPION_OF_ANGUISH) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->CompleteQuest(QUEST_THE_CHAMPION_OF_ANGUISH);
+		}
+	}
+};
+
+CreatureAI* GetAI_npc_amphitheater_of_anguish(Creature* pCreature)
+{
+    return new npc_amphitheater_of_anguishAI(pCreature);
+}
 
 void AddSC_npcs_special()
 {
@@ -2002,4 +2052,8 @@ void AddSC_npcs_special()
     newscript->GetAI = &GetAI_npc_mirror_image;
     newscript->RegisterSelf();
 
+	newscript = new Script;
+    newscript->Name = "npc_amphitheater_of_anguish";
+    newscript->GetAI = &GetAI_npc_amphitheater_of_anguish;
+    newscript->RegisterSelf();
 }

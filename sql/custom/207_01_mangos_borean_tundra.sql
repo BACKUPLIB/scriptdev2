@@ -40,3 +40,24 @@ UPDATE `creature_template` SET `ScriptName` = "npc_seaforium_depth_charge" WHERE
 
 # make gameobject for quest 11956 despawn after using it
 UPDATE `gameobject_template` SET `data5` = 1 WHERE `entry` = 188141;
+
+-- fix quest 11656 (Burn in Effigy)
+-- add quest credit NPCs
+DELETE FROM `creature` WHERE `id` IN (25511,25513);
+INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`spawndist`,`curhealth`,`MovementType`) VALUES 
+(25511,571,1,2,11868,3022.35,6785.00,3.16,300,5,8982,0),
+(25513,571,1,2,11868,2523.71,6839.83,0.76,300,5,8982,0);
+
+-- update existing quest credit NPC phase masks
+UPDATE `creature` SET `phaseMask` = 2 WHERE `id` IN (25510,25512);
+
+-- add spellfocus objects
+DELETE FROM `gameobject` WHERE `id` IN (300173);
+INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`state`) VALUES 
+(300173,571,1,2,3048.65,6752.09,6.49,250,1),
+(300173,571,1,2,3022.35,6785.00,3.16,250,1),
+(300173,571,1,2,2522.94,6854.04,0.76,250,1),
+(300173,571,1,2,2868.42,6864.51,3.80,250,1);
+
+-- enlarge spellfocus radius
+UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300173;

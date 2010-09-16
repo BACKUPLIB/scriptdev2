@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Borean_Tundra
 SD%Complete: 100
-SDComment: Quest support: 11708, 11692, 11611, 11961, 11865, 11878, 11608. Taxi vendors. 11570
+SDComment: Quest support: 11708, 11692, 11611, 11961, 11865, 11878, 11608, 11895. Taxi vendors. 11570
 SDCategory: Borean Tundra
 EndScriptData */
 
@@ -34,6 +34,8 @@ npc_orphaned_calf
 npc_lurgglbr
 npc_seaforium_depth_charge
 npc_mootoo
+npc_storm_totem
+npc_sage_earth_and_sky
 EndContentData */
 
 #include "precompiled.h"
@@ -682,6 +684,65 @@ CreatureAI* GetAI_npc_mootoo(Creature* pCreature)
     return new npc_mootooAI(pCreature);
 }
 
+/*#####
+## npc_storm_totem
+#####*/
+
+enum
+{
+    QUEST_MASTER_THE_STORM  = 11895,
+    NPC_STORM_TEMPEST       = 26045,
+    NPC_STORM_TOTEM         = 26048
+};
+
+struct MANGOS_DLL_DECL npc_storm_totemAI : public ScriptedAI
+{
+    npc_storm_totemAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+
+    Map*    pMap;
+    uint32  m_uiCheckTimer;
+    std::list<uint64> list;
+
+    void Reset()
+    {
+        pMap = m_creature->GetMap();
+        m_uiCheckTimer = 1000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        for (std::list<uint64>::iterator itr = list.begin(); itr != list.end(); ++itr)
+        {
+            if(Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                if(pPlayer->GetQuestStatus(QUEST_MASTER_THE_STORM) == QUEST_STATUS_INCOMPLETE && m_creature->GetDistance2d(pPlayer) < 1.0f)
+                {
+                    DoSpawnCreature(NPC_STORM_TEMPEST,rand()%5,rand()%5,0,0,TEMPSUMMON_DEAD_DESPAWN,30000);
+                    list.clear();
+                    return;
+                }
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_storm_totem(Creature* pCreature)
+{
+    return new npc_storm_totemAI(pCreature);
+}
+
+/*#####
+## npc_sage_earth_and_sky
+#####*/
+
+bool QuestAccept_npc_sage_earth_and_sky(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_MASTER_THE_STORM)
+    {
+        if(Creature* pTotem = GetClosestCreatureWithEntry(pCreature,NPC_STORM_TOTEM,30.0f))
+            ((npc_storm_totemAI*) pTotem->AI())->list.push_back(pPlayer->GetGUID());
+    }
+    return true;
+}
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -751,5 +812,15 @@ void AddSC_borean_tundra()
     newscript->Name = "npc_mootoo";
     newscript->GetAI = &GetAI_npc_mootoo;
     newscript->pQuestAccept = &QuestAccept_npc_mootoo;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_storm_totem";
+    newscript->GetAI = &GetAI_npc_storm_totem;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_sage_earth_and_sky";
+    newscript->pQuestAccept = &QuestAccept_npc_sage_earth_and_sky;
     newscript->RegisterSelf();
 }

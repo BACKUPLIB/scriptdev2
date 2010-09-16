@@ -61,3 +61,7 @@ INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`posit
 
 -- enlarge spellfocus radius
 UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300173;
+
+-- fix quest 11895 (master the storm)
+UPDATE `creature_template` SET `ScriptName` = "npc_storm_totem" WHERE `entry` = 26048;
+UPDATE `creature_template` SET `ScriptName` = "npc_sage_earth_and_sky" WHERE `entry` = 25982;

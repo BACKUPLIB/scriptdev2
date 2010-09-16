@@ -1919,16 +1919,79 @@ enum
 	QUEST_YGGDRAS = 12932,
 	QUEST_YGGDRAS_2 = 12954,
 	QUEST_THE_CHAMPION_OF_ANGUISH = 12948,
+
+	NPC_AZBARIN = 30026,
+    NPC_KORRAK = 30023,
+    NPC_STINKBEARD = 30017,
+    NPC_ORINOKO = 30020,
+    NPC_YGGDRAS = 30014,
+	NPC_VLADOF = 30022,
+	NPC_WHISKER = 30113,
+
+	SPELL_CLEAVE = 40504,
+	SPELL_CORRODE_FLESH = 57076,
+	SPELL_CHARGE = 24193,
+	SPELL_ENRAGE = 42745,
+	SPELL_GROW = 55948, 
+	SPELL_UPPERCUT = 30471,
+	SPELL_KNOCK_AWAY = 31389,
+	SPELL_THUNDER_CLAP = 15588,
+	SPELL_ENRAGE_2 = 50420,
+	SPELL_IMPALE = 55929, 
+	SPELL_FISHY_SCENT = 55937,
+	SPELL_BATTLE_SHOUT = 32064,
+	SPELL_BLOOD_BOIL = 55974, 
+	SPELL_BLOOD_PLAGUE = 55973, 
+	SPELL_BLOOD_PRESENCE = 50689,
+	SPELL_WHIRLWIND = 55977,
+
 };
 
 struct MANGOS_DLL_DECL npc_amphitheater_of_anguishAI : public ScriptedAI
 {
     npc_amphitheater_of_anguishAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-
+		Reset();
 	}
 
-	void Reset() { }
+	uint32 m_uiCleaveTimer;
+	uint32 m_uiCorrodeFleshTimer;
+	uint32 m_uiChargeTimer;
+	uint32 m_uiEnrageTimer;
+	uint32 m_uiGrowTimer;
+	uint32 m_uiUppercutTimer;
+	uint32 m_uiKnockAwayTimer;
+	uint32 m_uiThunderClapTimer;
+	uint32 m_uiEnrage2Timer;
+	uint32 m_uiImpaleTimer;
+	uint32 m_uiFishyScentTimer;
+	uint32 m_uiBattleShoutTimer;
+	uint32 m_uiSummonWhiskerTimer;
+	uint32 m_uiBloodBoilTimer;
+	uint32 m_uiBloodPlagueTimer;
+	uint32 m_uiBloodPresenceTimer;
+	uint32 m_uiWhirlwindTimer;
+
+	void Reset() 
+	{ 
+		m_uiCleaveTimer = urand(5000, 12000);
+		m_uiCorrodeFleshTimer = urand(3000, 17000);
+		m_uiChargeTimer = urand(12000, 20000);
+		m_uiEnrageTimer = urand(20000, 22000);
+		m_uiGrowTimer = 5000;
+		m_uiUppercutTimer = urand(6000, 8000);
+		m_uiKnockAwayTimer = urand(2000, 5000);
+		m_uiThunderClapTimer = urand(10000, 11000);
+		m_uiEnrage2Timer = 50000;
+		m_uiImpaleTimer = urand(12000, 13000);
+		m_uiFishyScentTimer = urand(8000, 10000);
+		m_uiBattleShoutTimer = urand(5000, 6000);
+		m_uiSummonWhiskerTimer = urand(1000, 2000);
+		m_uiBloodBoilTimer = urand(13000, 18000);
+		m_uiBloodPlagueTimer = urand(5000, 8000);
+		m_uiBloodPresenceTimer = 500;
+		m_uiWhirlwindTimer = 5000;
+	}
 
 	void JustDied(Unit* pKiller)
 	{
@@ -1949,6 +2012,132 @@ struct MANGOS_DLL_DECL npc_amphitheater_of_anguishAI : public ScriptedAI
 			else if (pPlayer->GetQuestStatus(QUEST_THE_CHAMPION_OF_ANGUISH) == QUEST_STATUS_INCOMPLETE)
 				pPlayer->CompleteQuest(QUEST_THE_CHAMPION_OF_ANGUISH);
 		}
+	}
+
+	void UpdateAI(const uint32 uiDiff)
+	{
+		if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+		switch(m_creature->GetEntry())
+		{
+			case NPC_YGGDRAS:
+				if (m_uiCleaveTimer < uiDiff)
+				{
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_CLEAVE, true);
+					m_uiCleaveTimer = urand(10000, 12000);
+				}else m_uiCleaveTimer -= uiDiff;
+
+				if (m_uiCorrodeFleshTimer < uiDiff)
+				{
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_CORRODE_FLESH, true);
+					m_uiCorrodeFleshTimer = urand(10000, 18000);
+				}else m_uiCorrodeFleshTimer -= uiDiff;
+
+				break;
+			case NPC_KORRAK:
+				if (m_uiChargeTimer < uiDiff)
+				{
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_CHARGE, true);
+					m_uiChargeTimer = urand(12000, 24000);
+				}else m_uiChargeTimer -= uiDiff;
+
+				if (m_uiEnrageTimer < uiDiff)
+				{
+					m_creature->CastSpell(m_creature, SPELL_ENRAGE, true);
+					m_uiEnrageTimer = urand(24000, 32000);
+				}else m_uiEnrageTimer -= uiDiff;
+
+				if (m_uiGrowTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_GROW, true);
+					m_uiGrowTimer = 10000;
+				}else m_uiGrowTimer -= uiDiff;
+
+				if (m_uiUppercutTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_UPPERCUT, true);
+					m_uiUppercutTimer = urand(18000, 22000);
+				}else m_uiUppercutTimer -= uiDiff;
+			
+				break;
+			case NPC_STINKBEARD:
+				if (m_uiKnockAwayTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_KNOCK_AWAY, true);
+					m_uiKnockAwayTimer = urand(18000, 19000);
+				}else m_uiKnockAwayTimer -= uiDiff;
+
+				if (m_uiThunderClapTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_THUNDER_CLAP, true);
+					m_uiThunderClapTimer = urand(12000, 15000);
+				}else m_uiThunderClapTimer -= uiDiff;
+
+				if (m_uiEnrage2Timer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_ENRAGE_2, true);
+					m_uiEnrage2Timer = 300000;
+				}else m_uiEnrage2Timer -= uiDiff;
+
+				break;
+			case NPC_ORINOKO:
+				if (m_uiImpaleTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_IMPALE, true);
+					m_uiImpaleTimer = urand(18000, 19000);
+				}else m_uiImpaleTimer -= uiDiff;
+
+				if (m_uiFishyScentTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_FISHY_SCENT, true);
+					m_uiFishyScentTimer = urand(20000, 26000);
+				}else m_uiFishyScentTimer -= uiDiff;
+
+				if (m_uiBattleShoutTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_BATTLE_SHOUT, true);
+					m_uiBattleShoutTimer = 120000;
+				}else m_uiBattleShoutTimer -= uiDiff;
+
+				if (m_uiSummonWhiskerTimer < uiDiff)
+				{	
+					m_creature->SummonCreature(NPC_WHISKER, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+					m_uiSummonWhiskerTimer = 600000;
+				}else m_uiSummonWhiskerTimer -= uiDiff;
+
+				break;
+			case NPC_VLADOF:
+				if (m_uiBloodBoilTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_BLOOD_BOIL, true);
+					m_uiBloodBoilTimer = urand(18000, 19000);
+				}else m_uiBloodBoilTimer -= uiDiff;
+
+				if (m_uiBloodPlagueTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_BLOOD_PLAGUE, true);
+					m_uiBloodPlagueTimer = urand(22000, 24000);
+				}else m_uiBloodPlagueTimer -= uiDiff;
+
+				if (m_uiBloodPresenceTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature, SPELL_BLOOD_PRESENCE, true);
+					m_uiBloodPresenceTimer = 120000;
+				}else m_uiBloodPresenceTimer -= uiDiff;
+
+				if (m_uiWhirlwindTimer < uiDiff)
+				{	
+					m_creature->CastSpell(m_creature->getVictim(), SPELL_WHIRLWIND, true);				
+					m_uiWhirlwindTimer = 10000;
+				}else m_uiWhirlwindTimer -= uiDiff;
+
+				break;
+			default:
+				break;
+		}
+
+		DoMeleeAttackIfReady();
 	}
 };
 

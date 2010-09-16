@@ -19,3 +19,6 @@ INSERT IGNORE INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event
 (3074602,30746,0,0,100,1,1000,1500,6000,10000,11,9672,0,0,"Master Summoner Zarod - Frostbolt"),
 (3074603,30746,0,0,100,1,1500,2500,10000,14000,11,28873,0,0,"Master Summoner Zarod - Lich Slap"),
 (3098801,30988,0,0,100,1,0,0,2000,5000,11,55079,0,0,"Scourgebeak Fleshripper - Swoop");
+
+-- change faction of NPC 35984 & 30281 to prevent them from fighting each other and players
+UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35 WHERE `entry` IN (35984,30281);

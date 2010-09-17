@@ -31,3 +31,9 @@ UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35 WHERE `entry` 
 
 -- fix quest 12847
 UPDATE `gameobject_template` SET `data2` = 5, `data4` = 1, `data11` = 1, `data9` = 1 WHERE `entry` = 191579;
+
+-- make NPC 33778 (Tournament Hyppogryph) walk on ground instead of walking in the air
+UPDATE `creature_template` SET `InhabitType` = 3 WHERE `entry` = 33778;
+
+-- fix NPCs 36065 & 36066 attacking Players on tournament ground
+UPDATE `creature_template` SET `unit_flags` = 131904 WHERE `entry` IN (36065,36066); #320

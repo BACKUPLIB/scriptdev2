@@ -2109,8 +2109,6 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
     void Reset()
     {
-        if (!HasEscortState(STATE_ESCORT_ESCORTING))
-        {
             bIsBattle = false;
             uiStep = 0;
             uiPhase_timer = 3000;
@@ -2130,9 +2128,6 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             uiFight_speech = 15000;
             uiSpawncheck = 1000;
             uiTargetcheck = 10000;
-
-            m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-            m_creature->Mount(25279);
 
             UpdateWorldState(m_creature->GetMap(), WORLD_STATE_REMAINS, 0);
             //UpdateWorldState(m_creature->GetMap(), WORLD_STATE_COUNTDOWN, 0);
@@ -2180,7 +2175,6 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 DespawnNPC(uiWarriorGUID[i]);
                 uiWarriorGUID[i] = 0;
             }
-        }
     }
 
     void AttackStart(Unit* who)

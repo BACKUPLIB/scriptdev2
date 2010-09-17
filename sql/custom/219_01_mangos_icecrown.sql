@@ -28,3 +28,6 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 
 -- change faction of NPC 35984 & 30281 to prevent them from fighting each other and players
 UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35 WHERE `entry` IN (35984,30281);
+
+-- fix quest 12847
+UPDATE `gameobject_template` SET `data2` = 5, `data4` = 1, `data11` = 1, `data9` = 1 WHERE `entry` = 191579;

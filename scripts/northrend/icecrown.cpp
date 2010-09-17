@@ -74,26 +74,32 @@ bool GossipSelect_npc_arete(Player* pPlayer, Creature* pCreature, uint32 uiSende
     switch(uiAction)
     {
         case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE2, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE3, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE4, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+4:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE5, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+5:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE6, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+6:
+            pPlayer->PlayerTalkClass->ClearMenus();
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE7, pCreature->GetGUID());
             break;

@@ -11,6 +11,9 @@ UPDATE `creature_template` SET `ScriptName`='npc_crusade_persuaded',ainame="" WH
 -- An End To All Things...
 UPDATE creature_template SET InhabitType = 3 WHERE entry = 28670;
 
+-- The Plaguebringers Request
+UPDATE `quest_template` SET `PrevQuestId` = 12716 WHERE `entry` = 12751;
+
 -- Ambush At The Overlook
 DELETE FROM `creature` WHERE `id` = 28957;
 INSERT INTO `creature` (`id`, `map`, `phaseMask`, `spawnMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 

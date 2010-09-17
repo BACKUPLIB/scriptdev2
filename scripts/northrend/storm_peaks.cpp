@@ -28,6 +28,7 @@ npc_frostborn_scout
 EndContentData */
 
 #include "precompiled.h"
+#include "../../../game/ObjectMgr.h"
 
 /*######
 ## npc_frostborn_scout
@@ -245,6 +246,186 @@ bool GossipSelect_npc_roxi_ramrocket(Player* pPlayer, Creature* pCreature, uint3
     return true;
 }
 
+/*######
+## npc_goblin_prisoner
+######*/
+
+enum
+{
+    QUEST_THEY_TOOK_OUR_MEN = 12843,
+    NPC_GOBLIN_PRISONER     = 29466,
+    NPC_SAY_EXIT            = -1999958,
+    NPC_SAY_UNGRATEFUL_USER = -1999959,
+    NPC_SAY_REMOVE_KILL     = -1999960,
+
+    SPELL_ENRAGE            = 45111,
+    SPELL_CHARGE_PLAYER     = 63336
+};
+
+struct MANGOS_DLL_DECL npc_goblin_prisonerAI : public ScriptedAI
+{
+    npc_goblin_prisonerAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        Reset();
+    }
+
+    uint8 m_phase;
+    uint32 m_timer;
+    uint64 pPlayerGUID;
+
+    void Reset()
+    {
+        m_phase = 0x00;
+        m_timer     = 0;
+    }
+
+    void StartExit(uint64 PlayerGUID)
+    {
+        pPlayerGUID = PlayerGUID;
+        m_phase = 0x01;
+        m_timer = 2000;
+    }
+
+    void MovementInform(uint32 uiMoveType, uint32 uiPointId)
+    {
+        if (uiMoveType != POINT_MOTION_TYPE)
+            return;
+
+        if (uiPointId == 1)
+        {
+            m_phase = 0x02;
+            m_timer = 5000;
+
+            DoScriptText(NPC_SAY_EXIT, m_creature, m_creature->GetMap()->GetPlayer(pPlayerGUID));
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (m_phase)
+        {
+            if (m_timer < diff)
+            {
+                // go some steps forward
+                if (m_phase & 0x01)
+                {
+
+                    float orientation = m_creature->GetOrientation();
+
+                    Map const *map = m_creature->GetMap();
+                    float x = m_creature->GetPositionX() + cos(orientation)*3;
+                    float y = m_creature->GetPositionY() + sin(orientation)*3;
+                    float z = map->GetHeight(x, y, MAX_HEIGHT);
+                    m_creature->GetMotionMaster()->MovePoint(1, x, y, z);
+
+                    m_phase = 0x00;
+                }
+                // go somewhere and despawn
+                else if (m_phase & 0x04)
+                {
+                    float orientation = m_creature->GetOrientation() + (urand(0,1) ? M_PI_F /4 : -M_PI_F /4);
+
+                    Map const *map = m_creature->GetMap();
+                    float x = m_creature->GetPositionX() + cos(orientation)*10;
+                    float y = m_creature->GetPositionY() + sin(orientation)*10;
+                    float z = map->GetHeight(x, y, MAX_HEIGHT);
+                    m_creature->GetMotionMaster()->MovePoint(2, x, y, z);
+                    m_phase = 0x20;
+                    m_timer = 1000;
+                }
+                // custom phase: check if player pay's attention
+                else if (m_phase & 0x02)
+                {
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pPlayerGUID))
+                    {
+                        // become angry
+                        if (!m_creature->IsWithinDist(pPlayer, 10.0f, false) && !pPlayer->HasInArc(M_PI_F/2, m_creature))
+                        {
+                            m_creature->GetMotionMaster()->Clear();
+                            DoCast(m_creature, SPELL_ENRAGE, true);
+                            DoScriptText(NPC_SAY_UNGRATEFUL_USER, m_creature, pPlayer);
+
+                            m_phase = 0x08;
+                            m_timer = 1000;
+                            return;
+                        }
+                    }
+                    m_phase = 0x04;
+                }
+                // custom phase: charge to player
+                else if (m_phase & 0x08)
+                {
+                    // charge to player and follow
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pPlayerGUID))
+                    {
+                        //m_creature->GetMotionMaster()->MoveFollow(pPlayer, 0.5f, pPlayer->GetAngle(m_creature));
+                        DoCast(pPlayer, SPELL_CHARGE_PLAYER, false);
+                    }
+                    m_phase = 0x10;
+                    m_timer = 1000;
+                    return;
+                }
+                // custom phase: (remove kill credit and) knock back :-P
+                else if (m_phase & 0x10)
+                {
+                    DoScriptText(NPC_SAY_REMOVE_KILL, m_creature, m_creature->GetMap()->GetPlayer(pPlayerGUID));
+
+                    /* hmm,ok, does does not really work...
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pPlayerGUID))
+                        if (Quest const* qInfo = GetQuestTemplateStore(QUEST_THEY_TOOK_OUR_MEN))
+                        {
+                            if (pPlayer->GetQuestStatus(QUEST_THEY_TOOK_OUR_MEN) == QUEST_STATUS_COMPLETE) 
+                                pPlayer->IncompleteQuest(QUEST_THEY_TOOK_OUR_MEN);
+                            QuestStatusMap qMap = pPlayer->getQuestStatusMap();
+                            QuestStatusData& q_status = qMap[QUEST_THEY_TOOK_OUR_MEN];
+                            uint32 curkillcount = q_status.m_creatureOrGOcount[0];
+                            q_status.m_creatureOrGOcount[0] = q_status.m_creatureOrGOcount[0] -1 < 0 ? 0 : q_status.m_creatureOrGOcount[0] -1;
+                            if (q_status.uState != QUEST_NEW)
+                                q_status.uState = QUEST_CHANGED;
+
+                            pPlayer->SendQuestUpdateAddCreatureOrGo( qInfo, m_creature->GetObjectGuid(), 0, curkillcount, -1);
+                        }
+                    */
+                    // kock player back and despawn
+                    m_creature->GetMotionMaster()->Clear();
+                    if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pPlayerGUID))
+                        pPlayer->KnockBackFrom(m_creature, 15.0f, 30.0f);
+                    m_phase = 0x20;
+                    m_timer = 4000;
+                    return;
+                }
+                else if (m_phase & 0x20)
+                {
+                    m_creature->ForcedDespawn();
+                    m_phase = 0x00;
+                    pPlayerGUID = 0;
+                    return;
+                }
+            }
+            else
+                m_timer -= diff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_goblin_prisonerAI(Creature* pCreature)
+{
+    return new npc_goblin_prisonerAI(pCreature);
+}
+
+bool GOHello_rusty_cage(Player* pPlayer, GameObject* pGo)
+{
+    // hacky implementation for eyecandy :-)
+    if (Creature* pPrisoner = GetClosestCreatureWithEntry(pGo,29466, 2))
+    {
+        if (npc_goblin_prisonerAI* pPrisonerAI = dynamic_cast<npc_goblin_prisonerAI*>(pPrisoner->AI()))
+            pPrisonerAI->StartExit(pPlayer->GetGUID());
+    }
+
+    // kill creadit is done via event script
+    return false;
+}
+
 void AddSC_storm_peaks()
 {
     Script* newscript;
@@ -272,4 +453,14 @@ void AddSC_storm_peaks()
     newscript->pGossipHello = &GossipHello_npc_roxi_ramrocket;
     newscript->pGossipSelect = &GossipSelect_npc_roxi_ramrocket;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_goblin_prisoner";
+    newscript->GetAI = &GetAI_npc_goblin_prisonerAI;
+    newscript->RegisterSelf(false);
+
+    newscript = new Script;
+    newscript->Name = "go_rusty_cage";
+    newscript->pGOHello = &GOHello_rusty_cage;
+    newscript->RegisterSelf(false);
 }

@@ -17,15 +17,18 @@
 /* ScriptData
 SDName: Sholazar_Basin
 SD%Complete: 100
-SDComment: Quest support: 12573, 12544
+SDComment: Quest support: 12573, 12544, 12688
 SDCategory: Sholazar Basin
 EndScriptData */
 
 /* ContentData
 npc_vekjik
+mob_voiceofnozronn
+npc_engineer_helice
 EndContentData */
 
 #include "precompiled.h"
+#include "escort_ai.h"
 
 /*######
 ## npc_vekjik
@@ -155,9 +158,81 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
 	}
 
 };
+
 CreatureAI* GetAI_mob_voiceofnozronnAI(Creature* pCreature)
 {
     return new mob_voiceofnozronnAI(pCreature);
+}
+
+/*#####
+## npc_engineer_helice
+#####*/
+
+/*
+TODO:
+implement following actions along escorting:
+Engineer Helice says: Let's get the hell out of here.
+Engineer Helice says: Listen up, Venture Company goons! Rule #1: Never keep the prisoner near the explosives.
+Engineer Helice says: Or THIS is what you get.
+<Packs of dynamite explodes>
+Engineer Helice says: It's getting a little hot over here. Shall we move on?
+Engineer Helice says: Oh, look, it's another cartload of explosives! Let's help them dispose of it.
+<Packs of dynamite explodes>
+Engineer Helice says: You really shouldn't play with this stuff. Someone could get hurt.
+Engineer Helice says: We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!
+*/
+
+enum
+{
+    QUEST_ENGINEERING_A_DISASTER  = 12688
+};
+
+struct MANGOS_DLL_DECL npc_engineer_heliceAI : public npc_escortAI
+{
+    npc_engineer_heliceAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 10:
+                pPlayer->GroupEventHappens(QUEST_ENGINEERING_A_DISASTER, m_creature);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void Reset() 
+    { 
+        m_creature->setFaction(35);
+    }
+};
+
+bool QuestAccept_npc_engineer_helice(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ENGINEERING_A_DISASTER)
+    {
+
+        if (npc_engineer_heliceAI* pEscortAI = dynamic_cast<npc_engineer_heliceAI*>(pCreature->AI()))
+        {
+            //FIXME: probably not the right faction
+            //set npc enemy to monsters
+            pCreature->setFaction(pPlayer->getFaction());
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_engineer_helice(Creature* pCreature)
+{
+    return new npc_engineer_heliceAI(pCreature);
 }
 
 void AddSC_sholazar_basin()
@@ -173,5 +248,11 @@ void AddSC_sholazar_basin()
     newscript = new Script;
     newscript->Name = "mob_voiceofnozronn";
     newscript->GetAI = &GetAI_mob_voiceofnozronnAI;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_engineer_helice";
+    newscript->GetAI = &GetAI_npc_engineer_helice;
+    newscript->pQuestAccept = &QuestAccept_npc_engineer_helice;
     newscript->RegisterSelf();
 }

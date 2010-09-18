@@ -1,1 +1,0 @@
-UPDATE `quest_template` SET `ReqItemId1` = 36818, `ReqItemCount1` = 1, ReqSourceId1 = 0, ReqSpellCast1 = 47628, ReqSpellCast2 = 47628, ReqCreatureOrGOld1 = 26615, ReqCreatureOrGOld2 = 26482 WHERE `entry` = 12111;

@@ -42,3 +42,13 @@ UPDATE `creature_template` SET `unit_flags` = 131904 WHERE `entry` IN (36065,360
 UPDATE creature_template SET lootid = 35113 WHERE entry = 35113;
 DELETE FROM `creature_loot_template` WHERE `entry` = 35113;
 INSERT INTO `creature_loot_template`(`entry`, `item`, `ChanceOrQuestChance`, `mincountOrRef`, `maxcount`) VALUES (35113, 47048, -100, 1, 1);
+
+-- fix quest 14104
+-- add event script to spawn questmob
+DELETE FROM `event_scripts` WHERE `id` = 22030;
+INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`x`,`y`,`z`,`o`) VALUES (22030,3,10,35012,300000,10006.4,650.6,10.34,4.542);
+-- spawn spellfocus object
+DELETE FROM `gameobject` WHERE `id` = 300004;
+INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`animprogress`,`state`) VALUES (300004,571,1,1,10004.3,633.73,12.2,300,0,0);
+-- enlarge raduis of spellfocus object
+UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300004;

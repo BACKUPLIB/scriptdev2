@@ -36,4 +36,9 @@ UPDATE `gameobject_template` SET `data2` = 5, `data4` = 1, `data11` = 1, `data9`
 UPDATE `creature_template` SET `InhabitType` = 3 WHERE `entry` = 33778;
 
 -- fix NPCs 36065 & 36066 attacking Players on tournament ground
-UPDATE `creature_template` SET `unit_flags` = 131904 WHERE `entry` IN (36065,36066); #320
+UPDATE `creature_template` SET `unit_flags` = 131904 WHERE `entry` IN (36065,36066);
+
+-- fix loot of NPC 35113 (fix quest 14017)
+UPDATE creature_template SET lootid = 35113 WHERE entry = 35113;
+DELETE FROM `creature_loot_template` WHERE `entry` = 35113;
+INSERT INTO `creature_loot_template`(`entry`, `item`, `ChanceOrQuestChance`, `mincountOrRef`, `maxcount`) VALUES (35113, 47048, -100, 1, 1);

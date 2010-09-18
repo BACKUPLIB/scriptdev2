@@ -15,3 +15,7 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`)
 (60471,0,8,24124,1),
 (60485,0,8,24124,1),
 (60511,0,8,24124,1);
+
+-- fix bug on item for quest 11281
+UPDATE `item_template` SET `spellcharges_1` = 1 WHERE entry = 33450;
+UPDATE `quest_template` SET `ReqItemId1` = 33450, `ReqItemCount1` = 1, ReqSourceId1 = 0 WHERE `entry` = 11281;

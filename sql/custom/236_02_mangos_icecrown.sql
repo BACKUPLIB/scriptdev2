@@ -101,3 +101,6 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, position_x, posit
 VALUES (30562, 571, 1, 1, 8137.476074, 438.845551, 574.612793, 4.543622, 500, 5, 12.600, 0, 0, 1);
 -- make quest 13083 only available when quest 13082 is done (we have to do this because we do not have phase shifts implemented)
 UPDATE `quest_template` SET `PrevQuestId` = 13082 WHERE `entry` = 13083;
+
+-- make NPC 31078 flightmaster (he should only be available as flightmaster after the player completes a set of quests, but we have no proper phasing at the moment..)
+UPDATE `creature_template` SET `npcflag` = '8192' WHERE `entry` =31078;

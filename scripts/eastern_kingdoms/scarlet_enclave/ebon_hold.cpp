@@ -2073,6 +2073,8 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
     uint32 uiTotal_scourge;
     uint32 uiSummon_counter;
 
+    uint32 uiTotalResetTimer;
+
     // Darion Mograine
     uint32 uiAnti_magic_zone;
     uint32 uiDeath_strike;
@@ -2117,6 +2119,8 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             uiTotal_scourge = ENCOUNTER_TOTAL_SCOURGE;
             uiSummon_counter = 0;
 
+            uiTotalResetTimer = 900000; // 15 minutes
+
             uiDawnofLightGUID = 0;
 
             uiAnti_magic_zone = 1000 + rand()%5000;
@@ -2133,11 +2137,11 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             //UpdateWorldState(m_creature->GetMap(), WORLD_STATE_COUNTDOWN, 0);
             UpdateWorldState(m_creature->GetMap(), WORLD_STATE_EVENT_BEGIN, 0);
 
-            uiTirionGUID = NULL;
-            uiKorfaxGUID = NULL;
-            uiMaxwellGUID = NULL;
-            uiEligorGUID = NULL;
-            uiRayneGUID = NULL;
+            uiTirionGUID = 0;
+            uiKorfaxGUID = 0;
+            uiMaxwellGUID = 0;
+            uiEligorGUID = 0;
+            uiRayneGUID = 0;
 
             for(uint8 i = 0; i < ENCOUNTER_DEFENDER_NUMBER; ++i)
             {
@@ -2150,10 +2154,17 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 uiEarthshatterGUID[i] = 0;
             }
 
-            uiKoltiraGUID = NULL;
-            uiOrbazGUID = NULL;
-            uiThassarianGUID = NULL;
-            uiLichKingGUID = NULL;
+            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiKoltiraGUID))
+                pTemp->ForcedDespawn(1000);
+            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiOrbazGUID))
+                pTemp->ForcedDespawn(1000);
+            if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiThassarianGUID))
+                pTemp->ForcedDespawn(1000);
+
+            uiKoltiraGUID = 0;
+            uiOrbazGUID = 0;
+            uiThassarianGUID = 0;
+            uiLichKingGUID = 0;
 
             for(uint8 i = 0; i < ENCOUNTER_ABOMINATION_NUMBER; ++i)
             {
@@ -2333,6 +2344,12 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
     void UpdateAI(const uint32 diff)
     {
         npc_escortAI::UpdateAI(diff);
+
+        // respawn if quest hung up somehow
+        if(uiStep > 0)
+            if(uiTotalResetTimer < diff)
+                m_creature->ForcedDespawn(1000);
+            else uiTotalResetTimer -= diff;
 
         if (!bIsBattle)
         {
@@ -3455,7 +3472,6 @@ bool GossipSelect_npc_highlord_darion_mograine(Player* pPlayer, Creature* pCreat
         case GOSSIP_ACTION_INFO_DEF+1:
             pPlayer->CLOSE_GOSSIP_MENU();
             ((npc_highlord_darion_mograineAI*)pCreature->AI())->uiStep = 1;
-                                                                    //not sure if "false" is the right value here
             ((npc_highlord_darion_mograineAI*)pCreature->AI())->Start(false, pPlayer->GetGUID());
         break;
     }

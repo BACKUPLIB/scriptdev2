@@ -52,3 +52,32 @@ DELETE FROM `gameobject` WHERE `id` = 300004;
 INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`animprogress`,`state`) VALUES (300004,571,1,1,10004.3,633.73,12.2,300,0,0);
 -- enlarge raduis of spellfocus object
 UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300004;
+
+-- fix quest 13042
+UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 30409;
+
+-- add EventAI for NPC 30409 (fix quest 13042) (timers not blizzlike!)
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 30409;
+INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
+(3040901,30409,4,0,100,0,0,0,0,0,1,-304091,0,0,"Apprentice Osterkilgr - Yell On Aggro"),
+(3040902,30409,4,0,100,0,0,0,0,0,22,1,0,0,"Apprentice Osterkilgr - Set Phase 1 On Aggro"),
+(3040903,30409,0,5,100,1,0,0,0,0,21,1,0,0,"Apprentice Osterkilgr - Start Combat Movement (Phase 1)"),
+(3040904,30409,0,5,100,1,0,0,0,0,20,1,0,0,"Apprentice Osterkilgr - Start Melee Attack (Phase 1"),
+(3040905,30409,0,5,100,0,0,0,0,0,42,0,0,0,"Apprentice Osterkilgr - Set self killable (Phase 1)"),
+(3040906,30409,0,5,100,1,500,1000,12000,20000,11,60290,0,0,"Apprentice Osterkilgr - Cast Blast Wave (Phase 1)"),
+(3040907,30409,0,5,100,1,4000,6000,10000,15000,11,14034,1,0,"Apprentice Osterkilgr - Cast Fireball (Phase 1)"),
+(3040908,30409,2,5,100,0,62,0,0,0,1,-304092,0,0,"Apprentice Osterkilgr - Yell On 62% HP (Phase 1)"),
+(3040909,30409,2,5,100,0,42,0,0,0,22,2,0,0,"Apprentice Osterkilgr - Set Phase 2 On 42% HP (Phase 1)"),
+(3040910,30409,0,3,100,0,0,0,0,0,21,0,0,0,"Apprentice Osterkilgr - Stop Combat Movement (Phase 2)"),
+(3040911,30409,0,3,100,0,0,0,0,0,20,0,0,0,"Apprentice Osterkilgr - Stop Melee Attack (Phase 2)"),
+(3040912,30409,0,3,100,0,1000,1000,0,0,1,-304093,0,0,"Apprentice Osterkilgr - Say (Phase 2)"),
+(3040913,30409,0,3,100,0,2000,2000,0,0,33,30412,1,0,"Apprentice Osterkilgr - Give Quest Credit (Phase 2)"),
+(3040914,30409,0,3,100,0,10000,10000,0,0,22,1,0,0,"Apprentice Osterkilgr - Set Phase 1 After Talking (Phase 2)");
+
+-- add script text for NPC 30409
+DELETE FROM `creature_ai_texts` WHERE `entry` IN (-304091,-304092,-304093);
+INSERT INTO `creature_ai_texts` (`entry`,`content_default`,`type`,`language`,`comment`) VALUES 
+(-304091,"You've come for the doctor's plans! You'll only find death!",1,0,"Apprentice Osterkilgr - On Aggro"),
+(-304092,"The doctor entrusted me with the plans to Nergeld! I will not fail!",1,0,"Apprentice Osterkilgr - On 60%HP"),
+(-304093,"The doctor entrusted me with the plans to Nergeld, our flesh giant amalgamation made entirely of vargul! It will be the most powerful creation of its kind and a whole legion of them will be created to destroy your pitiful forces!",0,0,"Apprentice Osterkilgr defeated");
+

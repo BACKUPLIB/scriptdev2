@@ -5,7 +5,6 @@ UPDATE `creature` SET `spawnMask` = 0 WHERE `guid` IN (88654,88664,88665,88666);
 
 -- add eventAI for icecrown maps (times are not blizzlike!)
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` IN (33687,33695,30958,30957,30746,30988,31283);
-
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (33687,33695,30958,30957,30746,30988,31283);
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
 (3368701,33687,0,0,100,1,1000,5000,15000,30000,11,65248,1,0,"Chillmaw - Frost Breath"),
@@ -55,7 +54,6 @@ UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300004;
 
 -- fix quest 13042
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 30409;
-
 -- add EventAI for NPC 30409 (fix quest 13042) (timers not blizzlike!)
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 30409;
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
@@ -73,7 +71,6 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 (3040912,30409,0,3,100,0,1000,1000,0,0,1,-304093,0,0,"Apprentice Osterkilgr - Say (Phase 2)"),
 (3040913,30409,0,3,100,0,2000,2000,0,0,33,30412,1,0,"Apprentice Osterkilgr - Give Quest Credit (Phase 2)"),
 (3040914,30409,0,3,100,0,10000,10000,0,0,22,1,0,0,"Apprentice Osterkilgr - Set Phase 1 After Talking (Phase 2)");
-
 -- add script text for NPC 30409
 DELETE FROM `creature_ai_texts` WHERE `entry` IN (-304091,-304092,-304093);
 INSERT INTO `creature_ai_texts` (`entry`,`content_default`,`type`,`language`,`comment`) VALUES 
@@ -81,3 +78,26 @@ INSERT INTO `creature_ai_texts` (`entry`,`content_default`,`type`,`language`,`co
 (-304092,"The doctor entrusted me with the plans to Nergeld! I will not fail!",1,0,"Apprentice Osterkilgr - On 60%HP"),
 (-304093,"The doctor entrusted me with the plans to Nergeld, our flesh giant amalgamation made entirely of vargul! It will be the most powerful creation of its kind and a whole legion of them will be created to destroy your pitiful forces!",0,0,"Apprentice Osterkilgr defeated");
 
+-- fix quest 13861
+-- spawn NPC 34127
+DELETE FROM `creature` WHERE `id` = 34127;
+INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
+(34127, 571, 1, 1, 6223.681152, 2255.466064, 494.533142, 3.529711, 500, 5, 250.000, 0, 0, 1),
+(34127, 571, 1, 1, 6276.000488, 2259.39746, 484.906769, 2.986218, 500, 5, 250.000, 0, 0, 1),
+(34127, 571, 1, 1, 6300.097656, 2314.445557, 480.249939, 4.870389, 500, 5, 250.000, 0, 0, 1),
+(34127, 571, 1, 1, 6156.892578, 2279.263916, 503.667877, 4.143901, 500, 5, 250.000, 0, 0, 1);
+-- add eventAI for NPC 34127
+UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 34127;
+DELETE FROM `creature_ai_scripts` WHERE `id` = 34127;
+INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
+(3412701,34127,11,0,100,1,0,0,0,0,11,63010,0,3,"Boneguard Commander - Cast Scourge Banner Aura On Spawn"),
+(3412702,34127,11,0,100,1,0,0,0,0,11,59942,0,3,"Boneguard Commander - Cast Scourge Banner Bearer On Spawn"),
+(3412703,34127,4,0,100,1,0,0,0,0,11,60023,1,3,"Boneguard Commander - Cast Charge On Aggro"),
+(3412704,34127,0,0,100,1,1000,5000,10000,15000,11,65147,0,0,"Boneguard Commander - Cast Shield Braker");
+
+-- fix quest 13068
+-- spawn npc 30532
+INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, curhealth, curmana, DeathState, MovementType)
+VALUES (30562, 571, 1, 1, 8137.476074, 438.845551, 574.612793, 4.543622, 500, 5, 12.600, 0, 0, 1);
+-- make quest 13083 only available when quest 13082 is done (we have to do this because we do not have phase shifts implemented)
+UPDATE `quest_template` SET `PrevQuestId` = 13082 WHERE `entry` = 13083;

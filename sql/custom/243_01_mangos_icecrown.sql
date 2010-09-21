@@ -97,6 +97,7 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 
 -- fix quest 13068
 -- spawn npc 30532
+DELETE FROM `creature` WHERE `id` = 30562;
 INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, curhealth, curmana, DeathState, MovementType)
 VALUES (30562, 571, 1, 1, 8137.476074, 438.845551, 574.612793, 4.543622, 500, 5, 12.600, 0, 0, 1);
 -- make quest 13083 only available when quest 13082 is done (we have to do this because we do not have phase shifts implemented)
@@ -104,3 +105,8 @@ UPDATE `quest_template` SET `PrevQuestId` = 13082 WHERE `entry` = 13083;
 
 -- make NPC 31078 flightmaster (he should only be available as flightmaster after the player completes a set of quests, but we have no proper phasing at the moment..)
 UPDATE `creature_template` SET `npcflag` = '8192' WHERE `entry` =31078;
+
+-- spawn npc 29794 for quest 12868
+DELETE FROM `creature` WHERE `id` = 29794;
+INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 
+('29794', '571', '1', '1', '7030.596191', '63.698158', '1033.686401', '2.118490', '1200', '5', '126000', '0', '0', '1');

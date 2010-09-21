@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Ashenvale
 SD%Complete: 70
-SDComment: Quest support: 6482, 6544, 6641
+SDComment: Quest support: 6482, 6544, 6641, 976
 SDCategory: Ashenvale Forest
 EndScriptData */
 
@@ -25,6 +25,7 @@ EndScriptData */
 npc_muglash
 npc_ruul_snowhoof
 npc_torek
+npc_feero_ironhand
 EndContentData */
 
 #include "precompiled.h"
@@ -418,6 +419,188 @@ CreatureAI* GetAI_npc_torek(Creature* pCreature)
     return new npc_torekAI(pCreature);
 }
 
+/*#####
+## npc_feero_ironhand
+#####*/
+
+enum
+{
+    SAY_START               = -1999947,
+    SAY_ATTACK_1_START      = -1999948,
+	SAY_ATTACK_1_END        = -1999949,
+	SAY_ATTACK_2_START      = -1999950,
+    SCOUT_SAY_ATTACK_2      = -1999951,
+    SAY_ATTACK_2_END        = -1999952,
+    SAY_ATTACK_3_START      = -1999953,
+    BALIZAR_SAY_ATTACK_3    = -1999954,
+    SAY_ATTACK_3_START_2    = -1999955,
+    SAY_COMPLETE            = -1999956,
+
+
+	NPC_DARK_ASSASSIN       = 3879,
+	NPC_FORSAKEN_SCOUT      = 3893,
+	NPC_CAEDAKAR            = 3900,
+	NPC_ALIGAR              = 3898,
+	NPC_BALIZAR             = 3899,
+
+    QUEST_AUBERDINE         = 976
+};
+
+struct MANGOS_DLL_DECL npc_feero_ironhandAI : public npc_escortAI
+{
+    npc_feero_ironhandAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    uint8 m_uiAttackCount;
+    uint32 m_uiSayTimer;
+    Creature* pCreature1;
+    Creature* pCreature2;
+    Creature* pCreature3;
+    Creature* pCreature4;
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+		case 5: // first attack
+            DoScriptText(SAY_ATTACK_1_START, m_creature, pPlayer);
+            m_uiAttackCount = 1;
+			pCreature1 = DoSpawnCreature(NPC_DARK_ASSASSIN, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature2 = DoSpawnCreature(NPC_DARK_ASSASSIN, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature3 = DoSpawnCreature(NPC_DARK_ASSASSIN, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature4 = DoSpawnCreature(NPC_DARK_ASSASSIN, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			break;
+
+		case 12: // second attack
+            DoScriptText(SAY_ATTACK_2_START, m_creature, pPlayer);
+            m_uiAttackCount = 2;
+			pCreature1 = DoSpawnCreature(NPC_FORSAKEN_SCOUT, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature2 = DoSpawnCreature(NPC_FORSAKEN_SCOUT, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature3 = DoSpawnCreature(NPC_FORSAKEN_SCOUT, rand()%10+4, rand()%10+4, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+            DoScriptText(SCOUT_SAY_ATTACK_2,pCreature1);
+            break;
+
+		case 20: // third attack
+			DoScriptText(SAY_ATTACK_3_START, m_creature, pPlayer);
+            m_uiAttackCount = 3;
+			pCreature1 = DoSpawnCreature(NPC_CAEDAKAR, 12.0f, 15.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature2 = DoSpawnCreature(NPC_ALIGAR, 6.0f, 0.3f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			pCreature3 = DoSpawnCreature(NPC_BALIZAR, 12.0f, 15.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+			DoScriptText(BALIZAR_SAY_ATTACK_3,pCreature3,0);
+            break;
+        case 21:
+            m_creature->ForcedDespawn();
+        }
+    }
+
+    void UpdateEscortAI(const uint32 uiDiff)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if(!pPlayer)
+            return;
+
+        if(m_uiAttackCount > 0)
+        switch(m_uiAttackCount)
+        {
+            case 1: // first attack
+                if(pCreature1 && pCreature2 && pCreature3 && pCreature4)
+                    if(!pCreature1->isAlive() && !pCreature2->isAlive() && !pCreature3->isAlive() && !pCreature4->isAlive())
+                    {
+                        m_uiAttackCount = 0;
+                        DoScriptText(SAY_ATTACK_1_END, m_creature, pPlayer);
+                        pCreature1 = NULL;
+                        pCreature2 = NULL;
+                        pCreature3 = NULL;
+                        pCreature4 = NULL;
+                    }
+                break;
+            case 2: // second attack
+                if(pCreature1 && pCreature2 && pCreature3)
+                    if(!pCreature1->isAlive() && !pCreature2->isAlive() && !pCreature3->isAlive())
+                    {
+                        m_uiAttackCount = 0;
+                        DoScriptText(SAY_ATTACK_2_END, m_creature, pPlayer);
+                        pCreature1 = NULL;
+                        pCreature2 = NULL;
+                        pCreature3 = NULL;
+                    }
+                break;
+            case 3: // third attack
+                if(pCreature1 && pCreature2 && pCreature3)
+                {
+                    if(m_uiSayTimer < uiDiff)
+                    {
+                        DoScriptText(SAY_ATTACK_3_START_2,pCreature3,m_creature);
+                        m_uiSayTimer = 9000000;
+                    }
+                    else m_uiSayTimer -= uiDiff;
+
+                    if(!pCreature1->isAlive() && !pCreature2->isAlive() && !pCreature3->isAlive())
+                    {
+                        DoScriptText(SAY_COMPLETE, m_creature, pPlayer);
+                        m_uiAttackCount = 0;
+                        pPlayer->GroupEventHappens(QUEST_AUBERDINE, m_creature);
+                        pCreature1 = NULL;
+                        pCreature2 = NULL;
+                        pCreature3 = NULL;
+                    }
+                    break;
+                }
+            default:
+                    break;
+        }
+
+        //Check if we have a current target
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if(!pPlayer)
+            return;
+
+        pPlayer->SendQuestFailed(QUEST_AUBERDINE);
+    }
+
+    void Reset() 
+    { 
+        m_uiSayTimer = 10000;
+        m_uiAttackCount = 0;
+        pCreature1 = NULL;
+        pCreature2 = NULL;
+        pCreature3 = NULL;
+        pCreature4 = NULL;
+    }
+};
+
+bool QuestAccept_npc_feero_ironhand(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_AUBERDINE)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_feero_ironhandAI* pEscortAI = dynamic_cast<npc_feero_ironhandAI*>(pCreature->AI()))
+            pEscortAI->Start(true, pPlayer->GetGUID(), pQuest);
+    }
+return true;
+}
+
+CreatureAI* GetAI_npc_feero_ironhandAI(Creature* pCreature)
+{
+    return new npc_feero_ironhandAI(pCreature);
+}
+
+
 void AddSC_ashenvale()
 {
     Script *newscript;
@@ -443,5 +626,11 @@ void AddSC_ashenvale()
     newscript->Name = "npc_torek";
     newscript->GetAI = &GetAI_npc_torek;
     newscript->pQuestAccept = &QuestAccept_npc_torek;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_feero_ironhand";
+    newscript->GetAI = &GetAI_npc_feero_ironhandAI;
+    newscript->pQuestAccept = &QuestAccept_npc_feero_ironhand;
     newscript->RegisterSelf();
 }

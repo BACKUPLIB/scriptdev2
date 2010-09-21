@@ -1,4 +1,5 @@
 -- brewfest fixes
+
 -- spawn some brewfest NPCs
 DELETE FROM `creature` WHERE `guid` BETWEEN 900050 AND 900055;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
@@ -18,3 +19,9 @@ INSERT INTO `game_event_creature` (`guid`, `event`) VALUES
 ('900055', '26');
 DELETE FROM `creature_questrelation` WHERE `id` = 28329 AND `quest` = 12318;
 INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES ('28329', '12318');
+
+-- add EventAI for NPC 23872 (Coren Direbrew)
+UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 23872;
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 23872;
+INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
+(2387201,23872,0,0,100,1,0,1000,10000,15000,11,47310,1,0,"Coren Direbrew - Cast Direbrews Disarm");

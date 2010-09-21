@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Western_Plaguelands
 SD%Complete: 90
-SDComment: Quest support: 5216,5219,5222,5225,5229,5231,5233,5235. To obtain Vitreous Focuser (could use more spesifics about gossip items)
+SDComment: Quest support: 5216,5219,5222,5225,5229,5231,5233,5235,9446. To obtain Vitreous Focuser (could use more spesifics about gossip items)
 SDCategory: Western Plaguelands
 EndScriptData */
 
@@ -25,9 +25,11 @@ EndScriptData */
 npcs_dithers_and_arbington
 npc_myranda_hag
 npc_the_scourge_cauldron
+npc_anchorite_truuen
 EndContentData */
 
 #include "precompiled.h"
+#include "escort_ai.h"
 
 /*######
 ## npcs_dithers_and_arbington
@@ -195,9 +197,79 @@ CreatureAI* GetAI_npc_the_scourge_cauldron(Creature* pCreature)
     return new npc_the_scourge_cauldronAI(pCreature);
 }
 
-/*######
-##
-######*/
+/*#####
+## npc_anachoret_truuen
+#####*/
+
+enum
+{
+    SAY_START                 = -1999957,
+    SAY_END                   = -1999958,
+    SAY_UTHER                 = -1999959,
+
+    QUEST_TOMB                = 9446,
+    NPC_UTHER_GHOST           = 17233,
+};
+
+struct MANGOS_DLL_DECL npc_anchorite_truuenAI : public npc_escortAI
+{
+    npc_anchorite_truuenAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 15:
+                DoScriptText(SAY_END, m_creature, pPlayer);
+                break;
+            case 16: 
+                m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+                if(Creature* pUther = m_creature->SummonCreature(NPC_UTHER_GHOST,972.3f,-1825.0f,84.0f,0.229f,TEMPSUMMON_TIMED_DESPAWN,60000))
+                {    
+                    pUther->GetMotionMaster()->MoveIdle();
+                    DoScriptText(SAY_UTHER,pUther,pPlayer);
+                }
+                pPlayer->GroupEventHappens(QUEST_TOMB, m_creature);
+        }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if(!pPlayer)
+            return;
+
+        pPlayer->SendQuestFailed(QUEST_TOMB);
+    }
+
+    void Reset() 
+    { 
+        m_creature->SetStandState(UNIT_STAND_STATE_STAND);
+    }
+};
+
+bool QuestAccept_npc_anchorite_truuen(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_TOMB)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_anchorite_truuenAI* pEscortAI = dynamic_cast<npc_anchorite_truuenAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+    }
+return true;
+}
+
+CreatureAI* GetAI_npc_anchorite_truuen(Creature* pCreature)
+{
+return new npc_anchorite_truuenAI(pCreature);
+}
 
 void AddSC_western_plaguelands()
 {
@@ -218,5 +290,11 @@ void AddSC_western_plaguelands()
     newscript = new Script;
     newscript->Name = "npc_the_scourge_cauldron";
     newscript->GetAI = &GetAI_npc_the_scourge_cauldron;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_anchorite_truuen";
+    newscript->pQuestAccept = &QuestAccept_npc_anchorite_truuen;
+    newscript->GetAI = &GetAI_npc_anchorite_truuen;
     newscript->RegisterSelf();
 }

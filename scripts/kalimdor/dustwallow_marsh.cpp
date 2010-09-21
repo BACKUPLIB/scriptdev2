@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Dustwallow_Marsh
 SD%Complete: 95
-SDComment: Quest support: 558, 1173, 1273, 1324, 11126, 11142, 11180. Vendor Nat Pagle
+SDComment: Quest support: 558, 1173, 1273, 1324, 11126, 11142, 11180, 1270/1222. Vendor Nat Pagle
 SDCategory: Dustwallow Marsh
 EndScriptData */
 
@@ -31,6 +31,7 @@ npc_nat_pagle
 npc_ogron
 npc_private_hendel
 npc_cassa_crimsonwing
+npc_stinky_ignatz
 EndContentData */
 
 #include "precompiled.h"
@@ -810,8 +811,99 @@ bool GossipSelect_npc_cassa_crimsonwing(Player* pPlayer, Creature* pCreature, ui
 }
 
 /*######
-##
+## npc_stinki_ignatz
 ######*/
+
+enum
+{
+	SAY_BEGIN               = -1999942,
+	SAY_SEARCH              = -1999943,
+	SAY_ENOUGH              = -1999944,
+    SAY_END_A               = -1999945,
+	SAY_END_H               = -1999946,
+
+	QUEST_ESCAPE_A          = 1222,
+	QUEST_ESCAPE_H          = 1270
+};
+
+struct MANGOS_DLL_DECL npc_stinky_ignatzAI : public npc_escortAI
+{
+    npc_stinky_ignatzAI(Creature* c) : npc_escortAI(c) {}
+
+	void Reset()
+	{
+        m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+	}
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+		case 2:
+				DoScriptText(SAY_SEARCH, m_creature, pPlayer);
+			    break;
+		case 4:
+				DoScriptText(SAY_SEARCH, m_creature, pPlayer);
+			    break;
+		case 5:
+				DoScriptText(SAY_SEARCH, m_creature, pPlayer);
+			    break;
+		case 6:
+				DoScriptText(SAY_SEARCH, m_creature, pPlayer);
+			    break;
+		case 7:
+				DoScriptText(SAY_ENOUGH, m_creature, pPlayer);
+			    break;
+        case 11:
+                m_creature->SetStandState(UNIT_STAND_STATE_STAND);
+                if (pPlayer->GetTeam() == ALLIANCE)
+				{
+                    pPlayer->GroupEventHappens(QUEST_ESCAPE_A, m_creature);
+				    DoScriptText(SAY_END_A, m_creature, pPlayer);
+				}
+                else if (pPlayer->GetTeam() == HORDE)
+				{
+                    pPlayer->GroupEventHappens(QUEST_ESCAPE_H, m_creature);
+				    DoScriptText(SAY_END_H, m_creature, pPlayer);
+				}
+        }
+    }
+
+    void JustDied(Unit* killer)
+    {
+        if (Player* pPlayer = GetPlayerForEscort())
+        {
+            if (pPlayer->GetTeam() == ALLIANCE)
+                pPlayer->FailQuest(QUEST_ESCAPE_A);
+            else if (pPlayer->GetTeam() == HORDE)
+                pPlayer->FailQuest(QUEST_ESCAPE_H);
+        }
+    }
+};
+
+bool QuestAccept_npc_stinky_ignatz(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ESCAPE_H || pQuest->GetQuestId() == QUEST_ESCAPE_A)
+    {
+		DoScriptText(SAY_BEGIN, pCreature, pPlayer);
+
+        if (npc_stinky_ignatzAI* pEscortAI = dynamic_cast<npc_stinky_ignatzAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_stinky_ignatzAI(Creature* pCreature)
+{
+    return new npc_stinky_ignatzAI(pCreature);
+}  
+
 
 void AddSC_dustwallow_marsh()
 {
@@ -867,5 +959,11 @@ void AddSC_dustwallow_marsh()
     pNewScript->Name = "npc_cassa_crimsonwing";
     pNewScript->pGossipHello = &GossipHello_npc_cassa_crimsonwing;
     pNewScript->pGossipSelect = &GossipSelect_npc_cassa_crimsonwing;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name= "npc_stinky_ignatz";
+    pNewScript->GetAI = &GetAI_npc_stinky_ignatzAI;
+    pNewScript->pQuestAccept = &QuestAccept_npc_stinky_ignatz;
     pNewScript->RegisterSelf();
 }

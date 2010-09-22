@@ -60,3 +60,7 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 (2393106,23931,0,0,100,1,10000,20000,20000,30000,11,6533,1,0,"Oluf - Cast Net"),
 (2393107,23931,0,0,100,1,12000,15000,25000,30000,11,42870,1,0,"Oluf - Cast Throw Dragonflayer Harpoon"),
 (2393108,23931,6,0,100,0,0,0,0,0,11,43326,0,3,"Oluf - Spawn Ancient Cypher On Death");
+
+-- fix quest 11429
+UPDATE `creature_template` SET `ScriptName` = "npc_alliance_banner" WHERE `entry` = 24640;
+UPDATE `item_template` SET `spellcharges_1` = 1 WHERE `entry` = 34051;

@@ -17,9 +17,16 @@
 /* ScriptData
 SDName: Howling_Fjord
 SD%Complete: ?
-SDComment: Quest support: 11221, 11483
+SDComment: Quest support: 11221, 11483, 11429
 SDCategory: Howling Fjord
 EndScriptData */
+
+/* ContentData
+npc_deathstalker_razael
+npc_dark_ranger_lyana
+npc_mcgoyver
+npc_alliance_banner
+*/
 
 #include "precompiled.h"
 
@@ -172,6 +179,87 @@ bool GossipSelect_npc_mcgoyver(Player* pPlayer, Creature* pCreature, uint32 uiSe
     return true;
 }
 
+/*###################
+## Alliance Banner ##
+###################*/
+
+enum
+{
+    NPC_DEFENDER    = 24015,
+    QUEST_ROCK_IT   = 11429,
+};
+
+struct MANGOS_DLL_DECL npc_alliance_bannerAI : public ScriptedAI
+{
+    npc_alliance_bannerAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset (); }
+
+    uint32 m_uiWaveCount;
+    uint32 m_uiWaveTimer;
+    bool m_bInFight;
+    Creature* pAttacker;
+
+    void Reset() 
+    {
+        m_uiWaveCount = 0;
+        m_uiWaveTimer = 6000;
+        m_bInFight = false;
+        pAttacker = NULL;
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if(m_creature->isPet())
+            if(Player* pPlayer = (Player*) ((Pet*) m_creature)->GetOwner())
+            {
+                 pPlayer->SendQuestFailed(QUEST_ROCK_IT);
+            }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        m_creature->StopMoving();
+
+        if(m_uiWaveCount < 3)
+        {
+            if(!m_bInFight)
+            {
+                if(m_uiWaveTimer < uiDiff)
+                {
+                    if(Creature* pTemp = m_creature->SummonCreature(NPC_DEFENDER,m_creature->GetPositionX()+rand()%40+10, m_creature->GetPositionY()+rand()%40+10,m_creature->GetPositionZ(),0,TEMPSUMMON_CORPSE_TIMED_DESPAWN,10000))
+                    {
+                        pAttacker = pTemp;
+                        if(m_creature->isPet())
+                        {
+                            pTemp->AI()->AttackStart(((Pet*)m_creature)->GetOwner());
+                        }
+                        else
+                            pTemp->AI()->AttackStart(m_creature);
+                        m_bInFight = true;
+                    }
+                    m_uiWaveTimer = 7000;
+                }
+                else
+                    m_uiWaveTimer -= uiDiff;
+            }
+            else
+                if(pAttacker && pAttacker->isDead())
+                {
+                    ++m_uiWaveCount;
+                    m_bInFight = false;
+                }
+        }
+        else
+            if(m_creature->isPet())
+                if(Player* pPlayer = (Player*) ((Pet*) m_creature)->GetOwner())
+                    pPlayer->AreaExploredOrEventHappens(QUEST_ROCK_IT);
+    }
+};
+
+CreatureAI* GetAI_npc_alliance_banner(Creature* pCreature)
+{
+    return new npc_alliance_bannerAI(pCreature);
+}
+
 void AddSC_howling_fjord()
 {
     Script* newscript;
@@ -192,5 +280,10 @@ void AddSC_howling_fjord()
     newscript->Name = "npc_mcgoyver";
     newscript->pGossipHello = &GossipHello_npc_mcgoyver;
     newscript->pGossipSelect = &GossipSelect_npc_mcgoyver;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_alliance_banner";
+    newscript->GetAI = &GetAI_npc_alliance_banner;
     newscript->RegisterSelf();
 }

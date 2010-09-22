@@ -29,6 +29,7 @@ npc_captive_mechagnome
 EndContentData */
 
 #include "precompiled.h"
+#include "follower_ai.h"
 #include "../../../game/ObjectMgr.h"
 
 /*######

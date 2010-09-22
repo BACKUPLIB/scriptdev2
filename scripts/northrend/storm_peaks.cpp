@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Storm_Peaks
 SD%Complete: 100
-SDComment: Vendor Support (31247). Quest support: 12970, 12684
+SDComment: Vendor Support (31247). Quest support: 12970, 12684, 12957
 SDCategory: Storm Peaks
 EndScriptData */
 
@@ -25,6 +25,7 @@ EndScriptData */
 npc_loklira_the_crone
 npc_roxi_ramrocket
 npc_frostborn_scout
+npc_captive_mechagnome
 EndContentData */
 
 #include "precompiled.h"
@@ -426,6 +427,68 @@ bool GOHello_rusty_cage(Player* pPlayer, GameObject* pGo)
     return false;
 }
 
+/*######
+## npc_captive_mechagnome
+######*/
+
+// TODO: find blizz text for text1
+#define GOSSIP_TEXT_MECHAGNOME1  "I will help you!"
+#define GOSSIP_TEXT_MECHAGNOME2  "Does not compute. Unit malfunctioning. Directive: shut down."
+
+enum
+{
+    QUEST_SLAVES_OF_STORMFORGED = 12957
+};
+
+struct MANGOS_DLL_DECL npc_captive_mechagnomeAI : public FollowerAI
+{
+    npc_captive_mechagnomeAI(Creature* pCreature) : FollowerAI(pCreature) 
+    { Reset();}    
+
+    uint32 m_uiDespawnTimer;
+
+    void Reset()
+    {
+        m_uiDespawnTimer = 900000; // 15 minutes
+    }
+
+    void UpdateFollowerAI(const uint32 uiDiff)
+    {
+        if(HasFollowState(STATE_FOLLOW_INPROGRESS))
+            if(m_uiDespawnTimer < uiDiff)
+                m_creature->ForcedDespawn();
+            else
+                m_uiDespawnTimer -= uiDiff;
+
+        FollowerAI::UpdateFollowerAI(uiDiff);
+    }
+};
+
+CreatureAI* GetAI_npc_captive_mechagnome(Creature* pCreature)
+{
+    return new npc_captive_mechagnomeAI(pCreature);
+}
+
+bool GossipHello_npc_captive_mechagnome(Player* pPlayer, Creature* pCreature)
+{
+    if(pCreature && pPlayer && pPlayer->GetQuestStatus(QUEST_SLAVES_OF_STORMFORGED) == QUEST_STATUS_INCOMPLETE)
+    {
+        if(rand()%2)
+        {
+            pCreature->MonsterYell(GOSSIP_TEXT_MECHAGNOME1,LANG_UNIVERSAL,pPlayer->GetGUID());
+            (( npc_captive_mechagnomeAI*)pCreature->AI())->StartFollow(pPlayer,pPlayer->getFaction());
+        }
+        else
+        {
+            pCreature->MonsterYell(GOSSIP_TEXT_MECHAGNOME2,LANG_UNIVERSAL,pPlayer->GetGUID());
+            pCreature->DealDamage(pCreature, pCreature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        }
+        pPlayer->KilledMonsterCredit(29962);
+    }
+
+    return true;
+}
+
 void AddSC_storm_peaks()
 {
     Script* newscript;
@@ -463,4 +526,10 @@ void AddSC_storm_peaks()
     newscript->Name = "go_rusty_cage";
     newscript->pGOHello = &GOHello_rusty_cage;
     newscript->RegisterSelf(false);
+
+    newscript = new Script;
+    newscript->Name = "npc_captive_mechagnome";
+    newscript->GetAI = &GetAI_npc_captive_mechagnome;
+    newscript->pGossipHello = &GossipHello_npc_captive_mechagnome;
+    newscript->RegisterSelf();
 }

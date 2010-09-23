@@ -65,3 +65,26 @@ UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300173;
 -- fix quest 11895 (master the storm)
 UPDATE `creature_template` SET `ScriptName` = "npc_storm_totem" WHERE `entry` = 26048;
 UPDATE `creature_template` SET `ScriptName` = "npc_sage_earth_and_sky" WHERE `entry` = 25982;
+
+-- fix quest 11676
+DELETE FROM `gameobject_scripts` WHERE `id` IN (60489,60510,60522,60546,60555,60567,60581,60606,60618,60632,60641,60679,60717,60777,60866,60872,60954,60968,60972);
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES
+(60489,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60510,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60522,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60546,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60555,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60567,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60581,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60606,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60618,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60632,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60641,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60679,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60717,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60777,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60866,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60872,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60954,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60968,0,8,25610,1,"scourge cage open credit for quest 11676"),
+(60972,0,8,25610,1,"scourge cage open credit for quest 11676");

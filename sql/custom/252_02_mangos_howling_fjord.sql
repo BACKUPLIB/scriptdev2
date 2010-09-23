@@ -67,3 +67,8 @@ UPDATE `item_template` SET `spellcharges_1` = 1 WHERE `entry` = 34051;
 
 -- fix quest 11314
 UPDATE `quest_template` SET `ReqCreatureOrGOId1` = 23677, `ReqSpellCast1` = 43340, `ReqItemId1` = 33606, `ReqItemCount1` = 1, `ReqSourceId2` = 0 WHERE `entry` = 11314;
+
+-- fix quest 11358/11366
+DELETE FROM `event_scripts` WHERE `id` = 15939;
+INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES
+(15939,0,8,24381,1,"Quest 11366 Credit");

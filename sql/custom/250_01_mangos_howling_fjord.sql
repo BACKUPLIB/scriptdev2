@@ -64,3 +64,6 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 -- fix quest 11429
 UPDATE `creature_template` SET `ScriptName` = "npc_alliance_banner" WHERE `entry` = 24640;
 UPDATE `item_template` SET `spellcharges_1` = 1 WHERE `entry` = 34051;
+
+-- fix quest 11314
+UPDATE `quest_template` SET `ReqCreatureOrGOId1` = 23677, `ReqSpellCast1` = 43340, `ReqItemId1` = 33606, `ReqItemCount1` = 1, `ReqSourceId2` = 0 WHERE `entry` = 11314;

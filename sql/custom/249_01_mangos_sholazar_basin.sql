@@ -4,6 +4,7 @@
 UPDATE `creature_template` SET `ScriptName` = 'npc_engineer_helice' WHERE entry = 28787;
 
 -- fix quest 12532
+DELETE FROM `creature` WHERE `id` = 28161;
 INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 (28161, 571, 1, 1, 0, 0, 5190.4, 4571.54, -102.378, 3.80362, 25, 5, 0, 1, 0, 0, 1),
 (28161, 571, 1, 1, 0, 0, 5174.2, 4558.92, -102.739, 3.80362, 25, 5, 0, 1, 0, 0, 1),
@@ -29,3 +30,7 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equip
 (28161, 571, 1, 1, 0, 0, 5193.29, 4451.03, -90.1913, 2.52343, 25, 5, 0, 1, 0, 0, 1),
 (28161, 571, 1, 1, 0, 0, 5206.27, 4452.23, -90.7965, 0.0965526, 25, 5, 0, 1, 0, 0, 1);
 
+-- fix quest 12531
+-- not the best way, but EventAI of this mob is corrupted somehow, so disable this part
+-- TODO: fix EventAI instead of removing this
+UPDATE `creature_ai_scripts` SET `creature_id` = 0 WHERE `id` = 2808301;

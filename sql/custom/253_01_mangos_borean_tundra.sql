@@ -1,25 +1,26 @@
 # fix quest 11876 (Help Those That Cannot Help Themselves) 
 DELETE FROM `gameobject_scripts` WHERE `id` IN (59102,59122,59128,59138,59169,59226,59253,59261,59265,59303,59313,59321,59335,59341,59348,59357,59412,59417,59464,66627);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59102,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59122,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59128,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59138,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59169,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59226,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59253,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59261,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59265,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59303,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59313,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59321,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59335,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59341,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59348,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59357,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59412,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59417,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (59464,1,15,46200,1);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES (66627,1,15,46200,1);
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES 
+(59102,1,15,46200,1),
+(59122,1,15,46200,1),
+(59128,1,15,46200,1),
+(59138,1,15,46200,1),
+(59169,1,15,46200,1),
+(59226,1,15,46200,1),
+(59253,1,15,46200,1),
+(59261,1,15,46200,1),
+(59265,1,15,46200,1),
+(59303,1,15,46200,1),
+(59313,1,15,46200,1),
+(59321,1,15,46200,1),
+(59335,1,15,46200,1),
+(59341,1,15,46200,1),
+(59348,1,15,46200,1),
+(59357,1,15,46200,1),
+(59412,1,15,46200,1),
+(59417,1,15,46200,1),
+(59464,1,15,46200,1),
+(66627,1,15,46200,1);
 UPDATE `gameobject_template` SET `flags` = 4 WHERE `name` = "Mammoth Trap";
 UPDATE `quest_template` SET `ReqItemId1` = 35228, `ReqItemCount1` = 1 WHERE `entry` = 11876;
 
@@ -44,20 +45,20 @@ UPDATE `gameobject_template` SET `data5` = 1 WHERE `entry` = 188141;
 -- fix quest 11656 (Burn in Effigy)
 -- add quest credit NPCs
 DELETE FROM `creature` WHERE `id` IN (25511,25513);
-INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`spawndist`,`curhealth`,`MovementType`) VALUES 
-(25511,571,1,2,11868,3022.35,6785.00,3.16,300,5,8982,0),
-(25513,571,1,2,11868,2523.71,6839.83,0.76,300,5,8982,0);
+INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`spawndist`,`curhealth`,`MovementType`) VALUES 
+(920001,25511,571,1,2,11868,3022.35,6785.00,3.16,300,5,8982,0),
+(920002,25513,571,1,2,11868,2523.71,6839.83,0.76,300,5,8982,0);
 
 -- update existing quest credit NPC phase masks
 UPDATE `creature` SET `phaseMask` = 2 WHERE `id` IN (25510,25512);
 
 -- add spellfocus objects
 DELETE FROM `gameobject` WHERE `id` IN (300173);
-INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`state`) VALUES 
-(300173,571,1,2,3048.65,6752.09,6.49,250,1),
-(300173,571,1,2,3022.35,6785.00,3.16,250,1),
-(300173,571,1,2,2522.94,6854.04,0.76,250,1),
-(300173,571,1,2,2868.42,6864.51,3.80,250,1);
+INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`spawntimesecs`,`state`) VALUES 
+(960001,300173,571,1,2,3048.65,6752.09,6.49,250,1),
+(960002,300173,571,1,2,3022.35,6785.00,3.16,250,1),
+(960003,300173,571,1,2,2522.94,6854.04,0.76,250,1),
+(960004,300173,571,1,2,2868.42,6864.51,3.80,250,1);
 
 -- enlarge spellfocus radius
 UPDATE `gameobject_template` SET `data1` = 15 WHERE `entry` = 300173;
@@ -88,3 +89,14 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,
 (60954,0,8,25610,1,"scourge cage open credit for quest 11676"),
 (60968,0,8,25610,1,"scourge cage open credit for quest 11676"),
 (60972,0,8,25610,1,"scourge cage open credit for quest 11676");
+
+-- fix quest 11587
+UPDATE `gameobject_template` SET `type` =  1, `data1` = 1751, `data0` = 0, `data3` = 0, `data2` = 10000 WHERE `entry` = 187561;
+DELETE FROM `gameobject_scripts` WHERE `id` IN (59810,59812,59813);
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`x`,`y`,`z`,`o`,`comments`) VALUES 
+(59810,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
+(59812,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
+(59813,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
+(59810,10,10,25318,10000,3485.32,6115.87,70.97,5.1755,"arcane prison - summon prisoner"),
+(59812,10,10,25318,10000,3393.04,6139.82,75.59,5.8862,"arcane prison - summon prisoner"),
+(59813,10,10,25318,10000,3262.55,6161.62,72.86,5.5642,"arcane prison - summon prisoner");

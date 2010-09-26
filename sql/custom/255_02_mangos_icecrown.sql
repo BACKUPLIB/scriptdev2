@@ -116,3 +116,8 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `po
 UPDATE quest_template SET ReqCreatureOrGOId1 = 31043, ReqItemId1 = 43153, ReqItemCount1 = 1, ReqSourceId4 = 0, ReqSpellCast1 = 57806 WHERE entry = 13110;
 DELETE FROM spell_script_target WHERE entry = 57806 AND targetEntry = 31043;
 INSERT INTO spell_script_target (entry, TYPE, targetEntry) VALUES (57806, 2, 31043);
+
+-- fix loot from npc
+-- mantis bug 3003
+DELETE FROM creature_loot_template WHERE entry = 33422;
+INSERT INTO creature_loot_template (entry, item, ChanceOrQuestChance, groupid, mincountOrRef, maxcount, lootcondition, condition_value1, condition_value2) VALUES (33422, 45064, 8.9, 0, 1, 1, 9, 13641, 0);

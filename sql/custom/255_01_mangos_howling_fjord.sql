@@ -72,3 +72,10 @@ UPDATE `quest_template` SET `ReqCreatureOrGOId1` = 23677, `ReqSpellCast1` = 4334
 DELETE FROM `event_scripts` WHERE `id` = 15939;
 INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES
 (15939,0,8,24381,1,"Quest 11366 Credit");
+
+-- fix quest 11352/11348
+-- mantis bug 3052
+UPDATE creature_template SET unit_flags = 4096 WHERE entry = 24345;
+UPDATE quest_template SET ReqItemId1 = 33796, ReqItemCount1 = 1, ReqSourceId3 = 0, ReqSpellCast1 = 49859 WHERE entry IN (11352, 11348);
+DELETE FROM spell_script_target WHERE entry = 49859 AND targetEntry = 24345;
+INSERT INTO spell_script_target (entry, type, targetEntry) VALUES (49859, 1, 24345)

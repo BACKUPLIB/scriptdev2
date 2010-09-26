@@ -237,10 +237,10 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            AllCreaturesOfEntryInRange check(m_creature, MOB_EGG, 100);
-            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            AllCreaturesOfEntryInRangeCheck check(m_creature, MOB_EGG, 100);
+            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck> searcher(templist, check);
 
-            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
            // CellLock<GridReadGuard> cell_lock(cell, pair);
             cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
@@ -272,10 +272,10 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            AllCreaturesOfEntryInRange check(m_creature, MOB_FIRE_BOMB, 100);
-            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            AllCreaturesOfEntryInRangeCheck check(m_creature, MOB_FIRE_BOMB, 100);
+            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck> searcher(templist, check);
 
-            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             //CellLock<GridReadGuard> cell_lock(cell, pair);
             cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
@@ -517,10 +517,10 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            AllCreaturesOfEntryInRange check(m_creature, 23817, 50);
-            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            AllCreaturesOfEntryInRangeCheck check(m_creature, 23817, 50);
+            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck> searcher(templist, check);
 
-            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             //CellLock<GridReadGuard> cell_lock(cell, pair);
             cell.Visit(pair, cSearcher, *(m_creature->GetMap()));

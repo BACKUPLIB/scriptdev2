@@ -341,10 +341,10 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            AllCreaturesOfEntryInRange check(m_creature, entry, 100);
-            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            AllCreaturesOfEntryInRangeCheck check(m_creature, entry, 100);
+            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck> searcher(templist, check);
 
-            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
            //CellLock<GridReadGuard> cell_lock(cell, pair);
             cell.Visit(pair, cSearcher, *(m_creature->GetMap()));

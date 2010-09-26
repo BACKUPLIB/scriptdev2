@@ -161,10 +161,10 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            AllCreaturesOfEntryInRange check(m_creature, entry, 100);
-            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            AllCreaturesOfEntryInRangeCheck check(m_creature, entry, 100);
+            MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck> searcher(templist, check);
 
-            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             // cellVisit<GridReadGuard> cell.Visit(cell, pair);
             cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
@@ -235,7 +235,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
 
             {
                 MaNGOS::AnyAoETargetUnitInObjectRangeCheck u_check(m_creature, 999);
-                MaNGOS::UnitListSearcher<MaNGOS::AnyAoETargetUnitInObjectRangeCheck> searcher(m_creature, tempUnitMap, u_check);
+                MaNGOS::UnitListSearcher<MaNGOS::AnyAoETargetUnitInObjectRangeCheck> searcher(tempUnitMap, u_check);
 
                 TypeContainerVisitor<MaNGOS::UnitListSearcher<MaNGOS::AnyAoETargetUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
                 TypeContainerVisitor<MaNGOS::UnitListSearcher<MaNGOS::AnyAoETargetUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);

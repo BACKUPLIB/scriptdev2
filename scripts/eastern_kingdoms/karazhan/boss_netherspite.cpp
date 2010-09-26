@@ -119,6 +119,7 @@ class NearestUnitForBeam
             }
             return false;
         }
+        WorldObject const& GetFocusObject() const { return *i_obj; }
     private:
         WorldObject const* i_obj;
         Unit const* i_origCaster;
@@ -430,7 +431,7 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
             cell.SetNoCreate();
 
             NearestUnitForBeam u_check(portal, m_creature, radius, beam);
-            MaNGOS::UnitLastSearcher<NearestUnitForBeam> checker(m_creature, target, u_check);
+            MaNGOS::UnitLastSearcher<NearestUnitForBeam> checker(target, u_check);
 
             TypeContainerVisitor<MaNGOS::UnitLastSearcher<NearestUnitForBeam>, GridTypeMapContainer > grid_object_checker(checker);
             TypeContainerVisitor<MaNGOS::UnitLastSearcher<NearestUnitForBeam>, WorldTypeMapContainer > world_object_checker(checker);

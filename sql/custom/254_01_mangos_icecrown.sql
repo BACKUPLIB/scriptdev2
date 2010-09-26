@@ -110,3 +110,9 @@ UPDATE `creature_template` SET `npcflag` = '8192' WHERE `entry` =31078;
 DELETE FROM `creature` WHERE `id` = 29794;
 INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 
 ('29794', '571', '1', '1', '7030.596191', '63.698158', '1033.686401', '2.118490', '1200', '5', '126000', '0', '0', '1');
+
+-- fix quest 13110
+-- mantis bug 3059
+UPDATE quest_template SET ReqCreatureOrGOId1 = 31043, ReqItemId1 = 43153, ReqItemCount1 = 1, ReqSourceId4 = 0, ReqSpellCast1 = 57806 WHERE entry = 13110;
+DELETE FROM spell_script_target WHERE entry = 57806 AND targetEntry = 31043;
+INSERT INTO spell_script_target (entry, TYPE, targetEntry) VALUES (57806, 2, 31043);

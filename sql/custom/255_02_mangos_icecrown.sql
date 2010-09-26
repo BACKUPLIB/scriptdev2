@@ -119,5 +119,5 @@ INSERT INTO spell_script_target (entry, TYPE, targetEntry) VALUES (57806, 2, 310
 
 -- fix loot from npc
 -- mantis bug 3003
-DELETE FROM creature_loot_template WHERE entry = 33422;
-INSERT INTO creature_loot_template (entry, item, ChanceOrQuestChance, groupid, mincountOrRef, maxcount, lootcondition, condition_value1, condition_value2) VALUES (33422, 45064, 8.9, 0, 1, 1, 9, 13641, 0);
+DELETE FROM creature_loot_template WHERE entry = 33422 AND item = 45064;
+INSERT INTO creature_loot_template (entry, item, ChanceOrQuestChance, groupid, mincountOrRef, maxcount, lootcondition, condition_value1, condition_value2) VALUES (33422, 45064, -100, 0, 1, 1, 0, 0, 0);

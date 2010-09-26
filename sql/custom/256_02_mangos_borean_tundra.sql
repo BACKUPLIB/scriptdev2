@@ -100,3 +100,8 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,
 (59810,10,10,25318,10000,3485.32,6115.87,70.97,5.1755,"arcane prison - summon prisoner"),
 (59812,10,10,25318,10000,3393.04,6139.82,75.59,5.8862,"arcane prison - summon prisoner"),
 (59813,10,10,25318,10000,3262.55,6161.62,72.86,5.5642,"arcane prison - summon prisoner");
+
+-- fix quest 11664
+UPDATE `creature_template` SET `ScriptName` = 'npc_mootoo' WHERE `entry` =25504;
+UPDATE `creature` SET `phaseMask` = 3 WHERE id = 25504;
+

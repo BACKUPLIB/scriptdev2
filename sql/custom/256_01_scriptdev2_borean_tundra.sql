@@ -1,3 +1,7 @@
+-- borean tundra fixes
+
+-- fix quest 11664
+DELETE FROM `script_waypoint` WHERE `entry` = 25504;
 INSERT INTO `script_waypoint` (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
 ('25504', '1', '2883.32', '6735.41', '32.89', '0', NULL),
 ('25504', '2', '2876.46', '6732.59', '32.86', '0', NULL),
@@ -14,8 +18,8 @@ INSERT INTO `script_waypoint` (`entry`, `pointid`, `location_x`, `location_y`, `
 ('25504', '13', '2829.29', '6799.99', '4.55', '0', NULL),
 ('25504', '14', '2813.17', '6773.95', '6.28', '0', NULL),
 ('25504', '15', '2809.57', '6755.63', '7.01', '25000', 'quest complete');
-
+DELETE FROM `script_texts` WHERE `entry` IN (-1999932,-1999933,-1999934);
 INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
-('-1999954', 'Ich freue mich euch zu sehen Fremder. Ihr müsst mir helfen, von hier zu entkommen. Alleine schaffe ich das nicht.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
-('-1999955', 'Wir haben es fast geschafft.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
-('-1999956', 'Habt vielen Dank, dass ihr mir bis hier her geholfen habt. Sprecht mit dem Ältesten Muhtoo, damit er euch angemessen entlohnen kann.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);
+('-1999932', 'Ich freue mich euch zu sehen Fremder. Ihr mÃ¼sst mir helfen, von hier zu entkommen. Alleine schaffe ich das nicht.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
+('-1999933', 'Wir haben es fast geschafft.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
+('-1999934', 'Habt vielen Dank, dass ihr mir bis hier her geholfen habt. Sprecht mit dem Ã„ltesten Muhtoo, damit er euch angemessen entlohnen kann.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);

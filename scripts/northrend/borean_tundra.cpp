@@ -631,9 +631,9 @@ CreatureAI* GetAI_npc_lurgglbr(Creature* pCreature)
 
 enum
 {
-    SAY_START                     = -1999954,
-    SAY_MIDDLE                    = -1999955,
-    SAY_END                       = -1999956,
+    SAY_START                     = -1999932,
+    SAY_MIDDLE                    = -1999933,
+    SAY_END                       = -1999934,
 
     QUEST_ESCAPE_DUST             = 11664
 };
@@ -661,7 +661,7 @@ struct MANGOS_DLL_DECL npc_mootooAI : public npc_escortAI
         }
     }
 
-    void Reset() { }
+    void Reset() {}
 };
 
 bool QuestAccept_npc_mootoo(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
@@ -673,7 +673,8 @@ bool QuestAccept_npc_mootoo(Player* pPlayer, Creature* pCreature, const Quest* p
         if (npc_mootooAI* pEscortAI = dynamic_cast<npc_mootooAI*>(pCreature->AI()))
         {
             pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
-            pCreature->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            //pCreature->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
         }
     }
     return true;

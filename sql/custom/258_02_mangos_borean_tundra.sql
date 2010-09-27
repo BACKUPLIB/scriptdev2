@@ -93,7 +93,7 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,
 -- fix quest 11587
 UPDATE `gameobject_template` SET `type` =  1, `data1` = 1751, `data0` = 0, `data3` = 0, `data2` = 10000 WHERE `entry` = 187561;
 DELETE FROM `gameobject_scripts` WHERE `id` IN (59810,59812,59813);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`x`,`y`,`z`,`o`,`comments`) VALUES 
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`x`,`y`,`z`,`o`,`comments`) VALUES
 (59810,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
 (59812,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
 (59813,5,15,45456,1,0,0,0,0,"arcane prison - quest credit"),
@@ -108,3 +108,18 @@ UPDATE `creature` SET `phaseMask` = 3 WHERE id = 25504;
 -- fix quest 11560
 UPDATE `gameobject_template` SET `ScriptName` = "go_tadpole_cage" WHERE `entry` = 187373;
 UPDATE `creature_template` SET `ScriptName` = "npc_tadpole" WHERE `entry` = 25201;
+
+-- fix quest 11661
+UPDATE creature_template SET minlevel = 68, maxlevel = 69, armor = 6432, minhealth = 6986, maxhealth = 7984, mindmg = 245, maxdmg = 346, attackpower = 412, faction_A = 1885, faction_H = 1885 WHERE entry IN (32577, 32578, 32579, 32580);
+UPDATE creature_template SET minlevel = 71, maxlevel = 71, armor = 7235, minhealth = 9291, maxhealth = 9291, mindmg = 245, maxdmg = 346, attackpower = 412, dmg_multiplier = 1.2, faction_A = 1885, faction_H = 1885 WHERE entry = 32576;
+UPDATE creature_template SET unit_flags = 0x2000002 WHERE entry = 27939;
+DELETE FROM event_scripts WHERE id = 16889;
+
+DELETE FROM event_scripts WHERE id = 16889;
+INSERT INTO event_scripts (id, delay, command, datalong, datalong2, datalong3, datalong4, data_flags, dataint, dataint2, dataint3, dataint4, X, Y, z, o, comments) VALUES
+(16889, 2, 10, 27939, 180000, 0, 0, 0x1, 0, 0, 0, 0, 2822, 7045.720215, -0.428997, 3.6621001, "Spawn 'The Helmsmann's Ship'"),
+(16889, 4, 10, 32577, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.19, 7023.63, 3.316, 4.49, "Spawn the 1st add"),
+(16889, 19, 10, 32578, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2787.83, 7024.55, 4.28, 4.97, "Spawn the 2nd add"),
+(16889, 34, 10, 32579, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.41, 7020.36, 5.48, 3.55, "Spawn the 3rd add"),
+(16889, 49, 10, 32580, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.19, 7023.63, 3.316, 4.49, "Spawn the 4th add"),
+(16889, 64, 10, 32576, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.19, 7024.55, 4.28, 4.97, "Spawn 'Orabus the Helmsman'");

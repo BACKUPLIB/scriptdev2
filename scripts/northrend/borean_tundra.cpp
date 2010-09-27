@@ -36,6 +36,8 @@ npc_seaforium_depth_charge
 npc_mootoo
 npc_storm_totem
 npc_sage_earth_and_sky
+go_tadpole_cage
+npc_tadpole
 EndContentData */
 
 #include "precompiled.h"
@@ -744,6 +746,84 @@ bool QuestAccept_npc_sage_earth_and_sky(Player* pPlayer, Creature* pCreature, co
     return true;
 }
 
+/*#####
+## go_tadpole_cage
+#####*/
+
+enum
+{
+    NPC_TADPOLE = 25201,
+    QUEST_TADPOLES = 11560
+};
+
+const int32 textNotOnQuest[13] =
+{
+-1039999, -1039998, -1039997, -1039996, -1039995, -1039994, -1039993, -1039992, -1039991, -1039990, -1039989, -1039988, -1039987,      
+};
+
+const int32 textOnQuest[4] =
+{
+   -1039986, -1039985, -1039984, -1039983 
+};
+
+bool GOHello_go_tadpole_cage(Player* pPlayer, GameObject* pGo)
+{
+    if(pPlayer && pGo)
+    {
+        if(Creature* pTadpole = GetClosestCreatureWithEntry(pGo,NPC_TADPOLE,2))
+            if(pPlayer->GetQuestStatus(QUEST_TADPOLES) == QUEST_STATUS_INCOMPLETE)
+            {
+                DoScriptText(textOnQuest[urand(0,3)],pTadpole,pPlayer);
+                ((FollowerAI*)pTadpole->AI())->StartFollow(pPlayer);
+                pPlayer->KilledMonsterCredit(NPC_TADPOLE);
+                // not nice, but I do not find another way to set GO not clickable anymore
+                pGo->Delete();
+            }
+            else
+            {
+                uint8 uiRace = pPlayer->getRace();
+                uint32 uiSay;
+                if(!urand(0,3))
+                {
+                    switch(uiRace)
+                    {
+                        case RACE_BLOODELF:         uiSay = textNotOnQuest[6]; break;
+                        case RACE_UNDEAD_PLAYER:    uiSay = textNotOnQuest[4]; break;
+                        case RACE_ORC:              uiSay = textNotOnQuest[0]; break;
+                        case RACE_TROLL:            uiSay = textNotOnQuest[3]; break;
+                        case RACE_TAUREN:           uiSay = textNotOnQuest[5]; break;
+                        case RACE_HUMAN:            uiSay = textNotOnQuest[1]; break;
+                        case RACE_NIGHTELF:         uiSay = textNotOnQuest[2]; break;
+                        case RACE_DWARF:            uiSay = textNotOnQuest[7]; break;
+                        case RACE_DRAENEI:          uiSay = textNotOnQuest[8]; break;
+                        case RACE_GNOME:            uiSay = textNotOnQuest[9]; break;
+                    }
+                }
+                else
+                    uiSay = textNotOnQuest[urand(10,12)];
+
+                DoScriptText(uiSay,pTadpole,pPlayer);
+            }
+    }
+    return true;
+}
+
+/*#####
+## npc_tadpole
+#####*/
+
+//maybe a simple followerAI can be made easier then this?
+struct MANGOS_DLL_DECL npc_tadpoleAI : public FollowerAI
+{
+    npc_tadpoleAI(Creature* pCreature) : FollowerAI(pCreature) { Reset(); }
+    void Reset(){}
+};
+
+CreatureAI* GetAI_npc_tadpole(Creature* pCreature)
+{
+    return new npc_tadpoleAI(pCreature);
+}
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -823,5 +903,15 @@ void AddSC_borean_tundra()
     newscript = new Script;
     newscript->Name = "npc_sage_earth_and_sky";
     newscript->pQuestAccept = &QuestAccept_npc_sage_earth_and_sky;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "go_tadpole_cage";
+    newscript->pGOHello = &GOHello_go_tadpole_cage;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_tadpole";
+    newscript->GetAI = &GetAI_npc_tadpole;
     newscript->RegisterSelf();
 }

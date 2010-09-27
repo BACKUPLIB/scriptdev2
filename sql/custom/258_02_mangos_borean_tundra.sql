@@ -105,3 +105,6 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,
 UPDATE `creature_template` SET `ScriptName` = 'npc_mootoo' WHERE `entry` =25504;
 UPDATE `creature` SET `phaseMask` = 3 WHERE id = 25504;
 
+-- fix quest 11560
+UPDATE `gameobject_template` SET `ScriptName` = "go_tadpole_cage" WHERE `entry` = 187373;
+UPDATE `creature_template` SET `ScriptName` = "npc_tadpole" WHERE `entry` = 25201;

@@ -23,3 +23,24 @@ INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc1`, `content
 ('-1999932', 'Ich freue mich euch zu sehen Fremder. Ihr müsst mir helfen, von hier zu entkommen. Alleine schaffe ich das nicht.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
 ('-1999933', 'Wir haben es fast geschafft.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
 ('-1999934', 'Habt vielen Dank, dass ihr mir bis hier her geholfen habt. Sprecht mit dem Ältesten Muhtoo, damit er euch angemessen entlohnen kann.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);
+
+-- script text for npc 25201 / quest 11560
+DELETE FROM `script_texts` WHERE `entry` BETWEEN -1039999 AND -1039983;
+INSERT INTO `script_texts` (`entry`,`content_default`,`comment`) VALUES
+(-1039999, "Eww.. orc!", "tadpole SAY_ORC"),
+(-1039998, "Eww.. human!", "tadpole SAY_HUMAN"),
+(-1039997, "Eww.. night elf!", "tadpole SAY_NIGHTELF"),
+(-1039996, "Eww.. troll!", "tadpole SAY_TROLL"),
+(-1039995, "Eww.. undead!", "tadpole SAY_UNDEAD"),
+(-1039994, "Eww.. tauren!", "tadpole SAY_TAUREN"),
+(-1039993, "Eww.. blood elf!", "tadpole SAY_BLOODELF"),
+(-1039992, "Eww.. dwarf!", "tadpole SAY_DWARF"),
+(-1039991, "Eww.. draenei!", "tadpole SAY_DRAENEI"),
+(-1039990, "Eww.. gnome!", "tadpole SAY_GNOME"),
+(-1039989, "You not da-da!", "tadpole SAY_1"),
+(-1039988, "No go with stranger!", "tadpole SAY_2"),
+(-1039987, "Close!", "tadpole SAY_3"),
+(-1039986, "Me go home?", "tadpole SAY_4"),
+(-1039985, "Play!", "tadpole SAY_5"),
+(-1039984, "Alurglgl!", "tadpole SAY_6"),
+(-1039983, "da-da?", "tadpole SAY_7");

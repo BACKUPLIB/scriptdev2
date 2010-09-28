@@ -88,7 +88,7 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `po
 (34127, 571, 1, 1, 6156.892578, 2279.263916, 503.667877, 4.143901, 500, 5, 250.000, 0, 0, 1);
 -- add eventAI for NPC 34127
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` = 34127;
-DELETE FROM `creature_ai_scripts` WHERE `id` = 34127;
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 34127;
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
 (3412701,34127,11,0,100,1,0,0,0,0,11,63010,0,3,"Boneguard Commander - Cast Scourge Banner Aura On Spawn"),
 (3412702,34127,11,0,100,1,0,0,0,0,11,59942,0,3,"Boneguard Commander - Cast Scourge Banner Bearer On Spawn"),

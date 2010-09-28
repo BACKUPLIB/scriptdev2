@@ -123,3 +123,9 @@ INSERT INTO event_scripts (id, delay, command, datalong, datalong2, datalong3, d
 (16889, 34, 10, 32579, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.41, 7020.36, 5.48, 3.55, "Spawn the 3rd add"),
 (16889, 49, 10, 32580, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.19, 7023.63, 3.316, 4.49, "Spawn the 4th add"),
 (16889, 64, 10, 32576, 120000, 0, 0, 0x1, 0, 0, 0, 0, 2794.19, 7024.55, 4.28, 4.97, "Spawn 'Orabus the Helmsman'");
+
+-- fix npc's 25831, 25832 & 25833
+-- fix mantis bug #0003053
+UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9280', `maxhealth` = '9280', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25831;
+UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9280', `maxhealth` = '9280', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25832;
+UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9290', `maxhealth` = '9290', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25833;

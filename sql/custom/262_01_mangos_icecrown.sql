@@ -127,3 +127,8 @@ INSERT INTO creature_loot_template (entry, item, ChanceOrQuestChance, groupid, m
 DELETE FROM `creature` WHERE `id` = 30686;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES (240000, '30686', '571', '1', '1', '0', '0', '6368.2', '236.884', '396.046', '4.67552', '120', '5', '0', '88200', '31952', '0', '0');
 UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '80', `minhealth` = '88200', `maxhealth` = '88200', `minmana` = '31952', `maxmana` = '31952' WHERE `entry` =30686;
+
+-- add npc 32444
+-- mantis bug #0003080
+DELETE FROM creature WHERE id = '32444';
+INSERT INTO creature VALUES (240001, 32444,571,1,1,0,0,7636.58,2058.89,600.261,2.9099,25,5,0,12600,3994,0,0);

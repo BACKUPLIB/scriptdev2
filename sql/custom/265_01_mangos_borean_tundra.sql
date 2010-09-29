@@ -1,4 +1,6 @@
-# fix quest 11876 (Help Those That Cannot Help Themselves) 
+-- borean tundra fixes
+
+-- fix quest 11876 (Help Those That Cannot Help Themselves) 
 DELETE FROM `gameobject_scripts` WHERE `id` IN (59102,59122,59128,59138,59169,59226,59253,59261,59265,59303,59313,59321,59335,59341,59348,59357,59412,59417,59464,66627);
 INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES 
 (59102,1,15,46200,1),
@@ -24,22 +26,22 @@ INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`)
 UPDATE `gameobject_template` SET `flags` = 4 WHERE `name` = "Mammoth Trap";
 UPDATE `quest_template` SET `ReqItemId1` = 35228, `ReqItemCount1` = 1 WHERE `entry` = 11876;
 
-# fix quest 11865 (Unfit For Death)
+-- fix quest 11865 (Unfit For Death)
 UPDATE `gameobject_template` SET `type`=6, `data1`=1, `data2`=1, `data3`=0, `data4`=1, `data5`=30, `data7`=0, `data10` = 0, `ScriptName` = "go_caribou_trap" WHERE `Name` = "Caribou Trap";
 UPDATE `creature_template` SET `ScriptName` = "npc_nesingwary_trapper" WHERE entry = 25835;
 UPDATE `quest_template` SET `ReqItemId1` = 35127, `ReqItemCount1` = 1 WHERE `entry` = 11865; 
 
-# fix quest 11878 (Khu'nok Will Know)
+-- fix quest 11878 (Khu'nok Will Know)
 UPDATE `creature_template` SET npcflag = 1, `ScriptName` = "npc_orphaned_calf" WHERE `entry` = 25861;
 UPDATE `quest_template` SET `SrcSpell` = 46233 WHERE `entry` = 11878;
 
-# partially fix quest 11794 (The Hunt Is On)
+-- partially fix quest 11794 (The Hunt Is On)
 UPDATE `quest_template` SET `ReqItemId1` = 35125, `ReqItemCount1` = 1 WHERE `entry` = 11794;
 
-# fix quest 11608 (Bury Those Cockroaches)
+-- fix quest 11608 (Bury Those Cockroaches)
 UPDATE `creature_template` SET `ScriptName` = "npc_seaforium_depth_charge" WHERE `entry` = 25401;
 
-# make gameobject for quest 11956 despawn after using it
+-- make gameobject for quest 11956 despawn after using it
 UPDATE `gameobject_template` SET `data5` = 1 WHERE `entry` = 188141;
 
 -- fix quest 11656 (Burn in Effigy)
@@ -129,3 +131,15 @@ INSERT INTO event_scripts (id, delay, command, datalong, datalong2, datalong3, d
 UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9280', `maxhealth` = '9280', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25831;
 UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9280', `maxhealth` = '9280', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25832;
 UPDATE `creature_template` SET `minlevel` = '71',`maxlevel` = '71', `minhealth` = '9290', `maxhealth` = '9290', `armor` = '7018', `mindmg` = '299', `maxdmg` = '426', `attackpower` = '308' WHERE `entry` =25833;
+
+-- fix quest 11631
+-- set totem movement idle
+UPDATE `creature` SET `MovementType` = 0 WHERE `id` = 25455;
+-- add spellfocus object
+DELETE FROM `gameobject` WHERE `id` = 300172;
+INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`animprogress`,`state`) VALUES
+(160000,300172,571,1,1,4526.36,5674.26,82.10,0,300,0,0);
+-- add quest credit event
+DELETE FROM `event_scripts` WHERE `id` = 16716;
+INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
+(16716,10,8,25456,1,"Quest 11631 Quest Credit");

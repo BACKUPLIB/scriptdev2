@@ -10,7 +10,7 @@ Unit* GetClosestAttackableUnit(Unit* pSource, float fMaxSearchRange)
     Unit* pTarget = NULL;
 
     MaNGOS::NearestAttackableUnitInObjectRangeCheck unit_check(pSource, pSource, fMaxSearchRange);
-    MaNGOS::UnitLastSearcher<MaNGOS::NearestAttackableUnitInObjectRangeCheck> searcher(pSource, pTarget, unit_check);
+    MaNGOS::UnitLastSearcher<MaNGOS::NearestAttackableUnitInObjectRangeCheck> searcher(pTarget, unit_check);
 
     Cell::VisitAllObjects(pSource, searcher, fMaxSearchRange);
 

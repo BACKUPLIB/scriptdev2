@@ -143,3 +143,7 @@ INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`
 DELETE FROM `event_scripts` WHERE `id` = 16716;
 INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
 (16716,10,8,25456,1,"Quest 11631 Quest Credit");
+
+-- fix quest 11571
+-- mantis bug #0003089
+UPDATE `quest_template` SET `SrcSpell` = 7178 WHERE `entry` = 11571;

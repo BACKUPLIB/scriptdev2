@@ -147,3 +147,16 @@ INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comm
 -- fix quest 11571
 -- mantis bug #0003089
 UPDATE `quest_template` SET `SrcSpell` = 7178 WHERE `entry` = 11571;
+
+-- fix quest 11896
+DELETE FROM `creature_ai_scripts` WHERE `id` IN (2575803,2575804,2575805,2575302,2575303,2575304,2575202,2575203,2575204);
+INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action2_type`,`action2_param1`,`action2_param2`,`comment`) VALUES 
+(2575803,25758,11,0,100,0,0,0,0,0,22,0,0,28,0,46432,"Defendo-tank 66D - Set Phase 0 and remove \"Power of the Storm\" Buff on Spawn"),
+(2575804,25758,23,0,100,0,46432,1,0,0,22,1,0,0,0,0,"Defendo-tank 66D - Change to phase2 when hit by \"Power of the Storm\""),
+(2575805,25758,6,1,100,0,0,0,0,0,33,26082,6,0,0,0,"Defendo-tank 66D - Give Quest Credit when in phase2"),
+(2575302,25753,11,0,100,0,0,0,0,0,22,0,0,28,0,46432,"Sentry-Bot 57-K - Set Phase 0 and remove \"Power of the Storm\" Buff on Spawn"),
+(2575303,25753,23,0,100,0,46432,1,0,0,22,1,0,0,0,0,"Sentry-Bot 57-K - Change to phase2 when hit by \"Power of the Storm\""),
+(2575304,25753,6,1,100,0,0,0,0,0,33,26082,6,0,0,0,"Sentry-Bot 57-K - Give Quest Credit when in phase2"),
+(2575202,25752,11,0,100,0,0,0,0,0,22,0,0,28,0,46432,"Scavenge-bot 004-A8 - Set Phase 0 and remove \"Power of the Storm\" Buff on Spawn"),
+(2575203,25752,23,0,100,0,46432,1,0,0,22,1,0,0,0,0,"Scavenge-bot 004-A8 - Change to phase2 when hit by \"Power of the Storm\""),
+(2575204,25752,6,1,100,0,0,0,0,0,33,26082,6,0,0,0,"Scavenge-bot 004-A8 - Give Quest Credit when in phase2");

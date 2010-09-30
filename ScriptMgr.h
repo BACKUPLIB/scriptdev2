@@ -12,6 +12,8 @@
 class Player;
 class Creature;
 class CreatureAI;
+class Pet;
+class PetAI;
 class InstanceData;
 class Quest;
 class Item;

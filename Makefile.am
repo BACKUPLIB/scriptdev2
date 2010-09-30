@@ -592,6 +592,7 @@ scripts/world/mob_generic_creature.cpp \
 scripts/world/npc_professions.cpp \
 scripts/world/npcs_special.cpp \
 scripts/world/spell_scripts.cpp \
+scripts/world/pet_scripts.cpp \
 system/ScriptLoader.cpp \
 system/ScriptLoader.h \
 system/system.cpp \

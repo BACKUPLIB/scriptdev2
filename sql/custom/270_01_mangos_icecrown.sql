@@ -132,3 +132,9 @@ UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '80', `minhealth`
 -- mantis bug #0003080
 DELETE FROM creature WHERE id = '32444';
 INSERT INTO creature VALUES (240001, 32444,571,1,1,0,0,7636.58,2058.89,600.261,2.9099,25,5,0,12600,3994,0,0);
+
+-- Black Knights Grave completes the quest
+-- Mantis Bug #0003093
+UPDATE `gameobject_template` SET `type` = '1',`data1` = '0',`data2` = '3000', `data5` = '0' WHERE `entry` =195186;
+DELETE FROM `gameobject_scripts` WHERE `id` = 60484 AND `command` = 7 AND `datalong` = 14016;
+INSERT INTO `gameobject_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `datalong3`, `datalong4`, `data_flags`, `dataint`, `dataint2`, `dataint3`, `dataint4`, `x`, `y`, `z`, `o`, `comments`) VALUES ('60484', '0', '7', '14016', '10', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', ''); 

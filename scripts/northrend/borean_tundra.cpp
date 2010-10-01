@@ -776,7 +776,7 @@ bool GOHello_go_tadpole_cage(Player* pPlayer, GameObject* pGo)
                 DoScriptText(textOnQuest[urand(0,3)],pTadpole,pPlayer);
                 ((FollowerAI*)pTadpole->AI())->StartFollow(pPlayer);
                 pPlayer->KilledMonsterCredit(NPC_TADPOLE);
-                // not nice, but I do not find another way to set GO not clickable anymore
+                // FIXME: GO has to be set not-usable instead of despawn
                 pGo->Delete();
             }
             else
@@ -816,7 +816,21 @@ bool GOHello_go_tadpole_cage(Player* pPlayer, GameObject* pGo)
 struct MANGOS_DLL_DECL npc_tadpoleAI : public FollowerAI
 {
     npc_tadpoleAI(Creature* pCreature) : FollowerAI(pCreature) { Reset(); }
-    void Reset(){}
+
+    uint32 m_uiDespawnTimer;
+
+    void Reset(){ m_uiDespawnTimer = 60000; }
+
+    void UpdateFollowerAI(const uint32 uiDiff)
+    {
+        if(m_uiDespawnTimer < uiDiff)
+        {
+            SetFollowComplete(false);
+            m_creature->ForcedDespawn();
+        }
+
+        FollowerAI::UpdateFollowerAI(uiDiff);
+    }
 };
 
 CreatureAI* GetAI_npc_tadpole(Creature* pCreature)

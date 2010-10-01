@@ -11,3 +11,7 @@ UPDATE `quest_template` SET `ReqItemId1` = 36818, `ReqItemCount1` = 1, ReqSource
 DELETE FROM `creature` WHERE `id` = 26859;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 
 ('900058', '26859', '571', '1', '1', '0', '0', '4341.036133', '978.466064', '91.479370', '5.435826', '120', '5', '0', '1', '0', '0', '0');
+
+-- fix loot of gameobject 192773
+-- mantis bug #0003114
+INSERT INTO `gameobject_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES(192773, 43084, -100, 0, 1, 1, 0, 0, 0)

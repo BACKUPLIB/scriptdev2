@@ -12,7 +12,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_crusade_persuaded',ainame="" WH
 UPDATE creature_template SET InhabitType = 3 WHERE entry = 28670;
 
 -- The Plaguebringers Request
-UPDATE `quest_template` SET `PrevQuestId` = 12716 WHERE `entry` = 12751;
+UPDATE `quest_template` SET `PrevQuestId` = 0 WHERE `entry` = 12751;
 
 -- Ambush At The Overlook
 DELETE FROM `creature` WHERE `id` = 28957;

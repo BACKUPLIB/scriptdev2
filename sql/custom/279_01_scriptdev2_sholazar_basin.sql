@@ -1,3 +1,5 @@
+
+-- fix quest 12688
 DELETE FROM `script_waypoint` WHERE `entry` = 28787;
 INSERT INTO `script_waypoint` (entry, pointid, location_x, location_y, location_z, waittime, point_comment) VALUES
 (28787, 1, 5926.399902, 5373.770020, -98.901802, 6.047510, NULL),
@@ -10,3 +12,7 @@ INSERT INTO `script_waypoint` (entry, pointid, location_x, location_y, location_
 (28787, 8, 5864.340332, 5357.849121, -98.547554, 3.882966, NULL),
 (28787, 9, 5834.825684, 5327.166504, -99.319473, 3.953652, NULL),
 (28787, 10, 5816.554199, 5305.958008, -97.237198, 4.004703, "quest complete");
+DELETE FROM `script_texts` WHERE `entry` IN (-1039981,-1039982);
+INSERT INTO `script_texts` (`entry`,`content_default`,`type`,`language`,`comment`) VALUES
+(-1039981,"Let's get the hell out of here.",0,0,"engineer helice SAY START"),
+(-1039982,"We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!",0,0,"engineer helice SAY END");

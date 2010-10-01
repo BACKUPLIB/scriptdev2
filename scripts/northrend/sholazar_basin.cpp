@@ -171,7 +171,7 @@ CreatureAI* GetAI_mob_voiceofnozronnAI(Creature* pCreature)
 /*
 TODO:
 implement following actions along escorting:
-Engineer Helice says: Let's get the hell out of here.
+Engineer Helice says: Let's get the hell out of here. (done)
 Engineer Helice says: Listen up, Venture Company goons! Rule #1: Never keep the prisoner near the explosives.
 Engineer Helice says: Or THIS is what you get.
 <Packs of dynamite explodes>
@@ -179,12 +179,14 @@ Engineer Helice says: It's getting a little hot over here. Shall we move on?
 Engineer Helice says: Oh, look, it's another cartload of explosives! Let's help them dispose of it.
 <Packs of dynamite explodes>
 Engineer Helice says: You really shouldn't play with this stuff. Someone could get hurt.
-Engineer Helice says: We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!
+Engineer Helice says: We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!(done)
 */
 
 enum
 {
-    QUEST_ENGINEERING_A_DISASTER  = 12688
+    QUEST_ENGINEERING_A_DISASTER  = 12688,
+    SAY_START                     = -1039981,
+    SAY_END                       = -1039982
 };
 
 struct MANGOS_DLL_DECL npc_engineer_heliceAI : public npc_escortAI
@@ -202,6 +204,7 @@ struct MANGOS_DLL_DECL npc_engineer_heliceAI : public npc_escortAI
         {
             case 10:
                 pPlayer->GroupEventHappens(QUEST_ENGINEERING_A_DISASTER, m_creature);
+                DoScriptText(SAY_END,m_creature,pPlayer);
                 break;
             default:
                 break;
@@ -225,6 +228,7 @@ bool QuestAccept_npc_engineer_helice(Player* pPlayer, Creature* pCreature, const
             //set npc enemy to monsters
             pCreature->setFaction(pPlayer->getFaction());
             pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+            DoScriptText(SAY_START,pCreature,pPlayer);
         }
     }
     return true;

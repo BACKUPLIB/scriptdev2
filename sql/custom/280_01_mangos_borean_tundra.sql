@@ -168,3 +168,11 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 
 -- fix quest 11730 / spell 46023
 UPDATE `spell_area` SET `gender` = 2 WHERE `spell` = 46023;
+
+-- add npc 25203
+-- mantis bug #0003125
+DELETE FROM creature WHERE guid = 240006;
+
+
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
+(240006, 25203, 571, 1, 1, 0, 0, 4483.87, 6279.69, -44.3063, 2.87981, 300, 10, 0, 9291, 0, 0, 2);

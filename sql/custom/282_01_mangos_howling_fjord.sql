@@ -75,7 +75,16 @@ INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comm
 
 -- fix quest 11352/11348
 -- mantis bug 3052
-UPDATE creature_template SET unit_flags = 4096 WHERE entry = 24345;
-UPDATE quest_template SET ReqItemId1 = 33796, ReqItemCount1 = 1, ReqSourceId3 = 0, ReqSpellCast1 = 49859 WHERE entry IN (11352, 11348);
-DELETE FROM spell_script_target WHERE entry = 49859 AND targetEntry = 24345;
-INSERT INTO spell_script_target (entry, type, targetEntry) VALUES (49859, 1, 24345)
+UPDATE `creature_template` SET `unit_flags` = 4096 WHERE `entry` = 24345;
+UPDATE `quest_template` SET `ReqItemId1` = 33796, `ReqItemCount1` = 1, `ReqSourceId3` = 0, `ReqSpellCast1` = 49859 WHERE `entry` IN (11352, 11348);
+DELETE FROM `spell_script_target` WHERE `entry` = 49859 AND `targetEntry` = 24345;
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES (49859, 1, 24345);
+
+-- fix quest 11416 / 11417
+UPDATE `creature` SET `position_x` = 1596.9, `position_y` = -3903.6, `position_z` = 140.6 WHERE `id` = 24518;
+DELETE FROM `scripted_event_id` WHERE `id` = 16142;
+INSERT INTO `scripted_event_id` (`id`, `ScriptName`) VALUES (16142, "event_spell_talonshrike_aggro");
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 24518;
+INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
+(2451802,24518,1,100,1,5000,8000,15000,22000,11,32909,1,0,"Talonshrike - Cast Talon Strike"),
+(2451801,24518,1,100,1,1000,2000,13000,20000,11,49865,1,1,"Talonshrike - Cast Eye Peck");

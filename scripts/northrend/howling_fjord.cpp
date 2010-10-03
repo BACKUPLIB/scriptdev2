@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Howling_Fjord
 SD%Complete: ?
-SDComment: Quest support: 11221, 11483, 11429
+SDComment: Quest support: 11221, 11483, 11429, 11416/11417
 SDCategory: Howling Fjord
 EndScriptData */
 
@@ -26,6 +26,7 @@ npc_deathstalker_razael
 npc_dark_ranger_lyana
 npc_mcgoyver
 npc_alliance_banner
+event_spell_talonshrike_aggro
 */
 
 #include "precompiled.h"
@@ -260,6 +261,27 @@ CreatureAI* GetAI_npc_alliance_banner(Creature* pCreature)
     return new npc_alliance_bannerAI(pCreature);
 }
 
+/*###############
+## Talonshrike ##
+###############*/
+
+enum
+{
+    NPC_TALONSHRIKE     = 24518
+};
+
+bool ProcessEventId_event_spell_talonshrike_aggro(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
+{
+    if(Creature* pCreature = GetClosestCreatureWithEntry((Unit*)pSource,NPC_TALONSHRIKE,150.f))
+    {
+        pCreature->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        pCreature->AI()->AttackStart((Unit*)pSource);
+        return true;
+    }
+
+    return false;
+}
+
 void AddSC_howling_fjord()
 {
     Script* newscript;
@@ -285,5 +307,10 @@ void AddSC_howling_fjord()
     newscript = new Script;
     newscript->Name = "npc_alliance_banner";
     newscript->GetAI = &GetAI_npc_alliance_banner;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "event_spell_talonshrike_aggro";
+    newscript->pProcessEventId = &ProcessEventId_event_spell_talonshrike_aggro;
     newscript->RegisterSelf();
 }

@@ -71,6 +71,8 @@ enum
 
 #define FAC_HOSTILE						16
 
+#define ACHIEV_SPEEDKILL_H              1860
+
 
 /*######
 ## boss_anubarak
@@ -87,6 +89,9 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
 
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
+
+        bool m_bIsInTimeForAchiev;
+        uint32 SpeedKillTimer;
 
     bool phase66;
     bool phase66Over;
@@ -134,7 +139,10 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         PoundTimer = 12000;
         CarrionSwarmTimer = 13000;
 
-		pTriggerTarget = NULL;
+            m_bIsInTimeForAchiev = true;
+            SpeedKillTimer = 240000;
+
+		    pTriggerTarget = NULL;
 
         i = 0;
 
@@ -160,6 +168,20 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
         m_pInstance->SetData(TYPE_ANUBARAK, DONE);
+
+            if (m_bIsInTimeForAchiev && !m_bIsRegularMode)
+            {
+                if (ACHIEV_SPEEDKILL_H)
+                {
+                    Map* pMap = m_creature->GetMap();
+                    if (pMap && pMap->IsDungeon())
+                    {
+                        Map::PlayerList const &players = pMap->GetPlayers();
+                        for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(ACHIEV_SPEEDKILL_H);
+                    }
+                }
+            }
     }
 
     void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
@@ -188,6 +210,13 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
             m_pInstance->SetData(TYPE_ANUBARAK, IN_PROGRESS);
             CloseDoorTimer = 9999999;
         }else CloseDoorTimer -= uiDiff;
+
+        if (SpeedKillTimer < uiDiff)
+        {
+            m_bIsInTimeForAchiev = false;
+        }
+        else
+            SpeedKillTimer -= uiDiff;
 
         if (phase66 || phase33 || phase15)
         {

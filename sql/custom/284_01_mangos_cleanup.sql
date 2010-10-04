@@ -63,7 +63,7 @@ UPDATE `creature_template` SET `ScriptName` = '' WHERE `entry` =31474;
 
 
 -- Fix for gameobject errors
-DELETE FROM `pool_gameobject` WHERE `guid` = 300000;
+DELETE FROM `pool_gameobject` WHERE `guid` = 200075;
 INSERT INTO `pool_gameobject` (`guid`, `pool_entry`, `chance`, `description`) VALUES ('200075', '30005', '0', 'The Schools of Arcane Magic - Divination');
 
 

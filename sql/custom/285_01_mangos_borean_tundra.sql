@@ -164,7 +164,7 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 -- add npc 25589
 -- mantis bug #0003112
 DELETE FROM `creature` WHERE `id` =25589;
-INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('934429', '25589', '571', '1', '1', '0', '0', '4410.833008', '5375.345215', '-15.241395', '0.639261', '120', '5', '0', '1', '0', '0', '0'); 
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('200030 ', '25589', '571', '1', '1', '0', '0', '4410.833008', '5375.345215', '-15.241395', '0.639261', '120', '5', '0', '1', '0', '0', '0'); 
 
 -- fix quest 11730 / spell 46023
 UPDATE `spell_area` SET `gender` = 2 WHERE `spell` = 46023;

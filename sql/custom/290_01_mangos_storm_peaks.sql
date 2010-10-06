@@ -13,3 +13,6 @@ UPDATE `creature_template` SET `KillCredit1` = 29380 WHERE `entry` IN (29370,293
 
 -- fix quest 12957
 UPDATE `creature_template` SET `ScriptName` = "npc_captive_mechagnome" WHERE `entry` = 29384;
+
+-- fix npc 29757
+UPDATE creature_template SET npcflag = 8192, flag = 1 WHERE entry = 29757

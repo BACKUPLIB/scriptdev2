@@ -34,3 +34,7 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equip
 -- not the best way, but EventAI of this mob is corrupted somehow, so disable this part
 -- TODO: fix EventAI instead of removing this
 UPDATE `creature_ai_scripts` SET `creature_id` = 0 WHERE `id` = 2808301;
+
+-- fix quest 12531
+DELETE FROM creature_ai_scripts WHERE id IN (2808301, 2808306, 2808309) AND creature_id = 28083;
+UPDATE creature_template SET faction_A = 8, faction_H = 8 WHERE entry = 28083

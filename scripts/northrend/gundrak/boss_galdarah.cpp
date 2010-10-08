@@ -55,7 +55,10 @@ enum
 	NPC_RHINO_SPIRIT				= 29791,
 
 	MODELID_HUMAN					= 27061,
-	MODELID_RHINO					= 26265
+	MODELID_RHINO					= 26265,
+
+    AURA_ECK_RESIDUE                = 55817,
+    ACHIEV_WHAT_THE_ECK_H           = 1864
 };
 
 /*######
@@ -130,6 +133,17 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
             m_pInstance->SetData(TYPE_GALDARAH, DONE);
 
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (pKiller->HasAura(AURA_ECK_RESIDUE) && !m_bIsRegularMode)
+           {
+                Map* pMap = m_creature->GetMap();
+                if (pMap && pMap->IsDungeon())
+                {
+                    Map::PlayerList const &players = pMap->GetPlayers();
+                    for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(ACHIEV_WHAT_THE_ECK_H);
+                }
+           }
     }
 
 	void ChangePhase()

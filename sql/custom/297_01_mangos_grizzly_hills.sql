@@ -41,3 +41,8 @@ INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`com
 ('122312', '0', '8', '27321', '0', 'Quest 12231 Kodian Credit'),
 ('122471', '0', '8', '27322', '0', 'Quest 12231 Orsonn Credit'),
 ('122472', '0', '8', '27321', '0', 'Quest 12231 Kodian Credit');
+
+-- fix quest 12227
+DELETE FROM `spell_scripts` WHERE `id` = 48340;
+INSERT INTO `spell_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES
+('48340', '2', '15', '48330', '1', 'Quest 12227 - cast spell to add quest item'); 

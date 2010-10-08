@@ -76,8 +76,8 @@ enum
 
     SPELL_CONSUMPTION       = 30497,
     H_SPELL_CONSUMPTION     = 35952,
-    PELL_TEMPORARY_VISUAL   = 39312,                   // this is wrong, a temporary solution. spell consumption already has the purple visual, but doesn't display as it should
-}
+    SPELL_TEMPORARY_VISUAL   = 39312,                   // this is wrong, a temporary solution. spell consumption already has the purple visual, but doesn't display as it should
+};
 
 struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
 {
@@ -252,10 +252,10 @@ struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
 
             if (m_pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
             {
-                if (m_uiIntroEvent_Timer < diff)
+                if (m_uiIntroEventTimer < uiDiff)
                 {
                     DoTauntPeons();
-                }else m_uiIntroEvent_Timer -= diff;
+                }else m_uiIntroEventTimer -= uiDiff;
             }
         }
 
@@ -273,30 +273,30 @@ struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
                 m_bSpinOnce = true;
             }
 
-            if (m_uiCleave_Timer < diff)
+            if (m_uiCleaveTimer < uiDiff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_SHADOW_CLEAVE : H_SPELL_SHADOW_SLAM);
-                m_uiCleave_Timer = urand(6000, 8500);
-            }else m_uiCleave_Timer -= diff;
+                m_uiCleaveTimer = urand(6000, 8500);
+            }else m_uiCleaveTimer -= uiDiff;
         }
         else
         {
-            if (m_uiShadowFissure_Timer < diff)
+            if (m_uiShadowFissureTimer < uiDiff)
             {
                 if (Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                     DoCastSpellIfCan(target,SPELL_SHADOW_FISSURE);
-                m_uiShadowFissure_Timer = urand(7500, 15000);
-            }else m_uiShadowFissure_Timer -= diff;
+                m_uiShadowFissureTimer = urand(7500, 15000);
+            }else m_uiShadowFissureTimer -= uiDiff;
 
-            if (m_uiDeathCoil_Timer < diff)
+            if (m_uiDeathCoilTimer < uiDiff)
             {
                 if (Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
 					DoCastSpellIfCan(target,m_bIsRegularMode ? SPELL_DEATH_COIL : H_SPELL_DEATH_COIL);
-                m_uiDeathCoil_Timer = urand(15000, 20000);
-            }else m_uiDeathCoil_Timer -= diff;
+                m_uiDeathCoilTimer = urand(15000, 20000);
+            }else m_uiDeathCoilTimer -= uiDiff;
 
             if (m_creature->GetHealthPercent() <= 20.0f)
-                Phase = true;
+                m_bPhase = true;
 
             DoMeleeAttackIfReady();
         }

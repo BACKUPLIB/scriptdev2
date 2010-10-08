@@ -39,18 +39,20 @@ enum
     SAY_SWARM_1                     = -1601010,
     SAY_SWARM_2                     = -1601011,
     SAY_DEATH                       = -1601012,
-    EMOTE_BOSS_GENERIC_FRENZY       = -1000005
+    EMOTE_BOSS_GENERIC_FRENZY       = -1000005,
+
+    ACHIEVEMENT_WATCH_HIM_DIE       = 1296,
+
+    CURSE_OF_FATIGUE                = 52592,
+    CURSE_OF_FATIGUE_H              = 59368,
+
+    MIND_FLAY                       = 52586,
+    MIND_FLAY_H                     = 59367,
+
+    ENRAGE                          = 28747,
+
+    NPC_SWARM                       = 28735
 };
-
-#define CURSE_OF_FATIGUE            52592
-#define CURSE_OF_FATIGUE_H          59368
-
-#define MIND_FLAY                   52586
-#define MIND_FLAY_H                 59367
-
-#define ENRAGE                      28747
-
-#define NPC_SWARM                   28735
 
 /*######
 ## boss_krikthir
@@ -101,10 +103,32 @@ struct MANGOS_DLL_DECL boss_krikthirAI : public ScriptedAI
         }
     }
 
-    void JustDied(Unit* pKiller)
+void JustDied(Unit* killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
-        m_pInstance->SetData(TYPE_KRIKTHIR, DONE);
+
+        if (m_pInstance)
+        {
+            m_pInstance->SetData(TYPE_KRIKTHIR, DONE);
+
+            //Achievement: Watch him die
+            if (!m_bIsRegularMode)
+            {
+                Creature *pAdd1, *pAdd2, *pAdd3;
+                if ((pAdd1 = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_WATCHER_GASHRA))) && pAdd1->isAlive() &&
+                   (pAdd2 = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_WATCHER_SILTHIK))) && pAdd2->isAlive() &&
+                   (pAdd3 = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_WATCHER_NARJIL))) && pAdd3->isAlive())
+                {
+                    Map* pMap = m_creature->GetMap();
+                    if (pMap && pMap->IsDungeon())
+                    {
+                        Map::PlayerList const &players = pMap->GetPlayers();
+                        for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                            itr->getSource()->CompletedAchievement(ACHIEVEMENT_WATCH_HIM_DIE);
+                    }
+                }
+            }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)

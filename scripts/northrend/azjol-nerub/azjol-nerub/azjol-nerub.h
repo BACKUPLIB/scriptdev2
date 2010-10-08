@@ -16,7 +16,11 @@ enum
     GO_DOOR_KRIKTHIR            = 192395,
     GO_DOOR_ANUBARAK_1          = 192396,
     GO_DOOR_ANUBARAK_2          = 192397,
-    GO_DOOR_ANUBARAK_3          = 192398
+    GO_DOOR_ANUBARAK_3          = 192398,
+
+    NPC_WATCHER_GASHRA          = 28730,
+    NPC_WATCHER_SILTHIK         = 28731,
+    NPC_WATCHER_NARJIL          = 28729
 };
 
 #endif

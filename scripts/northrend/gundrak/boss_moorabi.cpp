@@ -48,6 +48,8 @@ enum
     SPELL_DETERMINED_GORE_H = 59444,
     SPELL_QUAKE             = 55101,
     SPELL_NUMBING_ROAR      = 55100,
+
+    ACHIEVE_LESS_RABI_H     = 2040
 };
 
 /*######
@@ -108,6 +110,17 @@ struct MANGOS_DLL_DECL boss_moorabiAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (!m_bIsRegularMode && !m_bMammothPhase)
+        {
+            Map* pMap = m_creature->GetMap();
+            if (pMap && pMap->IsDungeon())
+            {
+                Map::PlayerList const &players = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                    itr->getSource()->CompletedAchievement(ACHIEVE_LESS_RABI_H);
+            }
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_MOORABI, DONE);

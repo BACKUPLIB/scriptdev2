@@ -42,6 +42,7 @@ static Say PeonAttacked[]=
     {-1540003},
     {-1540004},
 };
+
 static Say PeonDies[]=
 {
     {-1540005},
@@ -50,30 +51,33 @@ static Say PeonDies[]=
     {-1540008},
 };
 
-#define SAY_INTRO           -1540000
-#define SAY_TAUNT_1         -1540009
-#define SAY_TAUNT_2         -1540010
-#define SAY_TAUNT_3         -1540011
-#define SAY_AGGRO_1         -1540012
-#define SAY_AGGRO_2         -1540013
-#define SAY_AGGRO_3         -1540014
-#define SAY_SLAY_1          -1540015
-#define SAY_SLAY_2          -1540016
-#define SAY_DIE             -1540017
+enum
+{
+    SAY_INTRO               = -1540000,
+    SAY_TAUNT_1             = -1540009,
+    SAY_TAUNT_2             = -1540010,
+    SAY_TAUNT_3             = -1540011,
+    SAY_AGGRO_1             = -1540012,
+    SAY_AGGRO_2             = -1540013,
+    SAY_AGGRO_3             = -1540014,
+    SAY_SLAY_1              = -1540015,
+    SAY_SLAY_2              = -1540016,
+    SAY_DIE                 = -1540017,
 
-#define SPELL_DEATH_COIL            30500
-#define H_SPELL_DEATH_COIL          41070                   // probably wrong spell but fits good...
-#define SPELL_DARK_SPIN             30502                   // core bug spell attack caster :D
-#define SPELL_SHADOW_FISSURE        30496                   // Summon the ShadowFissure NPC
+    SPELL_DEATH_COIL        = 30500,
+    H_SPELL_DEATH_COIL      = 41070,                   // probably wrong spell but fits good...
+    SPELL_DARK_SPIN         = 30502,                   // core bug spell attack caster :D
+    SPELL_SHADOW_FISSURE    = 30496,                   // Summon the ShadowFissure NPC
 
-#define SPELL_SHADOW_CLEAVE         30495
-#define H_SPELL_SHADOW_SLAM         35953
+    SPELL_SHADOW_CLEAVE     = 30495,
+    H_SPELL_SHADOW_SLAM     = 35953,
 
-#define SPELL_HEMORRHAGE            30478
+    SPELL_HEMORRHAGE        = 30478,
 
-#define SPELL_CONSUMPTION           30497
-#define H_SPELL_CONSUMPTION         35952
-#define SPELL_TEMPORARY_VISUAL      39312                   // this is wrong, a temporary solution. spell consumption already has the purple visual, but doesn't display as it should
+    SPELL_CONSUMPTION       = 30497,
+    H_SPELL_CONSUMPTION     = 35952,
+    PELL_TEMPORARY_VISUAL   = 39312,                   // this is wrong, a temporary solution. spell consumption already has the purple visual, but doesn't display as it should
+}
 
 struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
 {
@@ -87,62 +91,62 @@ struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
-    bool IntroOnce;
-    bool IsIntroEvent;
-    bool IsMainEvent;
-    bool SpinOnce;
-    //bool HasTaunted;
-    bool Phase;
+    bool m_bIntroOnce;
+    bool m_bIsIntroEvent;
+    bool m_bIsMainEvent;
+    bool m_bSpinOnce;
+    //bool m_bHasTaunted;
+    bool m_bPhase;
 
-    uint32 PeonEngagedCount;
-    uint32 PeonKilledCount;
+    uint32 m_uiPeonEngagedCount;
+    uint32 m_uiPeonKilledCount;
 
-    uint32 IntroEvent_Timer;
-    uint32 DeathCoil_Timer;
-    uint32 ShadowFissure_Timer;
-    uint32 Cleave_Timer;
+    uint32 m_uiIntroEventTimer;
+    uint32 m_uiDeathCoilTimer;
+    uint32 m_uiShadowFissureTimer;
+    uint32 m_uiCleaveTimer;
 
     void Reset()
     {
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-        IsIntroEvent = false;
-        IntroOnce = false;
-        IsMainEvent = false;
-        //HasTaunted = false;
-        SpinOnce = false;
-        Phase = false;
+        m_bIsIntroEvent = false;
+        m_bIntroOnce = false;
+        m_bIsMainEvent = false;
+        //m_bHasTaunted = false;
+        m_bSpinOnce = false;
+        m_bPhase = false;
 
-        PeonEngagedCount = 0;
-        PeonKilledCount = 0;
+        m_uiPeonEngagedCount = 0;
+        m_uiPeonKilledCount = 0;
 
-        IntroEvent_Timer = 90000;                           //how long before getting bored and kills his minions?
-        DeathCoil_Timer = 20000;
-        ShadowFissure_Timer = 8000;
-        Cleave_Timer = 5000;
+        m_uiIntroEventTimer = 90000;                        // how long before getting bored and kills his minions?
+        m_uiDeathCoilTimer = 20000;
+        m_uiShadowFissureTimer = 8000;
+        m_uiCleaveTimer = 5000;
     }
 
     void DoYellForPeonAggro()
     {
-        if (PeonEngagedCount >= 4)
+        if (m_uiPeonEngagedCount >= 4)
             return;
 
-        DoScriptText(PeonAttacked[PeonEngagedCount].id, m_creature);
-        ++PeonEngagedCount;
+        DoScriptText(PeonAttacked[m_uiPeonEngagedCount].id, m_creature);
+        ++m_uiPeonEngagedCount;
     }
 
     void DoYellForPeonDeath()
     {
-        if (PeonKilledCount >= 4)
+        if (m_uiPeonKilledCount >= 4)
             return;
 
-        DoScriptText(PeonDies[PeonKilledCount].id, m_creature);
-        ++PeonKilledCount;
+        DoScriptText(PeonDies[m_uiPeonKilledCount].id, m_creature);
+        ++m_uiPeonKilledCount;
 
-        if (PeonKilledCount == 4)
+        if (m_uiPeonKilledCount == 4)
         {
-            IsIntroEvent = false;
-            IsMainEvent = true;
+            m_bIsIntroEvent = false;
+            m_bIsMainEvent = true;
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
     }
@@ -156,54 +160,54 @@ struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
             case 2: DoScriptText(SAY_TAUNT_3, m_creature); break;
         }
 
-        //TODO: kill the peons first
-        IsIntroEvent = false;
-        PeonEngagedCount = 4;
-        PeonKilledCount = 4;
-        IsMainEvent = true;
+        // TODO: kill the peons first
+        m_bIsIntroEvent = false;
+        m_uiPeonEngagedCount = 4;
+        m_uiPeonKilledCount = 4;
+        m_bIsMainEvent = true;
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
 
-    void AttackStart(Unit* who)
+    void AttackStart(Unit* pWho)
     {
-        if (IsIntroEvent || !IsMainEvent)
+        if (m_bIsIntroEvent || !m_bIsMainEvent)
             return;
 
-        if (m_creature->Attack(who, true))
+        if (m_creature->Attack(pWho, true))
         {
-            m_creature->AddThreat(who);
-            m_creature->SetInCombatWith(who);
-            who->SetInCombatWith(m_creature);
+            m_creature->AddThreat(pWho);
+            m_creature->SetInCombatWith(pWho);
+            pWho->SetInCombatWith(m_creature);
 
-            if (Phase)
-                DoStartNoMovement(who);
+            if (m_bPhase)
+                DoStartNoMovement(pWho);
             else
-                DoStartMovement(who);
+                DoStartMovement(pWho);
         }
     }
 
-    void MoveInLineOfSight(Unit *who)
+    void MoveInLineOfSight(Unit* pWho)
     {
-        if (!IntroOnce && m_creature->IsWithinDistInMap(who, 50.0f))
+        if (!m_bIntroOnce && m_creature->IsWithinDistInMap(pWho, 50.0f))
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            if (pWho->GetTypeId() != TYPEID_PLAYER)
                 return;
 
             DoScriptText(SAY_INTRO, m_creature);
-            IntroOnce = true;
-            IsIntroEvent = true;
+            m_bIntroOnce = true;
+            m_bIsIntroEvent = true;
 
             if (m_pInstance)
-                m_pInstance->SetData(TYPE_NETHEKURSE,IN_PROGRESS);
+                m_pInstance->SetData(TYPE_NETHEKURSE, IN_PROGRESS);
         }
 
-        if (IsIntroEvent || !IsMainEvent)
+        if (m_bIsIntroEvent || !m_bIsMainEvent)
             return;
 
-        ScriptedAI::MoveInLineOfSight(who);
+        ScriptedAI::MoveInLineOfSight(pWho);
     }
 
-    void Aggro(Unit *who)
+    void Aggro(Unit* pWho)
     {
         switch(urand(0, 2))
         {
@@ -237,65 +241,59 @@ struct MANGOS_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
             return;
 
         m_pInstance->SetData(TYPE_NETHEKURSE,DONE);
-
-        if (m_pInstance->GetData64(DATA_NETHEKURSE_DOOR))
-        {
-            if (GameObject* pDoor = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(DATA_NETHEKURSE_DOOR)))
-                pDoor->SetGoState(GO_STATE_ACTIVE);
-        }
     }
 
-    void UpdateAI(const uint32 diff)
+    void UpdateAI(const uint32 uiDiff)
     {
-        if (IsIntroEvent)
+        if (m_bIsIntroEvent)
         {
             if (!m_pInstance)
                 return;
 
             if (m_pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
             {
-                if (IntroEvent_Timer < diff)
+                if (m_uiIntroEvent_Timer < diff)
                 {
                     DoTauntPeons();
-                }else IntroEvent_Timer -= diff;
+                }else m_uiIntroEvent_Timer -= diff;
             }
         }
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (!IsMainEvent)
+        if (!m_bIsMainEvent)
             return;
 
-        if (Phase)
+        if (m_bPhase)
         {
-            if (!SpinOnce)
+            if (!m_bSpinOnce)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_DARK_SPIN);
-                SpinOnce = true;
+                m_bSpinOnce = true;
             }
 
-            if (Cleave_Timer < diff)
+            if (m_uiCleave_Timer < diff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_SHADOW_CLEAVE : H_SPELL_SHADOW_SLAM);
-                Cleave_Timer = urand(6000, 8500);
-            }else Cleave_Timer -= diff;
+                m_uiCleave_Timer = urand(6000, 8500);
+            }else m_uiCleave_Timer -= diff;
         }
         else
         {
-            if (ShadowFissure_Timer < diff)
+            if (m_uiShadowFissure_Timer < diff)
             {
                 if (Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                     DoCastSpellIfCan(target,SPELL_SHADOW_FISSURE);
-                ShadowFissure_Timer = urand(7500, 15000);
-            }else ShadowFissure_Timer -= diff;
+                m_uiShadowFissure_Timer = urand(7500, 15000);
+            }else m_uiShadowFissure_Timer -= diff;
 
-            if (DeathCoil_Timer < diff)
+            if (m_uiDeathCoil_Timer < diff)
             {
                 if (Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
 					DoCastSpellIfCan(target,m_bIsRegularMode ? SPELL_DEATH_COIL : H_SPELL_DEATH_COIL);
-                DeathCoil_Timer = urand(15000, 20000);
-            }else DeathCoil_Timer -= diff;
+                m_uiDeathCoil_Timer = urand(15000, 20000);
+            }else m_uiDeathCoil_Timer -= diff;
 
             if (m_creature->GetHealthPercent() <= 20.0f)
                 Phase = true;
@@ -314,82 +312,77 @@ struct MANGOS_DLL_DECL mob_fel_orc_convertAI : public ScriptedAI
     }
 
     ScriptedInstance* m_pInstance;
-    uint32 Hemorrhage_Timer;
+    uint32 m_uiHemorrhageTimer;
 
     void Reset()
     {
-        m_creature->SetNoCallAssistance(true);              //we don't want any assistance (WE R HEROZ!)
-        Hemorrhage_Timer = 3000;
+        m_creature->SetNoCallAssistance(true);              // we don't want any assistance (WE R HEROZ!)
+        m_uiHemorrhageTimer = 3000;
     }
 
-    void MoveInLineOfSight(Unit *who)
+    void MoveInLineOfSight(Unit* pWho)
     {
         return;
     }
 
-    void Aggro(Unit* who)
+    void Aggro(Unit* pWho)
     {
         if (m_pInstance)
         {
-            if (m_pInstance->GetData64(DATA_NETHEKURSE))
+            Creature* pKurse = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_NETHEKURSE));
+            if (pKurse && m_creature->IsWithinDist(pKurse, 45.0f))
             {
-                Creature* pKurse = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(DATA_NETHEKURSE));
+                if (boss_grand_warlock_nethekurseAI* pKurseAI = dynamic_cast<boss_grand_warlock_nethekurseAI*>(pKurse->AI()))
+                    pKurseAI->DoYellForPeonAggro();
 
-                if (pKurse && m_creature->IsWithinDist(pKurse, 45.0f))
-                {
-                    if (boss_grand_warlock_nethekurseAI* pKurseAI = dynamic_cast<boss_grand_warlock_nethekurseAI*>(pKurse->AI()))
-                        pKurseAI->DoYellForPeonAggro();
-
-                    if (m_pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
-                        return;
-                    else
-                        m_pInstance->SetData(TYPE_NETHEKURSE,IN_PROGRESS);
-                }
+                if (m_pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
+                    return;
+                else
+                    m_pInstance->SetData(TYPE_NETHEKURSE, IN_PROGRESS);
             }
         }
     }
 
-    void JustDied(Unit* Killer)
+    void JustDied(Unit* pKiller)
     {
         if (m_pInstance)
         {
             if (m_pInstance->GetData(TYPE_NETHEKURSE) != IN_PROGRESS)
                 return;
 
-            if (m_pInstance->GetData64(DATA_NETHEKURSE))
+            if (Creature* pKurse = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_NETHEKURSE)))
             {
-                if (Creature* pKurse = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(DATA_NETHEKURSE)))
-                {
-                    if (boss_grand_warlock_nethekurseAI* pKurseAI = dynamic_cast<boss_grand_warlock_nethekurseAI*>(pKurse->AI()))
-                        pKurseAI->DoYellForPeonAggro();
-                }
+                if (boss_grand_warlock_nethekurseAI* pKurseAI = dynamic_cast<boss_grand_warlock_nethekurseAI*>(pKurse->AI()))
+                    pKurseAI->DoYellForPeonAggro();
             }
         }
     }
 
-    void UpdateAI(const uint32 diff)
+    void UpdateAI(const uint32 uiDiff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (Hemorrhage_Timer < diff)
+        if (m_uiHemorrhageTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(),SPELL_HEMORRHAGE);
-            Hemorrhage_Timer = 15000;
-        }else Hemorrhage_Timer -= diff;
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_HEMORRHAGE);
+            m_uiHemorrhageTimer = 15000;
+        }
+        else
+            m_uiHemorrhageTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }
 };
 
-//NOTE: this creature are also summoned by other spells, for different creatures
+// NOTE: this creature are also summoned by other spells, for different creatures
 struct MANGOS_DLL_DECL mob_lesser_shadow_fissureAI : public ScriptedAI
 {
     mob_lesser_shadow_fissureAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
     void Reset() { }
-    void MoveInLineOfSight(Unit *who) { }
-    void AttackStart(Unit* who) { }
+    void MoveInLineOfSight(Unit* pWho) { }
+    void AttackStart(Unit* pWho) { }
 };
 
 CreatureAI* GetAI_boss_grand_warlock_nethekurse(Creature* pCreature)
@@ -409,20 +402,20 @@ CreatureAI* GetAI_mob_lesser_shadow_fissure(Creature* pCreature)
 
 void AddSC_boss_grand_warlock_nethekurse()
 {
-    Script *newscript;
+    Script* pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "boss_grand_warlock_nethekurse";
-    newscript->GetAI = &GetAI_boss_grand_warlock_nethekurse;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "boss_grand_warlock_nethekurse";
+    pNewScript->GetAI = &GetAI_boss_grand_warlock_nethekurse;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_fel_orc_convert";
-    newscript->GetAI = &GetAI_mob_fel_orc_convert;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_fel_orc_convert";
+    pNewScript->GetAI = &GetAI_mob_fel_orc_convert;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_lesser_shadow_fissure";
-    newscript->GetAI = &GetAI_mob_lesser_shadow_fissure;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_lesser_shadow_fissure";
+    pNewScript->GetAI = &GetAI_mob_lesser_shadow_fissure;
+    pNewScript->RegisterSelf();
 }

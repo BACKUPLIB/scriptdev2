@@ -1790,13 +1790,11 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
      owner = m_creature->GetOwner();
      if (!owner) return;
 
-     m_creature->SetLevel(owner->getLevel());
-     m_creature->setFaction(owner->getFaction());
-
-     m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
      m_creature->SetUInt32Value(UNIT_FIELD_BYTES_0, 2048);
-     m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
+     m_creature->SetUInt32Value(UNIT_FIELD_BYTES_2,owner->GetUInt32Value(UNIT_FIELD_BYTES_2));
      m_creature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+     m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
+     m_creature->SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
 
      m_uiFrostboltTimer = urand(5000,12000);
      m_uiFireblastTimer = urand(4000,9000);
@@ -1823,6 +1821,8 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
 
       if (m_creature->Attack(pWho, true))
         {
+            if (owner)
+                m_creature->CastSpell(m_creature, SPELL_CLONE_THREAT, true, NULL, NULL, owner->GetGUID());
             m_creature->clearUnitState(UNIT_STAT_FOLLOW);
             m_creature->SetInCombatWith(pWho);
             pWho->SetInCombatWith(m_creature);
@@ -1858,9 +1858,6 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
 
         if (owner && !m_creature->HasAura(SPELL_CLONE_CASTER_1))
                  m_creature->CastSpell(m_creature, SPELL_CLONE_CASTER_1, true, NULL, NULL, owner->GetGUID());
-
-        if (owner && !m_creature->HasAura(SPELL_CLONE_THREAT))
-                 m_creature->CastSpell(m_creature, SPELL_CLONE_THREAT, true, NULL, NULL, owner->GetGUID());
 
         if (!m_creature->getVictim())
             if (owner && owner->getVictim())

@@ -88,7 +88,7 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 	uint32 m_uiImpalingChargeTimer;
 	uint32 m_uiPunctureTimer;
 
-	Creature* cRhino;
+    uint64 m_uiRhinoGUID;
 
     void Reset()
     {
@@ -102,6 +102,8 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 		m_uiEnrageTimer = 4000;
 		m_uiImpalingChargeTimer = 7000;
 		m_uiPunctureTimer = 10000;
+
+        m_uiRhinoGUID = 0;
 
 		m_creature->SetDisplayId(MODELID_HUMAN);
 
@@ -158,9 +160,10 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 		float x = pTarget->GetPositionX() + 20.0f;
 		float y = pTarget->GetPositionY() + 20.0f;
 		float z = pTarget->GetPositionZ();
-		cRhino = m_creature->SummonCreature(NPC_RHINO_SPIRIT, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 1800);
+		Creature* cRhino = m_creature->SummonCreature(NPC_RHINO_SPIRIT, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 1800);
 		if (cRhino)
 		{
+            m_uiRhinoGUID = cRhino->GetGUID();
 			cRhino->CastSpell(pTarget, SPELL_CHARGE, true);
 			cRhino->SetInCombatWith(pTarget);
 			cRhino->AddThreat(pTarget, 1000.0f);
@@ -176,7 +179,7 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 
 		if (m_bUseStampede)
 		{
-			if (cRhino)
+            if (Creature* cRhino = m_creature->GetMap()->GetCreature(m_uiRhinoGUID))
 			{
 				if (cRhino->getVictim())
 				{

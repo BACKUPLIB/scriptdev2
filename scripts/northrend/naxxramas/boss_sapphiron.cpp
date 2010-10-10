@@ -87,8 +87,10 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
     uint32 m_uiBirthTimer;
     uint8 m_uiBirthState;
     bool m_bLandoff;
-    std::vector<Unit*> targets;
-    std::vector<Player*> immunePlayers;
+    //std::vector<Unit*> targets;
+    //std::vector<Player*> immunePlayers;
+    std::vector<uint64> targetGUIDs;
+    std::vector<uint64> immunePlayerGUIDs;
     Creature* pFrostBreathTarget;
 
     void Reset()
@@ -108,8 +110,8 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         m_uiIceboltCount = 0;
         m_bLandoff = false;
         pFrostBreathTarget;
-        targets.clear();
-        immunePlayers.clear();
+        targetGUIDs.clear();
+        immunePlayerGUIDs.clear();
         m_creature->SetVisibility(VISIBILITY_OFF);
         m_creature->setFaction(35);
         if(m_pInstance)
@@ -287,7 +289,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                     {
                         if(DoCastSpellIfCan(pTarget,SPELL_ICEBOLT) == CAST_OK)
                         {  
-                            targets.push_back(pTarget);
+                            targetGUIDs.push_back(pTarget->GetGUID());
                             ++m_uiIceboltCount;
 
                             if (m_uiIceboltCount == m_uiIceboltCountMax)
@@ -341,18 +343,17 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                         //check for each player
                         for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                             //check for both iceblocks
-                            for(std::vector<Unit*>::iterator itr = targets.begin(); itr!= targets.end(); ++itr)
+                            for(std::vector<uint64>::iterator itr = targetGUIDs.begin(); itr!= targetGUIDs.end(); ++itr)
                                 //check if player near iceblock
                             {
-                                if(i->getSource()->IsWithinLOSInMap(m_creature))
-                                    if(i->getSource()->GetDistance2d((*itr)) <= 5.0f)
+                                if(Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                                    if(i->getSource()->GetDistance2d(pPlayer) <= 6.0f)
                                     {
                                         //check if iceblock is closer to breathtarget then player
-                                        // not working, so disable for now
-                                        //if(pFrostBreathTarget->GetDistanceOrder((*itr),i->getSource(),false))
+                                        if(pFrostBreathTarget->GetDistanceOrder(pPlayer,i->getSource(),false))
                                         {
                                             i->getSource()->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
-                                            immunePlayers.push_back(i->getSource());
+                                            immunePlayerGUIDs.push_back(i->getSource()->GetGUID());
                                             break;
                                         }  
                                     }
@@ -361,14 +362,15 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                         if (DoCastSpellIfCan(m_creature, SPELL_FROST_BREATH) == CAST_OK)
                         {
                             //remove frost immunity
-                            for(std::vector<Player*>::iterator itr = immunePlayers.begin(); itr!= immunePlayers.end(); ++itr)
+                            for(std::vector<uint64>::iterator itr = immunePlayerGUIDs.begin(); itr!= immunePlayerGUIDs.end(); ++itr)
                             {
-                                (*itr)->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
+                                if(Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                                pPlayer->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
                             }
                             m_uiLandTimer = 4000;
                             m_bLandoff = true;
-                            immunePlayers.clear();
-                            targets.clear();
+                            immunePlayerGUIDs.clear();
+                            targetGUIDs.clear();
                         }
                     }
                     else

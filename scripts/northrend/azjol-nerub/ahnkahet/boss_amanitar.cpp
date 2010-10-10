@@ -134,12 +134,12 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         std::list<Creature*> lMushrooms;
-        GetCreatureListWithEntryInGrid(lMushroomsHealthy, m_creature, NPC_HEALTHY_MUSHROOM, 150.0f);
-        for(std::list<Creature*>::iterator itr = lMushroomsHealthy.begin(); itr != lMushroomsHealthy.end(); ++itr)
+        GetCreatureListWithEntryInGrid(lMushrooms, m_creature, NPC_HEALTHY_MUSHROOM, 150.0f);
+        for(std::list<Creature*>::iterator itr = lMushrooms.begin(); itr != lMushrooms.end(); ++itr)
             (*itr)->ForcedDespawn();
         lMushrooms.clear();
         GetCreatureListWithEntryInGrid(lMushrooms, m_creature, NPC_POISONOUS_MUSHROOM, 150.0f);
-        for(std::list<Creature*>::iterator itr = lMushroomsPoison.begin(); itr != lMushroomsPoison.end(); ++itr)
+        for(std::list<Creature*>::iterator itr = lMushrooms.begin(); itr != lMushrooms.end(); ++itr)
             (*itr)->ForcedDespawn();
     }
 

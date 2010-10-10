@@ -23,18 +23,22 @@ EndScriptData */
  
 #include "precompiled.h"
 #include "ahnkahet.h"
- 
-//TODO: fill in texts in database. Also need to add text for whisper. 
+
 enum 
 { 
     SAY_AGGRO                      = -1619033, 
-    SAY_INSANITY                    = -1619034, 
-    SAY_SLAY_1                      = -1619035, 
-    SAY_SLAY_2                      = -1619036, 
-    SAY_SLAY_3                      = -1619037, 
-    SAY_DEATH_1                    = -1619038, 
-    SAY_DEATH_2                    = -1619039, 
- 
+    SAY_INSANITY                   = -1619034, 
+    SAY_SLAY_1                     = -1619035, 
+    SAY_SLAY_2                     = -1619036, 
+    SAY_SLAY_3                     = -1619037, 
+    SAY_DEATH                      = -1619038, 
+    WHISPER_AGGRO                  = -1619039, 
+    WHISPER_INSANITY               = -1619040, 
+    WHISPER_SLAY_1                 = -1619041, 
+    WHISPER_SLAY_2                 = -1619042, 
+    WHISPER_SLAY_3                 = -1619043, 
+    WHISPER_DEATH                  = -1619044, 
+
     SPELL_INSANITY                  = 57496,
 	
 	SPELL_INSANITY_PHASE_16			= 57508,
@@ -50,15 +54,16 @@ enum
     SPELL_SHADOW_BOLT_SALVE_H      = 59975, 
  
     SPELL_MIND_FLAY                = 57941, 
-    SPELL_MIND_FLAY_H              = 59974 
+    SPELL_MIND_FLAY_H              = 59974,
+
+    // FIXME: these are not the right clone NPCs!
+    CLONE                      = 31627,
+    CLONE_H                    = 31627,
+    FAC_HOSTILE                = 16,
+    ACHIEVEMENT_QUICK_DEMISE   = 1862
 }; 
  
-#define CLONE                      28345 
-#define CLONE_H                    31847
-
-#define FAC_HOSTILE				   16
- 
-enum 
+enum clonehealth
 { 
     CLONE_HEALTH_DRUID        = 16101, 
     CLONE_HEALTH_DRUID_H      = CLONE_HEALTH_DRUID * 3, 
@@ -133,6 +138,8 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 	bool clone64;
 	bool clone128;
 	bool clone256;
+    bool startAchievement;
+    bool getsAchievement;
  
     std::list<uint64> cloneGUIDList; 
 	std::list<uint64> clone16GUIDList;
@@ -147,11 +154,13 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
     uint32 shadowBoltSalveTimer; 
     uint32 shiverTimer; 
     uint32 mindFlayTimer; 
+    uint32 achievementTimer;
  
     void Reset() 
     { 
         insanityEndTimer = 9999999; 
         createMirrorTimer = 9999999;
+        achievementTimer = 120000; // 2minutes
 		shadowBoltSalveTimer = 6000;
 		shiverTimer = 13000;
 		mindFlayTimer = 9000;
@@ -170,6 +179,8 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 		clone64 = false;
 		clone128 = false;
 		clone256 = false;
+        startAchievement = false;
+        getsAchievement = true;
 
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, NOT_STARTED);
@@ -177,24 +188,59 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
  
     void Aggro(Unit* pWho) 
     { 
-        DoScriptText(SAY_AGGRO, m_creature); 
+        DoScriptText(SAY_AGGRO, m_creature);
+
+        std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+	    for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+		{
+            if(m_creature->GetMap()->GetUnit((*itr)->getUnitGuid())->GetTypeId() == TYPEID_PLAYER)
+                DoScriptText(WHISPER_AGGRO,m_creature,m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()));
+        }
+        
+        startAchievement = true;
+
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, IN_PROGRESS);
     } 
  
     void KilledUnit(Unit* pVictim) 
     { 
+        std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+
+        int32 textId = 0;
+
         switch(urand(0, 2)) 
         { 
-            case 0: DoScriptText(SAY_SLAY_1, m_creature); break; 
-            case 1: DoScriptText(SAY_SLAY_2, m_creature); break; 
-            case 2: DoScriptText(SAY_SLAY_3, m_creature); break; 
+            case 0: textId = SAY_SLAY_1; break; 
+            case 1: textId = SAY_SLAY_2; break; 
+            case 2: textId = SAY_SLAY_3; break; 
         } 
+
+        DoScriptText(textId,m_creature);
+
+        for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+		{
+            if(m_creature->GetMap()->GetUnit((*itr)->getUnitGuid())->GetTypeId() == TYPEID_PLAYER)
+                DoScriptText(textId-6,m_creature,m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()));
+        }
     } 
  
     void JustDied(Unit* pKiller) 
     { 
-        DoScriptText(urand(0, 1) ? SAY_DEATH_1 : SAY_DEATH_2, m_creature); 
+        DoScriptText(SAY_DEATH, m_creature); 
+
+        Map* pMap = m_creature->GetMap();
+        if (pMap && pMap->IsDungeon())
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+            {
+                if(!m_bIsRegularMode && getsAchievement)
+                    itr->getSource()->CompletedAchievement(ACHIEVEMENT_QUICK_DEMISE);
+                DoScriptText(WHISPER_DEATH,m_creature,itr->getSource());
+            }
+        }
+
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, DONE);
     } 
@@ -522,7 +568,15 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
 	}
  
     void UpdateAI(const uint32 uiDiff) 
-    { 
+    {
+        if(startAchievement)
+            if(achievementTimer < uiDiff)
+            {
+                startAchievement = false;
+                getsAchievement = false;
+            } else
+                achievementTimer -= uiDiff;
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim()) 
             return; 
  
@@ -687,6 +741,15 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
         { 
             if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.66 && !phase66) 
             { 
+                DoScriptText(SAY_INSANITY, m_creature);
+
+                std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+	            for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+		        {
+                    if(m_creature->GetMap()->GetUnit((*itr)->getUnitGuid())->GetTypeId() == TYPEID_PLAYER)
+                        DoScriptText(WHISPER_INSANITY,m_creature,m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()));
+                }
+
 				m_creature->InterruptNonMeleeSpells(true);
                 phase66 = true; 
                 DoCastSpellIfCan(m_creature, SPELL_INSANITY); 
@@ -698,6 +761,15 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
  
             if (m_creature->GetHealth() < m_creature->GetMaxHealth() * 0.33 && !phase33) 
             {
+                DoScriptText(SAY_INSANITY, m_creature);
+
+                std::list<HostileReference *> t_list = m_creature->getThreatManager().getThreatList(); 
+	            for(std::list<HostileReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr) 
+		        {
+                    if(m_creature->GetMap()->GetUnit((*itr)->getUnitGuid())->GetTypeId() == TYPEID_PLAYER)
+                        DoScriptText(WHISPER_INSANITY,m_creature,m_creature->GetMap()->GetUnit((*itr)->getUnitGuid()));
+                }
+
 				m_creature->InterruptNonMeleeSpells(true);
                 phase33 = true; 
                 DoCastSpellIfCan(m_creature, SPELL_INSANITY); 

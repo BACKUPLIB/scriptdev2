@@ -16,7 +16,7 @@
 
 /* ScriptData
 SDName: Boss_Jedoga
-SD%Complete: 20%
+SD%Complete: 95%
 SDComment:
 SDCategory: Ahn'kahet
 EndScriptData */
@@ -45,6 +45,7 @@ enum
     SAY_VOLUNTEER_2                     = -1619032,
 
 	NPC_VOLUNTEER						= 30385,
+    NPC_TWILIGHT_INITIATE               = 30114,
 	NPC_VISUAL_TRIGGER					= 38667,
 
 	FAC_FRIENDLY						= 35,
@@ -62,7 +63,9 @@ enum
 	SPELL_THUNDERSHOCK_H				= 60029,
 
 	SPELL_CYCLONE_STRIKE				= 56855,
-	SPELL_CYCLONE_STRIKE_H				= 60030
+	SPELL_CYCLONE_STRIKE_H				= 60030,
+
+    ACHIEVEMENT_VOLUNTEER_WORK          = 2056
 };
 
 const float volunteerPos[7][4] =
@@ -84,6 +87,9 @@ const float volunteerPos[7][4] =
 
 #define CORD_ABOVE_Z	-0.624178f
 
+#define START_X         372.33f
+#define START_Y         -705.28f
+#define START_Z         -8.904f
 #define START_O			5.427970f
 
 /*######
@@ -103,6 +109,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
     bool m_bIsRegularMode;
 
 	bool volunteerPhase;
+    bool getsAchievement;
 
 	std::list<uint64> volunteerGUIDList;
 
@@ -129,18 +136,26 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 		lightingBallTimer = 4000;
 		thundershockTimer = 6000;
 		cycloneStrikeTimer = 8000;
+        getsAchievement = true;
 
 		volunteerGUIDList.clear();
 
-		if (pVisualTrigger)
-			pVisualTrigger->ForcedDespawn();
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA,NOT_STARTED);
+
+        m_creature->NearTeleportTo(START_X,START_Y,START_Z,START_O);
+        m_creature->GetMotionMaster()->MoveIdle();
+        m_creature->CastSpell(m_creature,SPELL_SPHERE_VISUAL,true);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_PASSIVE);
     }
 
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
 		SpawnVolunteers();
-		m_creature->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA,IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -155,8 +170,21 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 
     void JustDied(Unit* pKiller)
     {
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_JEDOGA,DONE);
         DoScriptText(SAY_DEATH, m_creature);
 		DepawnVolunteers();
+
+        if(!m_bIsRegularMode && getsAchievement)
+        {
+            Map* pMap = m_creature->GetMap();
+            if (pMap && pMap->IsDungeon())
+            {
+                Map::PlayerList const &players = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                    itr->getSource()->CompletedAchievement(ACHIEVEMENT_VOLUNTEER_WORK);
+            }
+        }
     }
 
 	void MoveInLineOfSight(Unit* pWho)
@@ -255,8 +283,30 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
 			
 	}
 
+    bool allStartMobsDead()
+    {
+        std::list<Creature* > lCreatureList;
+        GetCreatureListWithEntryInGrid(lCreatureList, m_creature, NPC_TWILIGHT_INITIATE, 40.);
+
+        if (!lCreatureList.empty())
+            for(std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
+                if ((*itr)->isAlive())
+                    return false;
+
+        return true;
+    }
+
     void UpdateAI(const uint32 uiDiff)
     {
+        if(m_pInstance && m_pInstance->GetData(TYPE_JEDOGA) == NOT_STARTED)
+            if(allStartMobsDead())
+            {
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_PASSIVE);
+                m_creature->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
+                m_creature->SetInCombatWithZone();
+            }
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -371,6 +421,17 @@ struct MANGOS_DLL_DECL mob_jedoga_volunteerAI : public ScriptedAI
 	{
 
 	}
+
+    void JustDied(Unit* pKiller)
+    {
+        if((pKiller->GetTypeId() == TYPEID_PLAYER) || (pKiller->GetOwner()) && (pKiller->GetOwner()->GetTypeId() == TYPEID_PLAYER))
+            if (m_pInstance)
+                if (Creature* pJedoga = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_JEDOGA_SHADOWSEEKER)))
+                    if (boss_jedogaAI* pJedogaAI = dynamic_cast<boss_jedogaAI*>(pJedoga->AI()))
+                    {
+                        pJedogaAI->getsAchievement = false;
+                    }
+    }
 
     void UpdateAI(const uint32 uiDiff) 
 	{ 

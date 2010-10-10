@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_Nadox
 SD%Complete: 90%
-SDComment: TODO: some more research on guardian aura needed, BroodRage needs core and db support
+SDComment: TODO: BroodRage needs core and db support (?)
 SDCategory: Ahn'kahet
 EndScriptData */
 
@@ -40,6 +40,7 @@ enum
     SPELL_BERSERK                 = 26662,
     SPELL_BROOD_RAGE              = 59465,
 
+    // guardian aura done via EventAI
     SPELL_GUARDIAN_AURA           = 56151,
     SPELL_GUARDIAN_AURA_TRIGGERED = 56153,
 
@@ -50,72 +51,10 @@ enum
     NPC_AHNKAHAR_GUARDIAN_EGG     = 30173,
     NPC_AHNKAHAR_SWARM_EGG        = 30172,
     NPC_AHNKAHAR_GUARDIAN         = 30176,
-    NPC_AHNKAHAR_SWARMER          = 30178
+    NPC_AHNKAHAR_SWARMER          = 30178,
+
+    ACHIEVEMENT_RESPECT_YOUR_ELDERS = 2038
 };
-
-/*######
-## mob_ahnkahat_egg
-######*/
-struct MANGOS_DLL_DECL mob_ahnkahar_eggAI : public ScriptedAI
-{
-    mob_ahnkahar_eggAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        Reset();
-    }
-
-    ScriptedInstance* m_pInstance;
-
-	Creature* pCurrentGuardian;
-
-	uint32 immunityTimer;
-
-    void Reset() 
-	{
-		pCurrentGuardian = NULL;
-		immunityTimer = 2900;		
-	}
-
-    void MoveInLineOfSight(Unit* pWho) {}
-    void AttackStart(Unit* pWho) {}
-
-    void JustSummoned(Creature* pSummoned)
-    {
-        if (pSummoned->GetEntry() == NPC_AHNKAHAR_GUARDIAN)
-		{
-            DoScriptText(EMOTE_HATCH, m_creature);
-			pSummoned->CastSpell(pSummoned, SPELL_GUARDIAN_AURA_TRIGGERED, true);
-		}
-
-        if (m_pInstance)
-        {
-            if (Creature* pElderNadox = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_ELDER_NADOX)))
-            {
-                float fPosX, fPosY, fPosZ;
-                pElderNadox->GetPosition(fPosX, fPosY, fPosZ);
-                pSummoned->GetMotionMaster()->MovePoint(0, fPosX, fPosY, fPosZ);
-            }
-        }
-    }
-
-	void UpdateAI(const uint32 uiDiff)
-	{
-		if (pCurrentGuardian && pCurrentGuardian->isAlive())
-		{
-			if (immunityTimer < uiDiff)
-			{
-				pCurrentGuardian->CastSpell(pCurrentGuardian, SPELL_GUARDIAN_AURA_TRIGGERED, true);
-				pCurrentGuardian->RemoveAurasDueToSpell(SPELL_GUARDIAN_AURA_TRIGGERED);
-				immunityTimer = 2900;
-			}else immunityTimer -= uiDiff;
-		}
-	}
-};
-
-CreatureAI* GetAI_mob_ahnkahar_egg(Creature* pCreature)
-{
-    return new mob_ahnkahar_eggAI(pCreature);
-}
 
 /*######
 ## boss_nadox
@@ -135,17 +74,23 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
 
     bool   m_bBerserk;
     bool   m_bGuardianSummoned;
+    bool   m_bGetsAchievement;
     uint32 m_uiBroodPlagueTimer;
     uint32 m_uiBroodRageTimer;
     uint32 m_uiSummonTimer;
+    uint8 m_uiGuardCount;
 
     void Reset()
     {
         m_bBerserk = false;
         m_bGuardianSummoned = false;
+        m_bGetsAchievement = true;
         m_uiSummonTimer = 5000;
         m_uiBroodPlagueTimer = 15000;
         m_uiBroodRageTimer = 20000;
+        m_uiGuardCount = 0;
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NADOX,NOT_STARTED);
     }
 
     Creature* SelectRandomCreatureOfEntryInRange(uint32 uiEntry, float fRange)
@@ -165,6 +110,8 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NADOX,IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -180,6 +127,18 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NADOX,DONE);
+        if(!m_bIsRegularMode && m_bGetsAchievement)
+        {
+            Map* pMap = m_creature->GetMap();
+            if (pMap && pMap->IsDungeon())
+            {
+                Map::PlayerList const &players = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                    itr->getSource()->CompletedAchievement(ACHIEVEMENT_RESPECT_YOUR_ELDERS);
+            }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -187,12 +146,15 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (!m_bGuardianSummoned && m_creature->GetHealthPercent() < 50.0f)
+        if ((m_uiGuardCount == 0 && m_creature->GetHealthPercent() < 75.0f) ||
+            (m_uiGuardCount == 1 && m_creature->GetHealthPercent() < 50.0f) ||
+            (m_uiGuardCount == 2 && m_creature->GetHealthPercent() < 25.0f))
         {
-            // guardian is summoned at 50% of boss HP
-            if (Creature* pGuardianEgg = SelectRandomCreatureOfEntryInRange(NPC_AHNKAHAR_GUARDIAN_EGG, 75.0f))
+            // guardian is summoned at 75, 50 and 25% of boss HP
+            if (Creature* pGuardianEgg = GetClosestCreatureWithEntry(m_creature,NPC_AHNKAHAR_GUARDIAN_EGG, 75.0f))
                 pGuardianEgg->CastSpell(pGuardianEgg, SPELL_SUMMON_SWARM_GUARDIAN, false);
-
+ 
+            m_uiGuardCount++;
             m_bGuardianSummoned = true;
         }
 
@@ -234,7 +196,7 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
         if (!m_bBerserk && m_creature->GetPositionZ() < 24.0)
         {
             m_bBerserk = true;
-            DoCastSpellIfCan(m_creature, SPELL_BERSERK);
+            m_creature->CastSpell(m_creature,SPELL_BERSERK,true);
         }
 
         DoMeleeAttackIfReady();
@@ -244,6 +206,62 @@ struct MANGOS_DLL_DECL boss_nadoxAI : public ScriptedAI
 CreatureAI* GetAI_boss_nadox(Creature* pCreature)
 {
     return new boss_nadoxAI(pCreature);
+}
+
+/*######
+## mob_ahnkahat_egg
+######*/
+struct MANGOS_DLL_DECL mob_ahnkahar_eggAI : public ScriptedAI
+{
+    mob_ahnkahar_eggAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+
+	uint32 immunityTimer;
+
+    void Reset() 
+	{
+
+	}
+
+    void MoveInLineOfSight(Unit* pWho) {}
+    void AttackStart(Unit* pWho) {}
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (pSummoned->GetEntry() == NPC_AHNKAHAR_GUARDIAN)
+		{
+            DoScriptText(EMOTE_HATCH, m_creature);
+		}
+
+        if (m_pInstance)
+        {
+            if (Creature* pElderNadox = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_ELDER_NADOX)))
+            {
+                pSummoned->GetMotionMaster()->MovePoint(0, pElderNadox->GetPositionX(), pElderNadox->GetPositionY(), pElderNadox->GetPositionZ());
+            }
+        }
+    }
+
+    void SummonedCreatureJustDied(Creature* pKilled)
+    {
+        if(pKilled->GetEntry() == NPC_AHNKAHAR_GUARDIAN)
+            if (m_pInstance)
+                if (Creature* pElderNadox = m_creature->GetMap()->GetCreature(m_pInstance->GetData64(NPC_ELDER_NADOX)))
+                    if (boss_nadoxAI* pNadoxAI = dynamic_cast<boss_nadoxAI*>(pElderNadox->AI()))
+                    {
+                        pNadoxAI->m_bGetsAchievement = false;
+                    }
+    }
+};
+
+CreatureAI* GetAI_mob_ahnkahar_egg(Creature* pCreature)
+{
+    return new mob_ahnkahar_eggAI(pCreature);
 }
 
 void AddSC_boss_nadox()

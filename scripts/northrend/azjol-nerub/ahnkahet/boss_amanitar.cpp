@@ -26,16 +26,20 @@ EndScriptData */
 
 enum
 {
-    NPC_HEALTHY_MUSHROOM        = 30391,
-    NPC_POISONOUS_MUSHROOM      = 30435,
+    NPC_HEALTHY_MUSHROOM            = 30391,
+    NPC_POISONOUS_MUSHROOM          = 30435,
 
-    SPELL_BASH                  = 57094,
-    SPELL_ENTANGLING_ROOTS      = 57095,
-    SPELL_MINI                  = 57055,
-    SPELL_VENOM_BOLT_VOLLEY     = 57088,
+    SPELL_BASH                      = 57094,
+    SPELL_ENTANGLING_ROOTS          = 57095,
+    SPELL_MINI                      = 57055,
+    SPELL_VENOM_BOLT_VOLLEY         = 57088,
 
-    SPELL_POTENT_FUNGUS         = 56648,
-    SPELL_POISON_CLOUD          = 57061
+    SPELL_POTENT_FUNGUS             = 56648,
+    SPELL_POISON_CLOUD              = 57061,
+    SPELL_POISONOUS_MUSHROOM_VISUAL = 56741,
+    SPELL_POISONOUS_MUSHROOM_VISUAL2= 61566,
+
+    SPELL_MUSHROOM_MODEL            = 31690
 };
 
 /*######
@@ -61,7 +65,7 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
 
     void Reset()
     {
-        spawnMushroomTimer = 5000;
+        spawnMushroomTimer = 1000;
         miniTimer = urand(20000, 22000);
         bashTimer = urand(10000, 11000);
         venomBoltVolleyTimer = urand(4000, 6000);
@@ -70,14 +74,18 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
     void spawnMushroom()
     {
         float posX, posY, posZ;
-        if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-        {
-            posX = pTarget->GetPositionX() + (float)urand(1, 20);
-            posY = pTarget->GetPositionY() + (float)urand(1, 20);
-            posZ = pTarget->GetPositionZ();
+        int32 randX,randY;
+        for(int i = 0; i < 8;i++)
+            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+            {
+                randX = rand()%30;
+                randY = rand()%30;
+                posX = pTarget->GetPositionX() + (urand(0,1)? (randX+3) : (-randX-3));
+                posY = pTarget->GetPositionY() + (urand(0,1)? (randY+3) : (-randY-3));
+                posZ = pTarget->GetMap()->GetWaterOrGroundLevel(posX,posY,pTarget->GetPositionZ()+3);
 
-            m_creature->SummonCreature(!urand(0, 4) ? NPC_HEALTHY_MUSHROOM : NPC_POISONOUS_MUSHROOM, posX, posY, posZ, m_creature->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000);
-        }     
+                m_creature->SummonCreature(!urand(0, 4) ? NPC_HEALTHY_MUSHROOM : NPC_POISONOUS_MUSHROOM, posX, posY, posZ, m_creature->GetOrientation(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000);
+            }     
     }
 
     void Aggro(Unit* pWho)
@@ -87,7 +95,7 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
         {
             spawnMushroom();
             i++;
-        }while (i < 5);
+        }while (i < 3);
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -98,12 +106,13 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
         if (spawnMushroomTimer < uiDiff)
         {
             spawnMushroom();
-            spawnMushroomTimer = 5000;
+            spawnMushroomTimer = 30000;
         }else spawnMushroomTimer -= uiDiff;
 
         if (miniTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), SPELL_MINI);
+            // not sure about this timer
             miniTimer = urand(20000, 25000);
         }else miniTimer -= uiDiff;
 
@@ -121,6 +130,19 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
+
+    void JustDied(Unit* pKiller)
+    {
+        std::list<Creature*> lMushrooms;
+        GetCreatureListWithEntryInGrid(lMushroomsHealthy, m_creature, NPC_HEALTHY_MUSHROOM, 150.0f);
+        for(std::list<Creature*>::iterator itr = lMushroomsHealthy.begin(); itr != lMushroomsHealthy.end(); ++itr)
+            (*itr)->ForcedDespawn();
+        lMushrooms.clear();
+        GetCreatureListWithEntryInGrid(lMushrooms, m_creature, NPC_POISONOUS_MUSHROOM, 150.0f);
+        for(std::list<Creature*>::iterator itr = lMushroomsPoison.begin(); itr != lMushroomsPoison.end(); ++itr)
+            (*itr)->ForcedDespawn();
+    }
+
 };
 
 CreatureAI* GetAI_boss_amanitar(Creature* pCreature)
@@ -144,7 +166,10 @@ struct MANGOS_DLL_DECL npc_amanitar_healthy_mushroomAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
-    void Reset() { }
+    void Reset() 
+    {
+        DoCast(m_creature,SPELL_MUSHROOM_MODEL,true);
+    }
 
     void JustDied(Unit* pWho)
     {
@@ -181,15 +206,18 @@ struct MANGOS_DLL_DECL npc_amanitar_poisonous_mushroomAI : public ScriptedAI
 
     void Reset()
     {
-        poisenCloudTimer = 500;
+        poisenCloudTimer = urand(4,8)*100;
+        DoCast(m_creature,SPELL_MUSHROOM_MODEL,true);
+        DoCast(m_creature,SPELL_POISONOUS_MUSHROOM_VISUAL,true);
     }
  
     void UpdateAI(const uint32 uiDiff)
     {
         if (poisenCloudTimer < uiDiff)
         {
+            DoCast(m_creature,SPELL_POISONOUS_MUSHROOM_VISUAL2,true);
             DoCastSpellIfCan(m_creature, SPELL_POISON_CLOUD);
-            poisenCloudTimer = 8000;
+            poisenCloudTimer = urand(7,10)*1000;
         }else poisenCloudTimer -= uiDiff;
     }
 };

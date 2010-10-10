@@ -344,19 +344,18 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                             for(std::vector<Unit*>::iterator itr = targets.begin(); itr!= targets.end(); ++itr)
                                 //check if player near iceblock
                             {
-                                if(i->getSource()->GetDistance2d((*itr)) <= 10.0f)
-                                {
-                                    //check if iceblock is closer to breathtarget then player
-                                    if(pFrostBreathTarget->GetDistanceOrder((*itr),i->getSource(),false))
+                                if(i->getSource()->IsWithinLOSInMap(m_creature))
+                                    if(i->getSource()->GetDistance2d((*itr)) <= 5.0f)
                                     {
-                                        // messages for ingame debug on testserver only
-                                        (*itr)->MonsterYell("Näher dran",LANG_UNIVERSAL,0);
-                                        i->getSource()->MonsterYell("Weiter weg",LANG_UNIVERSAL,0);
-                                        i->getSource()->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
-                                        immunePlayers.push_back(i->getSource());
-                                        break;
-                                    }  
-                                }
+                                        //check if iceblock is closer to breathtarget then player
+                                        // not working, so disable for now
+                                        //if(pFrostBreathTarget->GetDistanceOrder((*itr),i->getSource(),false))
+                                        {
+                                            i->getSource()->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+                                            immunePlayers.push_back(i->getSource());
+                                            break;
+                                        }  
+                                    }
                             }
 
                         if (DoCastSpellIfCan(m_creature, SPELL_FROST_BREATH) == CAST_OK)

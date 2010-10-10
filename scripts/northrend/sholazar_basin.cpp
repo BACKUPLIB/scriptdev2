@@ -121,11 +121,11 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
                     pPlayer = GetPlayerAtMinimumRange(20.0f);
 					if(pPlayer)
 					{
-                    DoScriptText(SAY_NOZRONN1, m_creature);
-                    saytimer += 5000;
-                    step++;
-					break;
-					} else break;
+                        DoScriptText(SAY_NOZRONN1, m_creature);
+                        saytimer += 5000;
+                        step++;
+					    break;
+					} 
                     break;
                 case 1:
                     DoScriptText(SAY_NOZRONN2, m_creature);
@@ -143,18 +143,19 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
                     step++;
                     break;
                 case 4:
-                    if (pPlayer->GetQuestStatus(QUEST_BONES_OF_NOZRONN) == QUEST_STATUS_INCOMPLETE)
-					{
-                    pPlayer->KilledMonsterCredit(28256, m_creature->GetGUID());
-                    //pPlayer->CompleteQuest(QUEST_BONES_OF_NOZRONN);
-                    DoScriptText(SAY_NOZRONN5, m_creature);
-                    step++;
+                    if(pPlayer)
+                        if (pPlayer->GetQuestStatus(QUEST_BONES_OF_NOZRONN) == QUEST_STATUS_INCOMPLETE)
+					    {
+                            pPlayer->KilledMonsterCredit(28256, m_creature->GetGUID());
+                            //pPlayer->CompleteQuest(QUEST_BONES_OF_NOZRONN);
+                            DoScriptText(SAY_NOZRONN5, m_creature);
+                            step++;
+                            break;
+                        }
                     break;
-					} else break;
             }
 
 	    } else saytimer -= diff;
-
 	}
 
 };

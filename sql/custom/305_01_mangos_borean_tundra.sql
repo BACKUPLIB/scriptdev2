@@ -177,3 +177,7 @@ UPDATE `spell_area` SET `gender` = 2 WHERE `spell` = 46023;
 DELETE FROM creature WHERE guid = 240006;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 (240006, 25203, 571, 1, 1, 0, 0, 4483.87, 6279.69, -44.3063, 2.87981, 300, 10, 0, 9291, 0, 0, 2);
+
+-- add npc 25427
+-- mantis bug #0003164
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('240009', '25427', '571', '1', '1', '0', '0', '4407.270508', '5330.973145', '-24.617218', '5.492043', '300', '5', '0', '1', '0', '0', '0');

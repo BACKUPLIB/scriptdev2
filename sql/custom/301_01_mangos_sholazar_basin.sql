@@ -34,3 +34,23 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equip
 -- not the best way, but EventAI of this mob is corrupted somehow, so disable this part
 -- TODO: fix EventAI instead of removing this
 UPDATE `creature_ai_scripts` SET `creature_id` = 0 WHERE `id` IN (2808301,2808306,2808309);
+
+-- fix quest 12621 
+UPDATE `creature_template` SET `gossip_menu_id` = '27800' WHERE `entry` =27801;
+UPDATE `quest_template` SET `SpecialFlags` = 0 WHERE `entry` = 12621;
+DELETE FROM `gossip_menu` WHERE `entry` IN (27800, 27801, 27802, 27803);
+INSERT INTO `gossip_menu` (`entry`,`text_id`, `cond_1`, `cond_1_val_1` ) VALUES 
+('27800', '13303', '9', '12621'),
+('27801', '13304', '9', '12621'),
+('27802', '13305', '9', '12621'),
+('27803', '1', '9', '12621');
+DELETE FROM `gossip_menu_option` WHERE `menu_id` IN (27800, 27801, 27802, 27803);
+INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`, `option_id`, `npc_option_npcflag`, `action_menu_id`, `action_script_id` ,`cond_1`, `cond_1_val_1`, `cond_1_val_2`) VALUES 
+('27800', '0', '0', 'I want to stop the Scourge as much as you do. How can I help?', '1', '1', '27801' , '0', '9', '12621', '0'),
+('27800', '1', '0', 'GOSSIP_OPTION_QUESTGIVER', '2', '2', '0', '0', '19', '12621', '0'),
+('27801', '0', '0', 'You can trust me. I am no friend of the Lich King.', '1', '1', '27802' , '0', '9', '12621', '0'),
+('27802', '0', '0', 'I will not fail.', '1', '1', '27803' , '126211', '9', '12621', '0'),
+('27803', '0', '0', 'GOSSIP_OPTION_QUESTGIVER', '2', '2', '0', '0', '0', '0', '0');
+DELETE FROM `gossip_scripts` WHERE `id`= 126211;
+INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`)  VALUES 
+('126211', '0', '15', '52045', '0', 'Quest 12621 Credit Spell');

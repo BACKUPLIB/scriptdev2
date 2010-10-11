@@ -98,3 +98,7 @@ INSERT INTO `creature_movement` (`id`, `point`, `position_x`, `position_y`, `pos
 (240005, 19, 7826.59, -282.358, 1099.34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.454, 0, 0),
 (240005, 20, 7645.51, -191.168, 1077.65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.69216, 0, 0),
 (240005, 21, 7390.74, -159.285, 1018.29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.09114, 0, 0);
+
+-- add npc 30469
+-- manits bug #0003185
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('220000', '30469', '571', '1', '1', '0', '0', '7641.067383', '-1511.613770', '972.383728', '3.329370', '120', '5', '0', '1', '0', '0', '0');

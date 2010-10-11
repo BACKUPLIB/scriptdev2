@@ -108,8 +108,11 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_mootoo' WHERE `entry` =25504;
 UPDATE `creature` SET `phaseMask` = 3 WHERE id = 25504;
 
 -- fix quest 11560
-UPDATE `gameobject_template` SET `ScriptName` = "go_tadpole_cage" WHERE `entry` = 187373;
+UPDATE `gameobject_template` SET `ScriptName` = "", `data2` = 11560 WHERE `entry` = 187373;
 UPDATE `creature_template` SET `ScriptName` = "npc_tadpole" WHERE `entry` = 25201;
+UPDATE `creature` SET `MovementType` = 0 WHERE `id` = 25201;
+DELETE FROM `scripted_event_id` WHERE `id` = 11560;
+INSERT INTO `scripted_event_id` (`id`,`ScriptName`) VALUES (11560,"go_tadpole_cage"); 
 
 -- fix quest 11661
 UPDATE creature_template SET minlevel = 68, maxlevel = 69, armor = 6432, minhealth = 6986, maxhealth = 7984, mindmg = 245, maxdmg = 346, attackpower = 412, faction_A = 1885, faction_H = 1885 WHERE entry IN (32577, 32578, 32579, 32580);
@@ -172,7 +175,5 @@ UPDATE `spell_area` SET `gender` = 2 WHERE `spell` = 46023;
 -- add npc 25203
 -- mantis bug #0003125
 DELETE FROM creature WHERE guid = 240006;
-
-
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 (240006, 25203, 571, 1, 1, 0, 0, 4483.87, 6279.69, -44.3063, 2.87981, 300, 10, 0, 9291, 0, 0, 2);

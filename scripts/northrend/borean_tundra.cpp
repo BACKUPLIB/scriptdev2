@@ -756,55 +756,33 @@ enum
     QUEST_TADPOLES = 11560
 };
 
-const int32 textNotOnQuest[13] =
+const int32 textNotOnQuest[3] =
 {
--1039999, -1039998, -1039997, -1039996, -1039995, -1039994, -1039993, -1039992, -1039991, -1039990, -1039989, -1039988, -1039987,      
+-1039999, -1039998, -1039997      
 };
 
 const int32 textOnQuest[4] =
 {
-   -1039986, -1039985, -1039984, -1039983 
+   -1039996, -1039995, -1039994, -1039993 
 };
 
-bool GOHello_go_tadpole_cage(Player* pPlayer, GameObject* pGo)
+bool ProcessEventId_go_tadpole_cage(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
 {
-    if(pPlayer && pGo)
-    {
-        if(Creature* pTadpole = GetClosestCreatureWithEntry(pGo,NPC_TADPOLE,2))
-            if(pPlayer->GetQuestStatus(QUEST_TADPOLES) == QUEST_STATUS_INCOMPLETE)
-            {
-                DoScriptText(textOnQuest[urand(0,3)],pTadpole,pPlayer);
-                ((FollowerAI*)pTadpole->AI())->StartFollow(pPlayer);
-                pPlayer->KilledMonsterCredit(NPC_TADPOLE);
-                // FIXME: GO has to be set not-usable instead of despawn
-                pGo->Delete();
-            }
-            else
-            {
-                uint8 uiRace = pPlayer->getRace();
-                uint32 uiSay;
-                if(!urand(0,3))
+    if(Player* pPlayer = (Player*) pSource)
+        if(GameObject* pGo = (GameObject*) pTarget)
+        {
+            if(Creature* pTadpole = GetClosestCreatureWithEntry(pGo,NPC_TADPOLE,0.5))
+                if(pPlayer->GetQuestStatus(QUEST_TADPOLES) == QUEST_STATUS_INCOMPLETE)
                 {
-                    switch(uiRace)
-                    {
-                        case RACE_BLOODELF:         uiSay = textNotOnQuest[6]; break;
-                        case RACE_UNDEAD_PLAYER:    uiSay = textNotOnQuest[4]; break;
-                        case RACE_ORC:              uiSay = textNotOnQuest[0]; break;
-                        case RACE_TROLL:            uiSay = textNotOnQuest[3]; break;
-                        case RACE_TAUREN:           uiSay = textNotOnQuest[5]; break;
-                        case RACE_HUMAN:            uiSay = textNotOnQuest[1]; break;
-                        case RACE_NIGHTELF:         uiSay = textNotOnQuest[2]; break;
-                        case RACE_DWARF:            uiSay = textNotOnQuest[7]; break;
-                        case RACE_DRAENEI:          uiSay = textNotOnQuest[8]; break;
-                        case RACE_GNOME:            uiSay = textNotOnQuest[9]; break;
-                    }
+                    DoScriptText(textOnQuest[urand(0,3)],pTadpole,pPlayer);
+                    ((FollowerAI*)pTadpole->AI())->StartFollow(pPlayer);
+                    pPlayer->KilledMonsterCredit(NPC_TADPOLE);
+                    // FIXME: GO has to be set not-usable instead of despawn
+                    // pGo->Delete();
                 }
                 else
-                    uiSay = textNotOnQuest[urand(10,12)];
-
-                DoScriptText(uiSay,pTadpole,pPlayer);
-            }
-    }
+                    DoScriptText(textNotOnQuest[urand(0,2)],pTadpole,pPlayer);
+        }
     return true;
 }
 
@@ -823,11 +801,13 @@ struct MANGOS_DLL_DECL npc_tadpoleAI : public FollowerAI
 
     void UpdateFollowerAI(const uint32 uiDiff)
     {
-        if(m_uiDespawnTimer < uiDiff)
-        {
-            SetFollowComplete(false);
-            m_creature->ForcedDespawn();
-        }
+        // despawn after following 1 minute
+        if(HasFollowState(STATE_FOLLOW_INPROGRESS))
+            if(m_uiDespawnTimer < uiDiff)
+            {
+                SetFollowComplete(false);
+                m_creature->ForcedDespawn();
+            }
 
         FollowerAI::UpdateFollowerAI(uiDiff);
     }
@@ -921,7 +901,7 @@ void AddSC_borean_tundra()
 
     newscript = new Script;
     newscript->Name = "go_tadpole_cage";
-    newscript->pGOHello = &GOHello_go_tadpole_cage;
+    newscript->pProcessEventId = &ProcessEventId_go_tadpole_cage;
     newscript->RegisterSelf();
 
     newscript = new Script;

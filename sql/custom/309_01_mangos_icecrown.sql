@@ -138,3 +138,7 @@ INSERT INTO creature VALUES (240001, 32444,571,1,1,0,0,7636.58,2058.89,600.261,2
 UPDATE `gameobject_template` SET `type` = '1',`data1` = '0',`data2` = '3000', `data5` = '0' WHERE `entry` =195186;
 DELETE FROM `gameobject_scripts` WHERE `id` = 60484 AND `command` = 7 AND `datalong` = 14016;
 INSERT INTO `gameobject_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `datalong3`, `datalong4`, `data_flags`, `dataint`, `dataint2`, `dataint3`, `dataint4`, `x`, `y`, `z`, `o`, `comments`) VALUES ('60484', '0', '7', '14016', '10', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', ''); 
+
+-- fix quest 14144 / spell 66390
+DELETE FROM `spell_script_target` WHERE `entry` = 66390;
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('66390', '1', '34852'); 

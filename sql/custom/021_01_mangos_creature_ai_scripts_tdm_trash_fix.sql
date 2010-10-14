@@ -1,1 +1,0 @@
-DELETE FROM creature_ai_scripts WHERE id IN (2468901, 2468801, 2469001);

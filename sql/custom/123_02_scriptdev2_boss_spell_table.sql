@@ -1,3 +1,5 @@
+-- fill boss_spell_table for rsa's BSW scripts
+
 -- Icecrown down spelltable
 
 -- Boss Bronjahm

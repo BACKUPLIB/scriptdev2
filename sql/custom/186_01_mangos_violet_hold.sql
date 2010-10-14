@@ -24,3 +24,6 @@ UPDATE `creature_template` SET `minhealth` = 500, `maxhealth` = 700, `minlevel` 
 
 -- not known if needed
 -- UPDATE `creature_template` SET `unit_flags`=33816580 WHERE `entry`=30896;
+
+-- mechanic immune masks
+UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(29315,29316,29313,29266,29312,29314,31134,31506,31507,31508,31509,31510,31511,31512);

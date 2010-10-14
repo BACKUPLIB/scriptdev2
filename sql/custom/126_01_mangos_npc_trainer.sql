@@ -1,3 +1,4 @@
+-- trainer fixes
 DELETE FROM `npc_trainer` WHERE `entry` = '18774' AND `spell` IN (28905,34590,28938,28914,28925,28910,28917);
 INSERT INTO `npc_trainer`(`entry`, `spell`, `spellcost`, `reqskill`, `reqskillvalue`, `reqlevel`)
 VALUES ('18774', '28905', '10000', '755', '305', '0'),

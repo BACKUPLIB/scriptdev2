@@ -1,19 +1,37 @@
 -- howling fjord fixes
 
+-- fix npc 24018
+UPDATE creature_template SET mingold=3546, maxgold=4432 WHERE entry=24018;
+
+-- fix quest 11240
+UPDATE creature_template SET lootid=24048, mingold=2546, maxgold=3432 WHERE entry=24048;
+DELETE FROM creature_loot_template WHERE entry=24048;
+INSERT INTO creature_loot_template VALUES
+(24048, 33187, -100, 0, 1, 1, 0, 0, 0), -- Whisper Gulch Gem
+(24048, 33188, -100, 1, 1, 1, 0, 0, 0), -- Whisper Gulch Ore Fragment
+(24048, 33447, 7, 2, 1, 1, 0, 0, 0), -- Runic Healing Potion
+(24048, 24231, 14, 2, 1, 1, 0, 0, 0); -- Coarse Snuff
+DELETE FROM creature WHERE id=24048;
+INSERT INTO creature (guid, id, map, spawnMask, phaseMask, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint, curhealth, curmana, DeathState, MovementType) VALUES
+(230012, 24048, 571, 1, 1, 0, 1, 1758.436890, -3337.399658, 80.453804, 2.559472, 300, 0, 0, 9291, 0, 0, 0);
+
+-- fix quest 11252
+UPDATE creature_loot_template SET ChanceOrQuestChance=-100 WHERE entry=23954 AND item=33330;
+
 -- fix quest 11255
 UPDATE `gameobject_template` SET `type` = 1 WHERE `entry` IN (186566,186567);
 DELETE FROM `gameobject_scripts` WHERE `id` IN(60407,60414,60426,60432,60438,60452,60459,60471,60485,60511);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES 
-(60407,0,8,24124,1),
-(60414,0,8,24124,1),
-(60426,0,8,24124,1),
-(60432,0,8,24124,1),
-(60438,0,8,24124,1),
-(60452,0,8,24124,1),
-(60459,0,8,24124,1),
-(60471,0,8,24124,1),
-(60485,0,8,24124,1),
-(60511,0,8,24124,1);
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
+(60407,0,8,24124,1,""),
+(60414,0,8,24124,1,""),
+(60426,0,8,24124,1,""),
+(60432,0,8,24124,1,""),
+(60438,0,8,24124,1,""),
+(60452,0,8,24124,1,""),
+(60459,0,8,24124,1,""),
+(60471,0,8,24124,1,""),
+(60485,0,8,24124,1,""),
+(60511,0,8,24124,1,"");
 
 -- fix bug on item for quest 11281
 UPDATE `item_template` SET `spellcharges_1` = 1 WHERE entry = 33450;
@@ -88,3 +106,5 @@ DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 24518;
 INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`comment`) VALUES 
 (2451802,24518,1,100,1,5000,8000,15000,22000,11,32909,1,0,"Talonshrike - Cast Talon Strike"),
 (2451801,24518,1,100,1,1000,2000,13000,20000,11,49865,1,1,"Talonshrike - Cast Eye Peck");
+
+UPDATE creature_template SET minlevel=70, maxlevel=70, minhealth=8980, maxhealth=8980, mindmg=312, maxdmg=413, dmg_multiplier=2.5, attackpower=155, baseattacktime=1500 WHERE entry=27959;

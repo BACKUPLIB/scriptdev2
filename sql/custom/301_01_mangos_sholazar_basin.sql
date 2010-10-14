@@ -30,6 +30,11 @@ INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equip
 (28161, 571, 1, 1, 0, 0, 5193.29, 4451.03, -90.1913, 2.52343, 25, 5, 0, 1, 0, 0, 1),
 (28161, 571, 1, 1, 0, 0, 5206.27, 4452.23, -90.7965, 0.0965526, 25, 5, 0, 1, 0, 0, 1);
 
+-- fix quest 12544
+INSERT INTO `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `datalong3`, `datalong4`, `data_flags`, `dataint`, `x`, `y`, `z`, `o`) VALUES
+('18481','0','10','28256','120000','0','0','0','0','5218.2485','5776.6992','-71.2309','2.462964');
+UPDATE `creature_template` SET `ScriptName` = 'mob_voiceofnozronn' WHERE `entry` = 28256;
+
 -- fix quest 12531
 -- not the best way, but EventAI of this mob is corrupted somehow, so disable this part
 -- TODO: fix EventAI instead of removing this

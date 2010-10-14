@@ -1,1 +1,0 @@
-UPDATE quest_template SET method = 0 WHERE entry = 12801;

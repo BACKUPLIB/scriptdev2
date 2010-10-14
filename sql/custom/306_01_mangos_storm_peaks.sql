@@ -5,6 +5,11 @@ UPDATE `gameobject_template` SET `data2` = 191544 WHERE `entry` = 191544;
 DELETE FROM `event_scripts` WHERE `id` = 191544;
 INSERT INTO `event_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
 (191544,0,8,29466,1,"quest they took our men");
+UPDATE creature_template SET ScriptName = "npc_goblin_prisoner" WHERE entry = 29466;
+UPDATE gameobject_template SET Scriptname = "go_rusty_cage", data3 = 30000 WHERE entry = 191544;
+-- Some goblins, who stand in their prison
+UPDATE creature SET orientation = 3.8746 WHERE guid = 98286;
+UPDATE creature SET orientation = 5.208 WHERE guid = 98303;
 
 -- fix quest 12978
 UPDATE `quest_template` SET `ReqCreatureOrGOId1` = 29380 WHERE `entry` = 12978;

@@ -1,7 +1,8 @@
 -- grizzly hills fixes
 -- add npc 26633 (Ursoc)
-INSERT INTO creature (id, map, spawnMask, phaseMask, position_x, position_y, position_z, orientation, spawntimesecs, spawndist,curhealth, curmana, DeathState, MovementType) VALUES 
-(26633, 571, 1, 1, 4922.347646, -3843.324951, 338.575836, 2.873092, 1000, 5, 212.700, 0, 0, 0);
+DELETE FROM `creature` WHERE id = 26633;
+INSERT INTO creature (guid, id, map, spawnMask, phaseMask, position_x, position_y, position_z, orientation, spawntimesecs, spawndist,curhealth, curmana, DeathState, MovementType) VALUES 
+(230026, 26633, 571, 1, 1, 4922.347646, -3843.324951, 338.575836, 2.873092, 1000, 5, 212.700, 0, 0, 0);
 
 -- fix quest 12231 / 12247 (TODO: some of the script seems to be already done (menu_id 65535)
 UPDATE `creature_template` SET `gossip_menu_id` = '20020' WHERE `entry` = 27275;
@@ -46,3 +47,7 @@ INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`com
 DELETE FROM `spell_scripts` WHERE `id` = 48340;
 INSERT INTO `spell_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES
 ('48340', '2', '15', '48330', '1', 'Quest 12227 - cast spell to add quest item'); 
+
+-- despawn some NPCs
+UPDATE `creature` SET `spawnMask` = 0 WHERE guid IN (114879,114891,114892,114893,114894,114897,114898,114899,114902,114912,114913,114914,114917,114918,114919,114920,114923,114924,114926,114928,114929,114930,
+114931,116183,116199,116563,116564,116566,116567,116568,116568,116569,116574,116579,116580);

@@ -1,5 +1,4 @@
-    /* Death Knight Ghoul
-       ------------------ */
+/* Death Knight Ghoul*/
 -- set AI, remove "Huddle" (no sense for autocast with current AI) and Leap (also work's not correct)
 UPDATE creature_template SET ScriptName = "pet_dk_ghoul", spell2 = 0, spell4 = 0 WHERE entry = 26125;
 
@@ -95,10 +94,7 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 ( 26125, 79, 5203, 0, 10089, 73, 114, 318, 820, 354, 62, 107),
 ( 26125, 80, 5342, 0, 10472, 75, 117, 331, 856, 361, 65, 109);
 
-
-
-    /* Greater Earth Elemental
-       ----------------------- */
+/* Greater Earth Elemental*/
 -- "attacks quite fast"
 UPDATE creature_template SET ScriptName = "pet_greater_earth_elemental", baseattacktime = 1500 WHERE entry = 15352;
 
@@ -107,9 +103,8 @@ UPDATE creature_template SET ScriptName = "pet_greater_earth_elemental", baseatt
     //                (  hp, mana, armor, mindmg, maxdmg, str, agi, sta, int, spi)
     statMap[68]= stats(7100,    0,  7000,     50,     83, 132,  62,  96, 132, 320);
     statMap[80]= stats(12200,   0, 14300,     60,    100, 261,  90, 162, 165, 460);
-
 */
-DELETe FROM `pet_levelstats` WHERE `creature_entry` = 15352 AND `level` BETWEEN 66 AND 80;
+DELETE FROM `pet_levelstats` WHERE `creature_entry` = 15352 AND `level` BETWEEN 66 AND 80;
 INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, `mindmg`, `maxdmg`, `str`, `agi`, `sta`, `inte`, `spi`) VALUES
 (15352, 66, 7100, 0, 7000, 50, 83, 132, 62, 96, 132, 320),
 (15352, 67, 7464, 0, 7521, 50, 84, 141, 64, 100, 134, 330),
@@ -127,10 +122,7 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 (15352, 79, 11835, 0, 13778, 59, 98, 251, 88, 157, 162, 450),
 (15352, 80, 12200, 0, 14300, 60, 100, 261, 90, 162, 165, 460);
 
-
-
-    /* Greater Fire Elemental
-       ----------------------- */
+/* Greater Fire Elemental*/
 UPDATE creature_template SET ScriptName = "pet_greater_fire_elemental" WHERE entry = 15438;
 
 -- levelstats
@@ -154,3 +146,16 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 ( 15438, 78, 7800, 2242, 1080, 153, 202, 343, 156, 120, 390, 440),
 ( 15438, 79, 7900, 2261, 1090, 156, 206, 354, 158, 122, 397, 450),
 ( 15438, 80, 8000, 2280, 1100, 160, 210, 366, 160, 125, 405, 460);
+
+-- Pets sollen leben... und nein, Pets sind keine Flugmeister
+UPDATE creature_template SET minhealth = 1, maxhealth = 1, npcflag = 0 WHERE entry IN (36911, 36908, 40703, 36979, 36909);
+
+-- fix NPC 34364
+UPDATE `creature_template` SET `minhealth` = '64', `maxhealth` = '64' WHERE `entry` =34364; 
+
+-- fix NPC 40295
+UPDATE `creature_template` SET `minhealth` = '64', `maxhealth` = '64' WHERE `entry` =40295; 
+
+-- fix item 54343
+-- not perfect, but it works! / 40281
+UPDATE `creature_template` SET `modelid_1` = '21733', `minhealth` = '4270', `maxhealth` = '4270', `minmana` = '3990', `maxmana` = '3990' WHERE `entry` =40281;

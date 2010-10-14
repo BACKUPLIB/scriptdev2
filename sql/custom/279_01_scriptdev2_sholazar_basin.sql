@@ -16,3 +16,12 @@ DELETE FROM `script_texts` WHERE `entry` IN (-1039981,-1039982);
 INSERT INTO `script_texts` (`entry`,`content_default`,`type`,`language`,`comment`) VALUES
 (-1039981,"Let's get the hell out of here.",0,0,"engineer helice SAY START"),
 (-1039982,"We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!",0,0,"engineer helice SAY END");
+
+-- fix quest 12544
+DELETE FROM `script_texts` WHERE `entry` IN (-1594190,-1594191,-1594192,-1594193,-1594194);
+INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc3`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
+('-1594190','Also hat das Orakel beschlossen, Euch zu helfen, Fremder. Nun gut, ich werde mein Wissen mit Euch teilen.','Also hat das Orakel beschlossen, Euch zu helfen, Fremder. Nun gut, ich werde mein Wissen mit Euch teilen.','0','0','0','0','SAY_NOZRONN1'),
+('-1594191','Euer Gefährte sucht den Splitterhornpatriarchen Farunn, der sich von seinen Brüdern fernhält.','Euer Gefährte sucht den Splitterhornpatriarchen Farunn, der sich von seinen Brüdern fernhält.','0','0','0','0','SAY_NOZRONN2'),
+('-1594192','Farunn durchstreift die Länder nördlich dessen, was Euer Volk die Bittertidenfälle nennt. Ihr werdet ihn allein vorfinden, aber Ihr werdet sehen, dass er keiner Verteidiger bedarf.','Farunn durchstreift die Länder nördlich dessen, was Euer Volk die Bittertidenfälle nennt. Ihr werdet ihn allein vorfinden, aber Ihr werdet sehen, dass er keiner Verteidiger bedarf.','0','0','0','0','SAY_NOZRONN3'),
+('-1594193','Kehrt zu Eurem Gefährten zurück. Sagt ihm, dass er losgehen und in Farunn seinen Preis einfordern soll.','Kehrt zu Eurem Gefährten zurück. Sagt ihm, dass er losgehen und in Farunn seinen Preis einfordern soll.','0','0','0','0','SAY_NOZRONN4'),
+('-1594194','Sobald er dies getan hat, sagt ihm, dass er dieses Land friedlich verlassen soll. Er gehört hier nicht her.','Sobald er dies getan hat, sagt ihm, dass er dieses Land friedlich verlassen soll. Er gehört hier nicht her.','0','0','0','0','SAY_NOZRONN5');

@@ -1,7 +1,5 @@
 -- Ahn'kahet fixes
 
--- boss Elder Nadox
-UPDATE `creature_template` SET `mechanic_immune_mask` = 81997726 WHERE `entry` = 29309;
 -- eventAI for trashmobs
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` IN (30176,30178);
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (30176,30178);
@@ -11,20 +9,28 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_chance
 (3017801,30178,0,100,7,0,500,25000,40000,11,56354,0,2,"Ahn'kahar Swarmer - Cast Sprint");
 
 -- boss Jedogar Shadowseeker
-UPDATE `creature_template` SET `mechanic_immune_mask` = 81997726 WHERE `entry` = 29310;
+DELETE FROM creature WHERE id=29310;
+INSERT INTO creature (guid, id, map, spawnMask, phaseMask, modelid, position_x, position_y, position_z, orientation, spawntimesecs, curhealth, MovementType) VALUES
+(230014, 29310, 619, 3, 1, 26777, 372.331, -705.278, -16.1797, 5.42797, 14400, 212700, 0);
+UPDATE creature_template SET MovementId=0, unit_flags=0 WHERE entry IN (29310, 31465);
+UPDATE creature_template SET unit_flags=0, mechanic_immune_mask=1073741823, speed_walk=0.7, speed_run=0.7, flags_extra=2, ScriptName='mob_jedoga_volunteer', unit_flags=32768, type_flags=8 WHERE entry IN (31474, 30385);
 
 -- boss Prince Taldaram
-UPDATE `creature_template` SET `mechanic_immune_mask` = 81997726 WHERE `entry` = 29308;
+UPDATE creature_template SET MovementType=0, MovementId=0, InhabitType=3 WHERE entry IN (29308, 31469);
+UPDATE `creature` SET `MovementType` = 0, `position_z`=11.308110 WHERE `id` IN (29308, 31469);
+UPDATE `creature_template` SET movementId=0, unit_flags=514 WHERE `entry` = 29308;
 UPDATE `creature_template` SET `ScriptName` = "mob_taldaram_flame_orb" WHERE `entry` = 30702;
 UPDATE `creature_template` SET `ScriptName` = "" WHERE `entry` = 31687;
 
 -- boss Amanitar
-UPDATE `creature_template` SET `mechanic_immune_mask` = 81997726, `ScriptName` = "boss_amanitar" WHERE `entry` = 30258;
+DELETE FROM creature WHERE id=30258;
+INSERT INTO creature (guid, id, map, spawnMask, position_x, position_y, position_z, orientation, spawntimesecs, curhealth) VALUES
+(230013,30258, 619, 2, 346.342987, -894.199036, -77.352600, 1.065079, 86400, 431392);
+UPDATE `creature_template` SET `ScriptName` = "boss_amanitar" WHERE `entry` = 30258;
 UPDATE `creature_template` SET `ScriptName` = "npc_amanitar_healthy_mushroom" WHERE `entry` = 30391;
 UPDATE `creature_template` SET `ScriptName` = "npc_amanitar_poisonous_mushroom" WHERE `entry` = 30435;
 
 -- boss Herals Volazj
-UPDATE `creature_template` SET `mechanic_immune_mask` = 81997726 WHERE `entry` = 29311;
 -- TODO: find the right NPC for this script:
 UPDATE `creature_template` SET `ScriptName` = "mob_volazj_clone" WHERE `entry` = 31627;
 
@@ -35,3 +41,6 @@ UPDATE `creature_template` SET `unit_flags` = 33554944 WHERE `entry` = 30413;
 DELETE FROM `areatrigger_teleport` WHERE `id` = 5235;
 INSERT INTO `areatrigger_teleport` (`id`,`name`,`target_map`,`target_position_x`,`target_position_y`,`target_position_z`,`target_orientation`) VALUES 
 (5235,"Ahn'Kahet (exit) 2",571,3641.84,2032.94,2.47,1.178);
+
+-- mechanic immune mask update
+UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(29309,29308,29310,29311,30258,31456,31463,31464,31465,31469);

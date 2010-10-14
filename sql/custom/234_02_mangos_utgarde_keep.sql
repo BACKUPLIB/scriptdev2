@@ -19,4 +19,37 @@ INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`grou
 (31673,43852,2,0,1,1,0,0,0),
 (31673,40752,100,0,1,1,0,0,0);
 
+UPDATE creature_ai_scripts SET event_type=2, event_param1=50, event_param2=5, event_param3=20000, event_param4=22000, action1_param2=0, action1_param3=1 WHERE id IN (2396003, 2396004);
+UPDATE creature_ai_scripts SET action1_param3=0 WHERE id IN (2396001, 2396002);
 
+UPDATE creature_template SET faction_A=35, modelid_1=13069 WHERE entry=24137;
+
+DELETE FROM creature WHERE id=24137;
+INSERT INTO creature (guid, id, map, spawnMask, position_x, position_y, position_z, orientation, spawntimesecs, curhealth) VALUES
+(230015, 24137, 574, 1, 181.163666, -87.773735, 13.822340, 1.856706, 1000, 4399);
+
+UPDATE creature_template SET unit_flags=0 WHERE entry IN (27389, 27390, 31657, 31680);
+UPDATE creature_template SET lootid=0 WHERE entry=24201;
+
+-- ingvar the plunderer
+DELETE FROM creature_ai_scripts WHERE creature_id=23997;
+INSERT INTO creature_ai_scripts (id, creature_id, event_type, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, action1_type, action1_param1, action1_param2, action1_param3, COMMENT) VALUES
+(2399701, 23997, 0, 100, 2, 2500, 2700, 50000, 60000, 11, 42750, 0, 1, 'Shadow Axe - Cast Throw Axe (normal mode)'),
+(2399702, 23997, 0, 100, 4, 2500, 2700, 50000, 60000, 11, 59719, 0, 1, 'Shadow Axe - Cast Throw Axe (heroic mode)'),
+(2399703, 23997, 1, 100, 2, 2500, 2700, 50000, 60000, 11, 42750, 0, 1, 'Shadow Axe - Cast Throw Axe OOC (normal mode)'),
+(2399704, 23997, 1, 100, 4, 2500, 2700, 50000, 60000, 11, 59719, 0, 1, 'Shadow Axe - Cast Throw Axe OOC (heroic mode)'),
+(2399705, 23997, 0, 100, 6, 12700, 12800, 0, 0, 41, 0, 0, 0, 'Shadow Axe - Despawn'),
+(2399706, 23997, 1, 100, 6, 12700, 12800, 0, 0, 41, 0, 0, 0, 'Shadow Axe - Despawn OOC'),
+(2399707, 23997, 0, 100, 6, 100, 150, 0, 0, 20, 0, 0, 0, 'Shadow Axe - Set no auto attack'),
+(2399708, 23997, 0, 100, 6, 2000, 2100, 0, 0, 21, 0, 0, 0, 'Shadow Axe - Set no combat movement');
+
+UPDATE creature_template SET unit_flags=34078722, AIName='EventAI' WHERE entry=23997;
+UPDATE creature_template SET flags_extra=130 WHERE entry=23996;
+
+DELETE FROM creature_ai_scripts WHERE creature_id=23996;
+INSERT INTO creature_ai_scripts (id, creature_id, event_type, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, action1_type, action1_param1, action1_param2, action1_param3, COMMENT) VALUES
+(2399601, 23996, 0, 100, 6, 100, 150, 0, 0, 20, 0, 0, 0, 'Shadow Axe Trigger - Set no auto attack'),
+(2399602, 23996, 0, 100, 6, 500, 700, 0, 0, 21, 0, 0, 0, 'Shadow Axe Trigger - Set no combat movement');
+
+-- set immune masks
+UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(23953,24200,24201,23954,31612,31656,31673,31679,30397,30398,30510,30529,30530,30532,30540,30748);

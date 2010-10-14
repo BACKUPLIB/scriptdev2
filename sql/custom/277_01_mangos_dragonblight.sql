@@ -15,4 +15,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 -- fix loot of gameobject 192773
 -- mantis bug #0003114
 DELETE FROM gameobject_loot_template WHERE entry = 192773;
-INSERT INTO `gameobject_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES(192773, 43084, -100, 0, 1, 1, 0, 0, 0)
+INSERT INTO `gameobject_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES(192773, 43084, -100, 0, 1, 1, 0, 0, 0); 
+
+-- Make event (kill credit, LOS) repeatable, repeat time of 2s to save cpu load
+UPDATE creature_ai_scripts SET event_flags = 1, event_param3 = 2, event_param4 = 2  WHERE id = 2785301;

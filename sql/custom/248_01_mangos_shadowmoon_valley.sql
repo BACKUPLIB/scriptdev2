@@ -9,3 +9,8 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 (2150602,21506,0,0,100,1,2000,5000,3000,8000,11,40504,1,0,"Azaloth - Cast Cleave"),
 (2150603,21506,0,0,100,1,1000,1000,20000,30000,11,11443,1,0,"Azaloth - Cast Cripple"),
 (2150604,21506,0,0,100,1,20000,30000,20000,30000,11,38741,1,1,"Azaloth - Cast Rain of Fire");
+
+UPDATE gameobject_template SET ScriptName='go_zuluheds_chain' WHERE entry=185156;
+
+/* Set attackable Flag for infernals in shadowmoon valley */
+UPDATE creature_template SET unit_flags=536870912 WHERE entry=21419;

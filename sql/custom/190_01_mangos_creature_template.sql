@@ -1,1 +1,0 @@
-UPDATE `creature_template` SET `ScriptName` = "npc_nerubar_victim" WHERE `entry` = 25284;

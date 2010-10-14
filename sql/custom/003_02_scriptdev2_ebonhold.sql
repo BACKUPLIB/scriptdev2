@@ -124,7 +124,9 @@ INSERT INTO `script_texts` (`entry`,`content_default`,`sound`,`type`,`language`,
    (-1609283, 'collapses.',0,2,0,0,'Highlord Darion Mograine'),
    (-1609284, 'charges towards the Lich King, Ashbringer in hand and strikes the Lich King.',0,2,0,0,'Highlord Tirion Fordring'),
    (-1609285, 'disappears. Tirion walks over to where Darion lay',0,2,0,0,'The Lich King'),
-   (-1609286, 'Light washes over the chapel �X the Light of Dawn is uncovered.',0,2,0,0,'');
+   (-1609286, 'Light washes over the chapel ¡X the Light of Dawn is uncovered.',0,2,0,0,''),
+-- quest "into the realm of shadows"
+   (-1999957, 'Beeindrucken, $C. Kehr zu mir in die Welt der Lebenden zurück, um eure Belohnung zu erhalten.', '0', '0', '0', '0', '');
 
 
 DELETE FROM script_waypoint WHERE entry=29173;

@@ -1,28 +1,33 @@
 -- borean tundra fixes
 
+-- Spawnfix shadowstalker getry
+DELETE FROM creature WHERE id = 25729;
+INSERT INTO creature(guid, id, map, spawnMask, phaseMask, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, curhealth)
+VALUES (230016, 25729, 571, 1, 1, 3123.091309, 6592.870117, 97.868080, 1.582328, 300, 0, 79.840);
+
 -- fix quest 11876 (Help Those That Cannot Help Themselves) 
 DELETE FROM `gameobject_scripts` WHERE `id` IN (59102,59122,59128,59138,59169,59226,59253,59261,59265,59303,59313,59321,59335,59341,59348,59357,59412,59417,59464,66627);
-INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`) VALUES 
-(59102,1,15,46200,1),
-(59122,1,15,46200,1),
-(59128,1,15,46200,1),
-(59138,1,15,46200,1),
-(59169,1,15,46200,1),
-(59226,1,15,46200,1),
-(59253,1,15,46200,1),
-(59261,1,15,46200,1),
-(59265,1,15,46200,1),
-(59303,1,15,46200,1),
-(59313,1,15,46200,1),
-(59321,1,15,46200,1),
-(59335,1,15,46200,1),
-(59341,1,15,46200,1),
-(59348,1,15,46200,1),
-(59357,1,15,46200,1),
-(59412,1,15,46200,1),
-(59417,1,15,46200,1),
-(59464,1,15,46200,1),
-(66627,1,15,46200,1);
+INSERT INTO `gameobject_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
+(59102,1,15,46200,1,""),
+(59122,1,15,46200,1,""),
+(59128,1,15,46200,1,""),
+(59138,1,15,46200,1,""),
+(59169,1,15,46200,1,""),
+(59226,1,15,46200,1,""),
+(59253,1,15,46200,1,""),
+(59261,1,15,46200,1,""),
+(59265,1,15,46200,1,""),
+(59303,1,15,46200,1,""),
+(59313,1,15,46200,1,""),
+(59321,1,15,46200,1,""),
+(59335,1,15,46200,1,""),
+(59341,1,15,46200,1,""),
+(59348,1,15,46200,1,""),
+(59357,1,15,46200,1,""),
+(59412,1,15,46200,1,""),
+(59417,1,15,46200,1,""),
+(59464,1,15,46200,1,""),
+(66627,1,15,46200,1,"");
 UPDATE `gameobject_template` SET `flags` = 4 WHERE `name` = "Mammoth Trap";
 UPDATE `quest_template` SET `ReqItemId1` = 35228, `ReqItemCount1` = 1 WHERE `entry` = 11876;
 
@@ -172,6 +177,9 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 -- fix quest 11730 / spell 46023
 UPDATE `spell_area` SET `gender` = 2 WHERE `spell` = 46023;
 
+-- fix npc 25284
+UPDATE `creature_template` SET `ScriptName` = "npc_nerubar_victim" WHERE `entry` = 25284;
+
 -- add npc 25203
 -- mantis bug #0003125
 DELETE FROM creature WHERE guid = 240006;
@@ -180,4 +188,6 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 
 -- add npc 25427
 -- mantis bug #0003164
-INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('240009', '25427', '571', '1', '1', '0', '0', '4407.270508', '5330.973145', '-24.617218', '5.492043', '300', '5', '0', '1', '0', '0', '0');
+DELETE FROM `creature` WHERE `id` = 25427;
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 
+('240009', '25427', '571', '1', '1', '0', '0', '4407.270508', '5330.973145', '-24.617218', '5.492043', '300', '5', '0', '1', '0', '0', '0');

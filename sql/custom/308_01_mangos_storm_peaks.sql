@@ -107,3 +107,15 @@ INSERT INTO `creature_movement` (`id`, `point`, `position_x`, `position_y`, `pos
 -- add npc 30469
 -- manits bug #0003185
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('220000', '30469', '571', '1', '1', '0', '0', '7641.067383', '-1511.613770', '972.383728', '3.329370', '120', '5', '0', '1', '0', '0', '0');
+
+-- fix quest 12905 / spell 72914
+DELETE FROM `spell_area` WHERE `spell` IN (55012,72914);
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) VALUES 
+('55012', '4422', '12905', '1', '0', '0', '0', '2', '1'),
+('55012', '4425', '12905', '1', '0', '0', '0', '2', '1'),
+('55012', '4537', '12905', '1', '0', '0', '0', '2', '1'),
+('55012', '4535', '12905', '1', '0', '0', '0', '2', '1'),
+('72914', '4422', '12905', '1', '0', '0', '0', '2', '0'),
+('72914', '4425', '12905', '1', '0', '0', '0', '2', '0'),
+('72914', '4537', '12905', '1', '0', '0', '0', '2', '0'),
+('72914', '4535', '12905', '1', '0', '0', '0', '2', '0');

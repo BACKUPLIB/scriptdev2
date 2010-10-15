@@ -106,6 +106,7 @@ INSERT INTO `creature_movement` (`id`, `point`, `position_x`, `position_y`, `pos
 
 -- add npc 30469
 -- manits bug #0003185
+DELETE FROM `creature` WHERE `guid` = 220000;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('220000', '30469', '571', '1', '1', '0', '0', '7641.067383', '-1511.613770', '972.383728', '3.329370', '120', '5', '0', '1', '0', '0', '0');
 
 -- fix quest 12905 / spell 72914

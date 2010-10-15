@@ -59,3 +59,6 @@ INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`,
 DELETE FROM `gossip_scripts` WHERE `id`= 126211;
 INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`)  VALUES 
 ('126211', '0', '15', '52045', '0', 'Quest 12621 Credit Spell');
+
+-- set item 44117 not lootable
+DELETE FROM `reference_loot_template` WHERE `item` = 44117; 

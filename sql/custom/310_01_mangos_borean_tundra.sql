@@ -191,3 +191,12 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 DELETE FROM `creature` WHERE `id` = 25427;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES 
 ('240009', '25427', '571', '1', '1', '0', '0', '4407.270508', '5330.973145', '-24.617218', '5.492043', '300', '5', '0', '1', '0', '0', '0');
+
+-- fix quest 11590 
+UPDATE `creature_template` SET `AIName` = "", `minlevel` = 69, `maxlevel` = 70, `minhealth` = 6387, `maxhealth` = 7185, `minmana` = 7031, `maxmana` = 7196, `ScriptName` = "npc_captured_beryl_sorcerer" WHERE `entry` = 25474;
+UPDATE `creature_template` SET `ScriptName` = "npc_beryl_sorcerer" WHERE `entry` = 25316;
+-- not sure if this is right
+DELETE FROM `spell_script_target` WHERE `entry` IN (45630,45735);
+INSERT INTO `spell_script_target` (`entry`,`type`,`targetEntry`) VALUES
+(45630,1,25474),
+(45735,1,25474);

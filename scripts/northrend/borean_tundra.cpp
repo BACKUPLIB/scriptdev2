@@ -38,12 +38,15 @@ npc_storm_totem
 npc_sage_earth_and_sky
 go_tadpole_cage
 npc_tadpole
+npc_captured_beryl_sorcerer
+npc_beryl_sorcerer
 EndContentData */
 
 #include "precompiled.h"
 #include "follower_ai.h"
 #include "escort_ai.h"
 #include "ObjectMgr.h"
+#include "../../../game/TemporarySummon.h"
 
 /*######
 ## npc_fizzcrank_fullthrottle
@@ -816,6 +819,93 @@ struct MANGOS_DLL_DECL npc_tadpoleAI : public FollowerAI
 CreatureAI* GetAI_npc_tadpole(Creature* pCreature)
 {
     return new npc_tadpoleAI(pCreature);
+}
+
+/*#####
+## npc_captured_beryl_sorcerer
+#####*/
+
+// TODO: Add visual effects for arcane chains (chains around captured sorcerer and from captured sorcerer to player)
+
+enum
+{
+    NPC_BERYL_SORCERER      = 25316,
+    NPC_CAPTURED_SORCERER   = 25474,
+    NPC_DONATAHN            = 25262,
+    QUEST_ABDUCTION         = 11590,
+
+    SPELL_ARCANE_CHAINS     = 45611,
+    SPELL_CHAINS_CHANNEL_1  = 45630, 
+    SPELL_CHAINS_CHANNEL_2  = 45735,
+    SPELL_SUMMON_CAPTURED   = 45626,
+
+    SPELL_ARCANE_CHAINS_2   = 45625,
+    SPELL_ARCANE_CHAINS_3   = 45632 // triggers cast of 45735
+    
+};
+
+
+struct MANGOS_DLL_DECL npc_captured_beryl_sorcererAI : public FollowerAI
+{
+    npc_captured_beryl_sorcererAI(Creature* pCreature) : FollowerAI(pCreature) { Reset(); }
+
+    void Reset()
+    {
+        if(m_creature->isTemporarySummon())
+            if(Player* plyr = (Player*) m_creature->GetMap()->GetUnit(((TemporarySummon*)m_creature)->GetSummonerGuid()))
+                StartFollow(plyr);
+
+        //m_creature->CastSpell(m_creature,SPELL_ARCANE_CHAINS_2,true);
+        //((TemporarySummon*)m_creature)->GetSummoner()->CastSpell(m_creature,SPELL_ARCANE_CHAINS_2,true);
+    }
+
+    void UpdateFollowerAI(const uint32 uiDiff)
+    {
+        /*if(HasFollowState(STATE_FOLLOW_INPROGRESS))
+            if(!m_creature->HasAura(SPELL_ARCANE_CHAINS_2,EFFECT_INDEX_0))
+                ((TemporarySummon*)m_creature)->GetSummoner()->CastSpell(m_creature,SPELL_ARCANE_CHAINS_2,true);
+        */
+        if(Creature* pDonathan = GetClosestCreatureWithEntry(m_creature,NPC_DONATAHN,5.f))
+        {
+            SetFollowComplete();
+            if(Player* pPlayer = GetLeaderForFollower())
+                pPlayer->KilledMonsterCredit(NPC_CAPTURED_SORCERER);
+            m_creature->ForcedDespawn(30000);
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_captured_beryl_sorcerer(Creature* pCreature)
+{
+    return new npc_captured_beryl_sorcererAI(pCreature);
+}
+
+/*#####
+## npc_beryl_sorcerer
+#####*/
+
+struct MANGOS_DLL_DECL npc_beryl_sorcererAI : public ScriptedAI
+{
+    npc_beryl_sorcererAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+
+    void Reset()
+    {
+    }
+
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell) 
+    {
+        if(pSpell->Id == SPELL_ARCANE_CHAINS && pCaster->GetTypeId() == TYPEID_PLAYER)
+            if(Player* pPlayer = (Player*) pCaster)
+            {
+                pPlayer->CastSpell(m_creature,SPELL_SUMMON_CAPTURED,true);
+                m_creature->ForcedDespawn();
+            }
+    }
+};
+
+CreatureAI* GetAI_npc_beryl_sorcerer(Creature* pCreature)
+{
+    return new npc_beryl_sorcererAI(pCreature);
 }
 
 void AddSC_borean_tundra()

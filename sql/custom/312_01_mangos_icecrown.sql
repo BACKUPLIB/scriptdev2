@@ -142,3 +142,13 @@ INSERT INTO `gameobject_scripts` (`id`, `delay`, `command`, `datalong`, `datalon
 -- fix quest 14144 / spell 66390
 DELETE FROM `spell_script_target` WHERE `entry` = 66390;
 INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('66390', '1', '34852'); 
+
+-- fix quest 13119
+-- mantis bug #0002906
+DELETE FROM `spell_script_target` WHERE `entry` = 57853 AND `targetEntry` IN(30742, 30744, 30745, 30950);
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES 
+('57853', '1', '30742'), 
+('57853', '1', '30744'), 
+('57853', '1', '30745'), 
+('57853', '1', '30950');
+UPDATE `mangos`.`quest_template` SET `ReqSpellCast1` = '57853', `ReqSpellCast2` = '57853', `ReqSpellCast3` = '57853', `ReqSpellCast4` = '57853' WHERE `quest_template`.`entry` =13119;

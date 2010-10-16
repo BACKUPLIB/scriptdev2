@@ -17,8 +17,8 @@ UPDATE `creature_template` SET `ScriptName`='mob_zuramat_sentry' WHERE `entry`='
 UPDATE `gameobject_template` SET `flags`=`flags`|4 WHERE `entry` IN (191723,191564,191563,191562,191606,191722,191556,191566,191565); -- door untargetable
 
 DELETE FROM `spell_script_target` WHERE `entry` IN (54160,59474);
-INSERT INTO `spell_script_target` VALUES (54160, 1, 29266);
-INSERT INTO `spell_script_target` VALUES (59474, 1, 29266);
+INSERT INTO `spell_script_target` VALUES (54160, 1, 29266),
+(59474, 1, 29266);
 
 UPDATE `creature_template` SET `minhealth` = 500, `maxhealth` = 700, `minlevel` = 77, `maxlevel` = 77, `mindmg` = 220, `maxdmg` = 270, `minrangedmg` = 170, `maxrangedmg` = 260, `attackpower` = 350, `rangedattackpower` = 60 WHERE `entry` = 29364;
 

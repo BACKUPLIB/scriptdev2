@@ -1,5 +1,5 @@
 -- -1 609 000 EBON HOLD
-DELETE FROM script_texts WHERE entry BETWEEN -1609127 AND -1609101;
+DELETE FROM script_texts WHERE entry BETWEEN -1609127 AND -1609101 OR entry = -1999957;
 INSERT INTO `script_texts` (`entry`,`content_default`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
 -- How To Win Friends And Influence Enemies
    (-1609101, 'I\'ll tear the secrets from your soul! Tell me about the "Crimson Dawn" and your life may be spared!',0,0,0,0,'player SAY_PERSUADE1'),

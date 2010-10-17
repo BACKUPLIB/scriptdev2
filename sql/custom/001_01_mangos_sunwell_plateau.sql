@@ -103,7 +103,7 @@ UPDATE gameobject_template SET `type`= '22', `data0`='0', `data3`='1', `data6`='
 UPDATE `creature_template` SET `minhealth`=11000000 ,`maxhealth`=11000000 WHERE `entry`=24882;
 -- scripts for 'burn' and 'stomp'
 DELETE FROM `spell_scripts` WHERE `id` IN (45141, 45185);
-INSERT INTO `spell_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`,`comment`) VALUES
+INSERT INTO `spell_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`,`comments`) VALUES
 ('45141', '0', '15', '46394', '2', '0', '0', '0', '0', '0',""),
 ('45185', '0', '14', '46394', '1', '0', '0', '0', '0', '0',"");
 

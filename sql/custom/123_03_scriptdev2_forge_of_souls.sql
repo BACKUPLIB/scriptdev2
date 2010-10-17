@@ -1,5 +1,5 @@
 -- Forge of souls
-DELETE FROM `script_texts` WHERE `entry` IN (-1632029,-1632029) OR `entry` BETWEEN -1632047 AND -1632040 OR `entry` BETWEEN -1632055 AND -1632050;
+DELETE FROM `script_texts` WHERE `entry` IN (-1632029,-1632030) OR `entry` BETWEEN -1632047 AND -1632040 OR `entry` BETWEEN -1632055 AND -1632050;
 INSERT INTO `script_texts` (`entry`,`content_default`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
 -- Devourer of Souls
 (-1632029,'Excellent work, champions! We shall set up our base camp in these chambers. My mages will get the Scourge transport device working shortly. Step inside it when you''re ready for your next mission. I will meet you on the other side.',16625,1,0,0,'Jaina SAY_JAINA_OUTRO'),

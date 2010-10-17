@@ -58,7 +58,7 @@ INSERT INTO `pool_gameobject` (`guid`,`pool_entry`,`chance`,`description`) VALUE
 (82267,30004,0,"Blinking Rules & Regulations"),
 (33156,30004,0,"Bundle of Romantic Correspondences");
 -- books VI
-DELETE FROM `gameobject` WHERE `id` = 192711;
+DELETE FROM `gameobject` WHERE `guid` = 300000;
 INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`rotation3`,`spawntimesecs`,`animprogress`,`state`) VALUES
 (300000,192711,571,1,1,5777.8,832.618,680.279,0.541051,1,180,255,1);
 DELETE FROM `pool_template` WHERE `entry` = 30005;

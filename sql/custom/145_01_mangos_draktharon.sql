@@ -1,4 +1,4 @@
-﻿# update wotlk instance drak'tharon keep bosses
+# update wotlk instance drak'tharon keep bosses
 # boss trollgore normal
 UPDATE `creature_template` SET `AIName` = "", `rank` = 3, `dmg_multiplier` = 15 WHERE `entry` = 26630;
 # boss trollgore heroic

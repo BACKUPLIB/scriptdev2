@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_Keristrasza
 SD%Complete: 65%
-SDComment: timers tuning, add achievement
+SDComment: timers tuning
 SDCategory: Nexus
 EndScriptData */
 
@@ -33,6 +33,7 @@ enum
     SAY_DEATH                   = -1576020,
 
     SPELL_INTENSE_COLD          = 48094,
+    SPELL_INTENSE_COLD_TRIGGERED= 48095,
 
     SPELL_CRYSTALFIRE_BREATH    = 48096,
     SPELL_CRYSTALFIRE_BREATH_H  = 57091,
@@ -43,8 +44,13 @@ enum
 
     SPELL_TAIL_SWEEP            = 50155,
 
-    SPELL_ENRAGE                = 8599
+    SPELL_ENRAGE                = 8599,
+
+    ACHIEVEMENT_INTENSE_COLD    = 2036
 };
+
+uint64 m_auiPlayerGUIDs[] = {0,0,0,0,0};
+bool m_abGetsAchievement[] = {true, true, true, true, true};
 
 /*######
 ## boss_keristrasza
@@ -92,7 +98,34 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
     {
         DoScriptText(SAY_AGGRO, m_creature);
 
+        Map* pMap = m_creature->GetMap();
+        if (pMap)
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            if(players.getSize() > 5)
+                return;
+            uint8 i = 0;
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+            {
+                m_auiPlayerGUIDs[i] = itr->getSource()->GetGUID();
+                ++i;
+            }
+        }
+
         m_creature->CastSpell(m_creature, SPELL_INTENSE_COLD, true);
+    }
+
+    void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
+    {
+        if(pSpell->Id ==SPELL_INTENSE_COLD_TRIGGERED && pTarget->GetTypeId() == TYPEID_PLAYER)
+            if(Aura* AuraIntenseCold = pTarget->GetAura(SPELL_INTENSE_COLD_TRIGGERED, EFFECT_INDEX_0))
+                if(AuraIntenseCold->GetStackAmount() > 2)
+                    for(int i=0;i<5;++i)
+                        if(pTarget->GetGUID() == m_auiPlayerGUIDs[i])
+                        {
+                            m_abGetsAchievement[i] = false;
+                            break;
+                        }
     }
 
     void JustDied(Unit* pKiller)
@@ -101,6 +134,15 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KERISTRASZA, DONE);
+
+        if(m_bIsRegularMode)
+            return;
+
+        for(int i=0;i<5;++i)
+            if(m_auiPlayerGUIDs[i] > 0)
+                if(Player* pPlayer = (Player*) m_creature->GetMap()->GetUnit(m_auiPlayerGUIDs[i]))
+                    if(m_abGetsAchievement[i])
+                        pPlayer->CompletedAchievement(ACHIEVEMENT_INTENSE_COLD);
     }
 
     void KilledUnit(Unit* pVictim)

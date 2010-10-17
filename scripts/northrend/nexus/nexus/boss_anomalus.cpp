@@ -55,7 +55,9 @@ enum
 
     SPELL_SUMMON_CRAZED_MANA_WRAITH    = 47692,
     NPC_CHAOTIC_RIFT                   = 26918,
-    NPC_CRAZED_MANA_WRAITH             = 26746
+    NPC_CRAZED_MANA_WRAITH             = 26746,
+
+    ACHIEVEMENT_CHAOS_THEORY           = 2037
 };
 
 const float spawnRiftPos[6][4] =
@@ -93,6 +95,7 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     uint32 m_uiCreateRiftTimer;
     uint64 m_uiChaoticRiftGUID;
 	uint32 m_uiBerserkCheckTimer;
+    bool   m_bRiftKilled;
 
     std::list<uint64> m_uiRiftGUIDList;
 
@@ -105,6 +108,7 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
         m_uiCreateRiftTimer = 25000;
         m_uiChaoticRiftGUID = 0;
 		m_uiBerserkCheckTimer = 6000;
+        m_bRiftKilled = false;
 
         DespawnRifts();
     }
@@ -116,12 +120,22 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
 
     void JustDied(Unit* pKiller)
     {
+        DespawnRifts();
         DoScriptText(SAY_DEATH, m_creature);
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ANOMALUS, DONE);
 
-        DespawnRifts();
+        if(m_bRiftKilled || m_bIsRegularMode)
+            return;
+
+        Map* pMap = m_creature->GetMap();
+        if (pMap)
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                itr->getSource()->CompletedAchievement(ACHIEVEMENT_CHAOS_THEORY);
+        }
     }
 
     void KilledUnit(Unit* pVictim)
@@ -269,6 +283,13 @@ struct MANGOS_DLL_DECL mob_chaotic_riftAI : public Scripted_NoMovementAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 pSummoned->AI()->AttackStart(pTarget);
         }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if(pKiller->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER && m_pInstance)
+            if(Creature* pAnomalus = (Creature*) m_creature->GetMap()->GetUnit(m_pInstance->GetData64(NPC_ANOMALUS)))
+            ((boss_anomalusAI*)pAnomalus->AI())->m_bRiftKilled = true;
     }
 
     void UpdateAI(const uint32 uiDiff)

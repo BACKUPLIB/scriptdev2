@@ -38,7 +38,10 @@ enum
     SPELL_HATEFULSTRIKE_H = 59192,
     SPELL_ENRAGE          = 28131,
     SPELL_BERSERK         = 26662,
-    SPELL_SLIMEBOLT       = 32309
+    SPELL_SLIMEBOLT       = 32309,
+
+    ACHIEVEMENT_SPEEDKILL_10  = 1856,
+    ACHIEVEMENT_SPEEDKILL_25  = 1857
 };
 
 struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
@@ -59,6 +62,10 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     bool   m_bEnraged;
     bool   m_bBerserk;
 
+    uint32 m_uiSpeedKillTimer;
+    bool m_bIsInTimeForAchievement;
+    bool m_bSpeedKillTimerStarted;
+
     void Reset()
     {
         m_uiHatefulStrikeTimer = 1000;                      //1 second
@@ -66,6 +73,10 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         m_uiSlimeboltTimer = 10000;
         m_bEnraged = false;
         m_bBerserk = false;
+
+        m_bIsInTimeForAchievement = true;
+        m_uiSpeedKillTimer = 180000;
+        m_bSpeedKillTimerStarted = false;
     }
 
     void KilledUnit(Unit* pVictim)
@@ -80,6 +91,14 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
 
+        if(m_bIsInTimeForAchievement)
+        {
+            Map* pMap = m_creature->GetMap();
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end();++itr)
+                itr->getSource()->CompletedAchievement( m_bIsRegularMode ? ACHIEVEMENT_SPEEDKILL_10 : ACHIEVEMENT_SPEEDKILL_25);
+        }
+
         if (m_pInstance)
             m_pInstance->SetData(TYPE_PATCHWERK, DONE);
     }
@@ -87,6 +106,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(urand(0, 1)?SAY_AGGRO1:SAY_AGGRO2, m_creature);
+        m_bSpeedKillTimerStarted = true;
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_PATCHWERK, IN_PROGRESS);
@@ -129,6 +149,14 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if(m_bSpeedKillTimerStarted)
+            if (m_uiSpeedKillTimer < uiDiff)
+            {
+                m_bIsInTimeForAchievement = false;
+            }
+            else
+                m_uiSpeedKillTimer -= uiDiff;
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 

@@ -40,6 +40,7 @@ go_tadpole_cage
 npc_tadpole
 npc_captured_beryl_sorcerer
 npc_beryl_sorcerer
+npc_bonker_togglevolt
 EndContentData */
 
 #include "precompiled.h"
@@ -908,6 +909,65 @@ CreatureAI* GetAI_npc_beryl_sorcerer(Creature* pCreature)
     return new npc_beryl_sorcererAI(pCreature);
 }
 
+/*#####
+## npc_bonker_togglevolt
+#####*/
+
+enum
+{
+    SAY_BEGIN                     = -1029999,
+    SAY_ANGRY                     = -1029998,
+    SAY_COMPLETE                  = -1029997,
+
+    QUEST_GET_ME_OUTA_HERE        = 11673
+};
+
+struct MANGOS_DLL_DECL npc_bonker_togglevoltAI : public npc_escortAI
+{
+    npc_bonker_togglevoltAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 6:
+                DoScriptText(SAY_ANGRY, m_creature, pPlayer);
+                break;
+			case 13:
+				DoScriptText(SAY_COMPLETE, m_creature, pPlayer);
+				pPlayer->GroupEventHappens(QUEST_GET_ME_OUTA_HERE, m_creature);
+				break;
+        }
+    }
+
+    void Reset() {}
+};
+
+bool QuestAccept_npc_bonker_togglevolt(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_GET_ME_OUTA_HERE)
+    {
+        DoScriptText(SAY_BEGIN, pCreature, pPlayer);
+
+        if (npc_bonker_togglevoltAI* pEscortAI = dynamic_cast<npc_bonker_togglevoltAI*>(pCreature->AI()))
+        {
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_bonker_togglevolt(Creature* pCreature)
+{
+    return new npc_bonker_togglevoltAI(pCreature);
+}
+
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -998,4 +1058,11 @@ void AddSC_borean_tundra()
     newscript->Name = "npc_tadpole";
     newscript->GetAI = &GetAI_npc_tadpole;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_bonker_togglevolt";
+    newscript->GetAI = &GetAI_npc_bonker_togglevolt;
+    newscript->pQuestAccept = &QuestAccept_npc_bonker_togglevolt;
+    newscript->RegisterSelf();
+
 }

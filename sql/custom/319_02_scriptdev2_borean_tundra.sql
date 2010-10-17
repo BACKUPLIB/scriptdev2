@@ -34,3 +34,26 @@ INSERT INTO `script_texts` (`entry`,`content_default`,`comment`) VALUES
 (-1039995, "Play!", "tadpole SAY_5"),
 (-1039994, "Alurglgl!", "tadpole SAY_6"),
 (-1039993, "da-da?", "tadpole SAY_7");
+
+-- fix quest 11673 (mantis bug #0003113)
+DELETE FROM `script_waypoint` WHERE `entry` =25589;
+INSERT INTO `script_waypoint` (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES 
+('25589', '1', '4477.85', '5370.52', '-14.88', '0', NULL),
+('25589', '2', '4488.51', '5388.26', '-15.26', '0', NULL),
+('25589', '3', '4469.62', '5421.90', '-15.74', '0', NULL),
+('25589', '4', '4431.22', '5437.05', '-15.24', '0', NULL),
+('25589', '5', '4400.60', '5421.76', '-14.32', '0', NULL),
+('25589', '6', '4386.71', '5384.00', '-3.90', '0', NULL),
+('25589', '7', '4406.25', '5337.60', '6.68', '0', NULL),
+('25589', '8', '4443.88', '5336.77', '14.06', '0', NULL),
+('25589', '9', '4480.47', '5363.64', '19.50', '0', NULL),
+('25589', '10', '4483.98', '5410.55', '28.69', '0', NULL),
+('25589', '11', '4461.75', '5429.60', '34.28', '0', NULL),
+('25589', '12', '4411.48', '5436.50', '40.36', '0', NULL),
+('25589', '13', '4362.50', '5468.33', '48.61', '25000', 'quest complete');
+DELETE FROM `script_texts` WHERE `entry` IN ('-1029999', '-1029998', '-1029997');
+-- texts not blizzlike!
+INSERT INTO `script_texts` (`entry`, `content_default`, `content_loc3`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
+('-1029999', 'Right then, no time to waste. Lets get outa here!', 'Ihr müsst mir helfen, Fremder. Die bei der Landebahn haben mich wohl vergessen, nachdem ich in Gefangenschaft geriet. Zusammen werden wir es aber hier hinaus schaffen.', '0', '0', '0', '0', NULL),
+('-1029998', 'Wenn wir hier lebend rauskommen, werde ich denen mal die Meinung sagen!', 'Wenn wir hier lebend rauskommen, werde ich denen mal die Meinung sagen!', '0', '0', '0', '0', NULL),
+('-1029997', 'Vielen Dank für eure Hilfe. Geht zu Kurbelzisch und sagt ihm er soll euch belohnen.', 'Vielen Dank für eure Hilfe. Geht zu Kurbelzisch und sagt ihm er soll euch belohnen.', '0', '0', '0', '0', NULL);

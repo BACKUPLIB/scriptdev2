@@ -203,4 +203,7 @@ INSERT INTO `spell_script_target` (`entry`,`type`,`targetEntry`) VALUES
 
 -- fix by Jeiy
 -- mantis bug #0003234
-UPDATE `quest_template` SET `ReqSpellCast1` = '45606' WHERE `quest_template`.`entry` =11637;
+UPDATE `quest_template` SET `ReqSpellCast1` = '45606' WHERE `entry` =11637;
+
+-- fix quest 11673 (mantis bug #0003113)
+UPDATE `creature_template` SET `ScriptName` = 'npc_bonker_togglevolt' WHERE `entry` =25589;

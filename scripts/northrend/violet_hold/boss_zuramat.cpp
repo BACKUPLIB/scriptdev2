@@ -47,6 +47,8 @@ enum
     SPELL_VOID_SENTRY_AURA_H                  = 54351,
     SPELL_SHADOW_BOLT_VOLLEY                  = 54358, // 54342? 54358?
     SPELL_SHADOW_BOLT_VOLLEY_H                = 59747,
+
+    ACHIEVEMENT_A_VOID_DANCE                  = 2153
 };
 
 struct MANGOS_DLL_DECL boss_zuramatAI : public ScriptedAI
@@ -67,12 +69,16 @@ struct MANGOS_DLL_DECL boss_zuramatAI : public ScriptedAI
     uint32 m_uiVoidShift_Timer;
     uint32 m_uiSummonVoidSentry_Timer;
 
+    bool m_bKilledSentry;
+
     void Reset()
     {
         m_uiShroudDarkness_Timer = urand(8000, 9000);
         m_uiSummonVoidSentry_Timer = urand(5000, 10000);
         m_uiVoidShift_Timer = 10000;
         MovementStarted = false;
+
+        m_bKilledSentry = false;
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ZURAMAT, NOT_STARTED);
@@ -204,6 +210,17 @@ struct MANGOS_DLL_DECL boss_zuramatAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ZURAMAT, DONE);
+
+        if(m_bIsRegularMode || m_bKilledSentry)
+            return;
+
+        Map* pMap = m_creature->GetMap();
+        if (pMap)
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                itr->getSource()->CompletedAchievement(ACHIEVEMENT_A_VOID_DANCE);
+        }
     }
 
     void JustReachedHome()
@@ -244,6 +261,15 @@ struct MANGOS_DLL_DECL mob_zuramat_sentryAI : public ScriptedAI
         //DoCast(m_creature, m_bIsRegularMode ? SPELL_VOID_SENTRY_AURA_H : SPELL_VOID_SENTRY_AURA); ??
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         DoCast(m_creature, m_bIsRegularMode ? SPELL_SHADOW_BOLT_VOLLEY_H : SPELL_SHADOW_BOLT_VOLLEY);
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if(pKiller->GetCharmerOrOwnerOrSelf()->GetTypeId() == TYPEID_PLAYER)
+            if(m_pInstance)
+                if(Creature* pZuramat = (Creature*) m_creature->GetMap()->GetUnit(m_pInstance->GetData64(TYPE_ZURAMAT)))
+                    if(boss_zuramatAI* zuramatAI = (boss_zuramatAI*) pZuramat->AI())
+                        zuramatAI->m_bKilledSentry = true;
     }
 };
 

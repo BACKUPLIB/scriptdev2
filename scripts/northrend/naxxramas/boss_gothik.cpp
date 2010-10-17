@@ -97,6 +97,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
     {
         m_uiPhase = PHASE_SPEECH;
 
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_uiSpeechCount = 0;
         m_uiSpeechTimer = 5000;
 
@@ -108,10 +109,13 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
         m_uiHarvestSoulTimer = 15000;
     }
 
-    void Aggro(Unit* pWho)
+    void MoveInLineOfSight(Unit* pWho)
     {
         m_creature->SetInCombatWithZone();
-
+    }
+        
+    void Aggro(Unit* pWho)
+    {
         DoScriptText(SAY_SPEECH_1, m_creature);
 
         if (!m_pInstance)
@@ -248,6 +252,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                         DoScriptText(SAY_TELEPORT, m_creature);
                         DoScriptText(EMOTE_TO_FRAY, m_creature);
                         DoCastSpellIfCan(m_creature, SPELL_TELEPORT_RIGHT);
+                        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         m_uiPhase = PHASE_GROUND;
                         return;
                     }

@@ -200,3 +200,7 @@ DELETE FROM `spell_script_target` WHERE `entry` IN (45630,45735);
 INSERT INTO `spell_script_target` (`entry`,`type`,`targetEntry`) VALUES
 (45630,1,25474),
 (45735,1,25474);
+
+-- fix by Jeiy
+-- mantis bug #0003234
+UPDATE `quest_template` SET `ReqSpellCast1` = '45606' WHERE `quest_template`.`entry` =11637;

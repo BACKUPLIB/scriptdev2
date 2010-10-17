@@ -157,18 +157,20 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 	void SummonRhinoSpirit()
 	{
 		Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
-		float x = pTarget->GetPositionX() + 20.0f;
-		float y = pTarget->GetPositionY() + 20.0f;
-		float z = pTarget->GetPositionZ();
-		Creature* cRhino = m_creature->SummonCreature(NPC_RHINO_SPIRIT, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 1800);
-		if (cRhino)
-		{
-            m_uiRhinoGUID = cRhino->GetGUID();
-			cRhino->CastSpell(pTarget, SPELL_CHARGE, true);
-			cRhino->SetInCombatWith(pTarget);
-			cRhino->AddThreat(pTarget, 1000.0f);
-		}
-
+        if(pTarget)
+        {
+		    float x = pTarget->GetPositionX() + 20.0f;
+		    float y = pTarget->GetPositionY() + 20.0f;
+		    float z = pTarget->GetPositionZ();
+		    Creature* cRhino = m_creature->SummonCreature(NPC_RHINO_SPIRIT, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 1800);
+		    if (cRhino)
+		    {
+                m_uiRhinoGUID = cRhino->GetGUID();
+			    cRhino->CastSpell(pTarget, SPELL_CHARGE, true);
+			    cRhino->SetInCombatWith(pTarget);
+			    cRhino->AddThreat(pTarget, 1000.0f);
+		    }
+        }
 		m_bUseStampede = true;
 	}
 

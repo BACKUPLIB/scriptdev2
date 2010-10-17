@@ -104,11 +104,13 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
 
     uint32 saytimer;
     uint32 step;
-    Player* pPlayer;
+    uint64 m_uiPlayerGUID;
+
     void Reset()
     {
-     saytimer = 1000;
-     step = 0;
+        saytimer = 1000;
+        step = 0;
+        m_uiPlayerGUID = 0;
     }
 
 	void UpdateAI(const uint32 diff)
@@ -118,9 +120,9 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
             switch(step)
             {
                 case 0:
-                    pPlayer = GetPlayerAtMinimumRange(20.0f);
-					if(pPlayer)
+					if(Player* pPlayer = GetPlayerAtMinimumRange(20.0f))
 					{
+                        m_uiPlayerGUID = pPlayer->GetGUID();
                         DoScriptText(SAY_NOZRONN1, m_creature);
                         saytimer += 5000;
                         step++;
@@ -143,7 +145,7 @@ struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
                     step++;
                     break;
                 case 4:
-                    if(pPlayer)
+                    if(Player* pPlayer = (Player*) m_creature->GetMap()->GetUnit(m_uiPlayerGUID))
                         if (pPlayer->GetQuestStatus(QUEST_BONES_OF_NOZRONN) == QUEST_STATUS_INCOMPLETE)
 					    {
                             pPlayer->KilledMonsterCredit(28256, m_creature->GetGUID());

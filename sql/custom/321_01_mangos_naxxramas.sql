@@ -29,4 +29,8 @@ INSERT INTO `gameobject` (`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`posit
 UPDATE `gameobject_template` SET `data2` = 10 WHERE `entry` = 181356;
 
 # despawn thaddius & heigan as long as their scripts don't work
+
+-- open heigan entrance door
+UPDATE `gameobject` SET `state` = '0' WHERE `id` = 181202;
+
 UPDATE `creature` SET `spawnMask` = 0 WHERE `id` IN (15928,15936);

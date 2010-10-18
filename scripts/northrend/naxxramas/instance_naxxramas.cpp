@@ -304,9 +304,9 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
             {
                 DoUseDoorOrButton(m_uiNothExitDoorGUID);
                 DoUseDoorOrButton(m_uiHeigEntryDoorGUID);
+                SetData(TYPE_HEIGAN,DONE); // as long as this encounter is not working
             }
-            else    //as long as heigan is despawned
-                break; 
+            break; 
         case TYPE_HEIGAN:
             m_auiEncounter[4] = uiData;
             DoUseDoorOrButton(m_uiHeigEntryDoorGUID);

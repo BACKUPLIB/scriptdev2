@@ -19,3 +19,6 @@ INSERT INTO creature_ai_scripts (id, creature_id, event_type, event_chance, even
 
 -- set immune masks
 UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(28684,28921,29120,31561,31610,31611);
+
+-- remote possible reputation bug
+DELETE FROM `creature_onkill_reputation` WHERE `creature_id` = 31647;

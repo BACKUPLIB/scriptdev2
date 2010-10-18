@@ -41,7 +41,7 @@ INSERT INTO `gossip_menu` (`entry`, `text_id`) VALUES
 DELETE FROM `gossip_menu_option` WHERE `menu_id` IN (65535);
 INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`, `option_id`, `npc_option_npcflag`, `action_menu_id`, `action_script_id`, `cond_1`, `cond_1_val_1`, `cond_1_val_2`) VALUES
 ('65535', '1', '0', 'GOSSIP_OPTION_QUESTGIVER', '2', '3', '0', '0', '0', '0', '0'),
-('65535', '2', '0', 'Gief Buff!', '1', '3', '65534', '65535', '9', '12132', '0');
+('65535', '2', '0', 'Ich muss zurückkehren in die Schattenwelt, Koltira. Sendet mich zurück.', '1', '3', '65534', '65535', '9', '12132', '0');
 DELETE FROM `gossip_scripts` WHERE `id` = 65535;
 INSERT INTO `gossip_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `comments`) VALUES
 ('65535', '0', '15', '47740', '2', '');

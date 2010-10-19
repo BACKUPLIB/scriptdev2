@@ -129,7 +129,7 @@ struct MANGOS_DLL_DECL npc_millhouse_manastormAI : public ScriptedAI
 		if (m_pInstance && m_pInstance->GetData(TYPE_HARBINGERSKYRISS) == DONE)
 		{
 			m_creature->SetVisibility(VISIBILITY_OFF);
-			m_creature->setDeathState(JUST_DIED);
+			m_creature->SetDeathState(JUST_DIED);
 		}
 
         if (!Init)
@@ -291,7 +291,7 @@ struct MANGOS_DLL_DECL npc_warden_mellicharAI : public ScriptedAI
 
         if (!m_creature->getVictim() && who->isTargetableForAttack() && (m_creature->IsHostileTo(who)) && who->isInAccessablePlaceFor(m_creature))
         {
-            if (!m_creature->canFly() && m_creature->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
+            if (!m_creature->CanFly() && m_creature->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                 return;
 
             if (who->GetTypeId() != TYPEID_PLAYER)
@@ -507,7 +507,7 @@ struct MANGOS_DLL_DECL mob_zerekethvoidzoneAI : public ScriptedAI
 	{
 		if (Death_Timer < diff)
 		{
-			m_creature->setDeathState(JUST_DIED);
+			m_creature->SetDeathState(JUST_DIED);
 			m_creature->SetVisibility(VISIBILITY_ON);
 		}else Death_Timer -= diff;
 	}

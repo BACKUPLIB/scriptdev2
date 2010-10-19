@@ -173,7 +173,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
         for(std::list<Creature*>::iterator i = templist.begin(); i != templist.end(); ++i)
         {
             (*i)->SetVisibility(VISIBILITY_OFF);
-            (*i)->setDeathState(JUST_DIED);
+            (*i)->SetDeathState(JUST_DIED);
         }
     }
 

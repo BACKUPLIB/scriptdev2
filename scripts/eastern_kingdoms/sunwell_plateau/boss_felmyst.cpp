@@ -688,7 +688,7 @@ struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
         m_creature->SetFloatValue(UNIT_FIELD_COMBATREACH, 0.0f );
 
         // workaround, to select a close victim (== summoner in this case)
-        if (m_creature->isTemporarySummon())
+        if (m_creature->IsTemporarySummon())
             AttackStart(m_creature->GetMap()->GetUnit(((TemporarySummon*)m_creature)->GetSummonerGuid()));
 
         // force felmyst to cast visual beam
@@ -702,7 +702,7 @@ struct MANGOS_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
         {
             Unit* pTarget =  GetClosestAttackableUnit(m_creature, 100.0f);  // maybe we need to exclude pets?
             // unsummon if no unit is present
-            if (!pTarget && m_creature->isTemporarySummon())
+            if (!pTarget && m_creature->IsTemporarySummon())
                 ((TemporarySummon*)m_creature)->UnSummon();
             AttackStart(pTarget);
         }

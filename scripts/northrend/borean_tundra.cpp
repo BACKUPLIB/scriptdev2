@@ -852,7 +852,7 @@ struct MANGOS_DLL_DECL npc_captured_beryl_sorcererAI : public FollowerAI
 
     void Reset()
     {
-        if(m_creature->isTemporarySummon())
+        if(m_creature->IsTemporarySummon())
             if(Player* plyr = (Player*) m_creature->GetMap()->GetUnit(((TemporarySummon*)m_creature)->GetSummonerGuid()))
                 StartFollow(plyr);
 

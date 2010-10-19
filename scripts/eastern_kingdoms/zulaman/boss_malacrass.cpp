@@ -311,7 +311,7 @@ struct MANGOS_DLL_DECL boss_hex_lord_malacrassAI : public ScriptedAI
             Creature *pCreature = ((Creature*)m_creature->GetMap()->GetUnit( AddGUID[i]));
             if(!pCreature || !pCreature->isAlive())
             {
-                if(pCreature) pCreature->setDeathState(DEAD);
+                if(pCreature) pCreature->SetDeathState(DEAD);
                 pCreature = m_creature->SummonCreature(AddEntry[i], Pos_X[i], POS_Y, POS_Z, ORIENT, TEMPSUMMON_DEAD_DESPAWN, 0);
                 if(pCreature) AddGUID[i] = pCreature->GetGUID();
             }

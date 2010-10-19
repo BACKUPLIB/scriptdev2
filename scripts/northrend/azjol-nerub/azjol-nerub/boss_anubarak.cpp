@@ -443,7 +443,7 @@ struct MANGOS_DLL_DECL npc_elite_anubAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
-            if (!m_creature->isTemporarySummon())
+            if (!m_creature->IsTemporarySummon())
                 return;
 
             if (m_creature->GetPositionX() < 550.0f)

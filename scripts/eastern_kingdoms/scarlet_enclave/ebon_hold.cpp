@@ -215,7 +215,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -243,7 +243,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -271,7 +271,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -299,7 +299,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -327,7 +327,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -355,7 +355,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -383,7 +383,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -411,7 +411,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -439,7 +439,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -467,7 +467,7 @@ struct MANGOS_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
                             case 10: DoScriptText(SAY_EXEC_WAITING, m_creature, pPlayer); break;
                             case 11:
                                 DoScriptText(EMOTE_DIES, m_creature);
-                                m_creature->setDeathState(JUST_DIED);
+                                m_creature->SetDeathState(JUST_DIED);
                                 m_creature->SetHealth(0);
                                 return;
                         }
@@ -1452,7 +1452,7 @@ struct MANGOS_DLL_DECL npc_salanar_the_horseman_shadow_realmAI : public Scripted
 
 CreatureAI* GetAI_npc_salanar_the_horseman_shadow_realmAI(Creature* pCreature)
 {
-    if (pCreature->isTemporarySummon())
+    if (pCreature->IsTemporarySummon())
         return new npc_salanar_the_horseman_shadow_realmAI(pCreature);
     else
         return NULL;
@@ -1563,7 +1563,7 @@ struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
                 else
                     pGift->GetOwner()->SummonCreature(NPC_SCARLET_GHOST, m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
                 pGift->Delete();
-                m_creature->setDeathState(JUST_DIED);
+                m_creature->SetDeathState(JUST_DIED);
                 m_creature->RemoveCorpse();
             }
     }
@@ -1581,7 +1581,7 @@ struct MANGOS_DLL_DECL npc_scarlet_ghoulAI : public FollowerAI
 
     npc_scarlet_ghoulAI(Creature* pCreature) : FollowerAI(pCreature) 
     { 
-        if (pCreature->isTemporarySummon())
+        if (pCreature->IsTemporarySummon())
             plyr =(Player*)(pCreature->GetMap()->GetUnit(((TemporarySummon*)pCreature)->GetSummonerGuid()));
 
         if (plyr)
@@ -2624,7 +2624,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
                     case 27:
                         if (Creature* pTemp = (Creature*)m_creature->GetMap()->GetUnit(uiDarionGUID))
-                            pTemp->setDeathState(JUST_DIED);
+                            pTemp->SetDeathState(JUST_DIED);
                         JumpToNextStep(24000);
                         break;
 

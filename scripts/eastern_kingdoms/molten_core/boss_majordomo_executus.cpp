@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
             Creature *pCreature = (Creature*)m_creature->GetMap()->GetUnit(AddGUID[i]);
             if(!pCreature || !pCreature->isAlive())
             {
-                if(pCreature) pCreature->setDeathState(DEAD);
+                if(pCreature) pCreature->SetDeathState(DEAD);
                 pCreature = m_creature->SummonCreature(AddEntry[i], POS_X[i], POS_Y[i], POS_Z[i], ORIENT[i], TEMPSUMMON_DEAD_DESPAWN, 0);
                 if(pCreature) AddGUID[i] = pCreature->GetGUID();
             }
@@ -242,7 +242,7 @@ struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
 										{
 											DoCast(m_creature, SPELL_TELEPORT);
 											m_creature->SetVisibility(VISIBILITY_OFF);
-											m_creature->setDeathState(JUST_DIED);
+											m_creature->SetDeathState(JUST_DIED);
 											m_pInstance->SetData(DATA_MAJORDOMO, DONE);
 							
 																

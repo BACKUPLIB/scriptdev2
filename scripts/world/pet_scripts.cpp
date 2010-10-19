@@ -130,7 +130,7 @@ struct MANGOS_DLL_DECL pet_greater_earth_elementalAI : public PetAI
         if (!owner)
             return NULL;
 
-        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->isTotem())
+        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->IsTotem())
             return NULL;
 
         return ((Totem*)owner)->GetOwner();
@@ -203,7 +203,7 @@ struct MANGOS_DLL_DECL pet_greater_fire_elementalAI : public PetAI
         if (!owner)
             return NULL;
 
-        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->isTotem())
+        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->IsTotem())
             return NULL;
 
         return ((Totem*)owner)->GetOwner();
@@ -258,7 +258,7 @@ struct MANGOS_DLL_DECL pet_greater_fire_elementalAI : public PetAI
 
 CreatureAI* GetAI_pet_simple_guardian(Creature* pCreature)
 {
-    if (pCreature->isPet())
+    if (pCreature->IsPet())
         return new pet_simple_guardianAI((Pet*)pCreature);
     else
         return NULL;
@@ -266,7 +266,7 @@ CreatureAI* GetAI_pet_simple_guardian(Creature* pCreature)
 
 CreatureAI* GetAI_pet_dk_ghoul(Creature* pCreature)
 {
-    if (pCreature->isPet())
+    if (pCreature->IsPet())
         return new pet_dk_ghoulAI((Pet*)pCreature);
     else
         return NULL;
@@ -274,7 +274,7 @@ CreatureAI* GetAI_pet_dk_ghoul(Creature* pCreature)
 
 CreatureAI* GetAI_pet_greater_earth_elemental(Creature* pCreature)
 {
-    if (pCreature->isPet())
+    if (pCreature->IsPet())
         return new pet_greater_earth_elementalAI((Pet*)pCreature);
     else
         return NULL;
@@ -282,7 +282,7 @@ CreatureAI* GetAI_pet_greater_earth_elemental(Creature* pCreature)
 
 CreatureAI* GetAI_pet_greater_fire_elemental(Creature* pCreature)
 {
-    if (pCreature->isPet())
+    if (pCreature->IsPet())
         return new pet_greater_fire_elementalAI((Pet*)pCreature);
     else
         return NULL;

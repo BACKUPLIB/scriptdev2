@@ -209,7 +209,7 @@ struct MANGOS_DLL_DECL npc_alliance_bannerAI : public ScriptedAI
 
     void JustDied(Unit* pKiller)
     {
-        if(m_creature->isPet())
+        if(m_creature->IsPet())
             if(Player* pPlayer = (Player*) ((Pet*) m_creature)->GetOwner())
             {
                  pPlayer->SendQuestFailed(QUEST_ROCK_IT);
@@ -229,7 +229,7 @@ struct MANGOS_DLL_DECL npc_alliance_bannerAI : public ScriptedAI
                     if(Creature* pTemp = m_creature->SummonCreature(NPC_DEFENDER,m_creature->GetPositionX()+rand()%40+10, m_creature->GetPositionY()+rand()%40+10,m_creature->GetPositionZ(),0,TEMPSUMMON_CORPSE_TIMED_DESPAWN,10000))
                     {
                         pAttacker = pTemp;
-                        if(m_creature->isPet())
+                        if(m_creature->IsPet())
                         {
                             pTemp->AI()->AttackStart(((Pet*)m_creature)->GetOwner());
                         }
@@ -250,7 +250,7 @@ struct MANGOS_DLL_DECL npc_alliance_bannerAI : public ScriptedAI
                 }
         }
         else
-            if(m_creature->isPet())
+            if(m_creature->IsPet())
                 if(Player* pPlayer = (Player*) ((Pet*) m_creature)->GetOwner())
                     pPlayer->AreaExploredOrEventHappens(QUEST_ROCK_IT);
     }

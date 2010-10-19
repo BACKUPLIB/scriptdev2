@@ -563,7 +563,7 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
         if(!pInstance || !(pInstance->GetData(TYPE_JANALAI) == IN_PROGRESS))
         {
             m_creature->SetVisibility(VISIBILITY_OFF);
-            m_creature->setDeathState(JUST_DIED);
+            m_creature->SetDeathState(JUST_DIED);
             return;
         }
 
@@ -597,7 +597,7 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
                 else
                 {
                     m_creature->SetVisibility(VISIBILITY_OFF);
-                    m_creature->setDeathState(JUST_DIED);
+                    m_creature->SetDeathState(JUST_DIED);
                 }
             }else WaitTimer -= diff;
         }
@@ -628,7 +628,7 @@ struct MANGOS_DLL_DECL mob_hatchlingAI : public ScriptedAI
         else
             m_creature->GetMotionMaster()->MovePoint(0, hatcherway[1][3][0]+rand()%4-2,1150+rand()%4-2,hatcherway[1][3][2]);
 
-		m_creature->canFly();
+		m_creature->CanFly();
     }
 
     void Aggro(Unit *who) { m_creature->SetInCombatWithZone(); }
@@ -638,7 +638,7 @@ struct MANGOS_DLL_DECL mob_hatchlingAI : public ScriptedAI
         if(!pInstance || !(pInstance->GetData(TYPE_JANALAI) == IN_PROGRESS))
         {
             m_creature->SetVisibility(VISIBILITY_OFF);
-            m_creature->setDeathState(JUST_DIED);
+            m_creature->SetDeathState(JUST_DIED);
             return;
         }
 

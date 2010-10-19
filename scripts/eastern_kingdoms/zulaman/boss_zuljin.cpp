@@ -322,7 +322,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
                 if(Temp = m_creature->GetMap()->GetUnit( SpiritGUID[i]))
                 {
                     Temp->SetVisibility(VISIBILITY_OFF);
-                    Temp->setDeathState(DEAD);
+                    Temp->SetDeathState(DEAD);
                 }
             }
             SpiritGUID[i] = 0;
@@ -353,7 +353,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
         for(std::list<Creature*>::iterator i = templist.begin(); i != templist.end(); ++i)
         {
             (*i)->SetVisibility(VISIBILITY_OFF);
-            (*i)->setDeathState(JUST_DIED);
+            (*i)->SetDeathState(JUST_DIED);
         }
     }
 

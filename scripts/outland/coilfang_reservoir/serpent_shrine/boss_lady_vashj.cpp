@@ -179,7 +179,7 @@ struct MANGOS_DLL_DECL boss_lady_vashjAI : public ScriptedAI
             if (Creature* pTemp = m_creature->GetMap()->GetCreature(m_auiShieldGeneratorChannel[i]))
             {
                 if (pTemp->isAlive())
-                    pTemp->setDeathState(JUST_DIED);
+                    pTemp->SetDeathState(JUST_DIED);
 
                 m_auiShieldGeneratorChannel[i] = 0;
             }
@@ -516,7 +516,7 @@ struct MANGOS_DLL_DECL mob_enchanted_elementalAI : public ScriptedAI
                     if (pVashj->isAlive() && pVashj->isInCombat())
                         m_creature->CastSpell(pVashj, SPELL_SURGE, false, 0, 0, pVashj->GetGUID());
                     else
-                        m_creature->setDeathState(JUST_DIED);
+                        m_creature->SetDeathState(JUST_DIED);
                 }
             }
         }
@@ -613,7 +613,7 @@ struct MANGOS_DLL_DECL mob_toxic_sporebatAI : public ScriptedAI
                 {
                     //remove
                     m_creature->SetVisibility(VISIBILITY_OFF);
-                    m_creature->setDeathState(DEAD);
+                    m_creature->SetDeathState(DEAD);
                     m_creature->RemoveCorpse();
                     m_creature->setFaction(35);
                 }
@@ -700,7 +700,7 @@ bool ItemUse_item_tainted_core(Player* pPlayer, Item* pItem, SpellCastTargets co
 
             //get and remove channel
             if (Creature* pChannel = pVashj->GetMap()->GetCreature(pVashjAI->m_auiShieldGeneratorChannel[uiChannelIdentifier]))
-                pChannel->setDeathState(JUST_DIED);         //calls Unsummon()
+                pChannel->SetDeathState(JUST_DIED);         //calls Unsummon()
 
             pInstance->SetData(uiIdentifier, DONE);
 

@@ -120,3 +120,27 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_start_active`, 
 ('72914', '4425', '12905', '1', '0', '0', '0', '2', '0'),
 ('72914', '4437', '12905', '1', '0', '0', '0', '2', '0'),
 ('72914', '4535', '12905', '1', '0', '0', '0', '2', '0');
+
+-- fix quest 12998
+-- update Data for NPC Overseer Narvir
+UPDATE `creature_template` SET `minlevel` = '78',`maxlevel` = '79',`AIName` = 'EventAI', `minhealth` = '11770',`maxhealth` = '12175',`faction_A` = '2102',`faction_H` = '2102' WHERE `creature_template`.`entry` =30299;
+-- set event for GO 192181 - Quest 12998
+UPDATE `gameobject_template` SET `data2` = '192181' WHERE `entry` =192181;
+-- event Script for Go 192181 - Quest 12998
+DELETE FROM `event_scripts` WHERE `id` = 192181;
+INSERT INTO `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `x`, `y`, `z`, `o`, `comments`) VALUES 
+('192181', '0', '10', '30299', '24000', '7312.779', '-714.095', '791.608', '4.729', 'Summons NPC 30299 - Quest 12998'),
+('192181', '0', '15', '32332', '1', '0', '0', '0', '0', 'add Cosmetic Cyclone - Quest 12998'),
+('192181', '26', '14', '32332', '1', '0', '0', '0', '0', 'remove Cosmetic Cyclone - Quest 12998'),
+('192181', '1', '15', '59123', '1', '0', '0', '0', '0', 'add stun Player - Quest 12998'),
+('192181', '26', '14', '59123', '1', '0', '0', '0', '0', 'remove stun Player - Quest 12998'),
+('192181', '26', '8', '30299', '0', '0', '0', '0', '0', 'Kill Credit 30299 - Quest 12998');
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 30299;
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES 
+('302990', '30299', '11', '0', '100', '0', '0', '0', '0', '0', '21', '1', '0', '0', '20', '0', '0', '0', '0', '0', '0', '0', 'Overseer Narvir moves to Target and stop MeleeAttack'),
+('302991', '30299', '0', '0', '100', '0', '4000', '4001', '0', '0', '1', '-304094', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Overseer Narvir say first'),
+('302992', '30299', '0', '0', '100', '0', '12000', '12001', '0', '0', '1', '-304095 ', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Overseer Narvir say second');
+DELETE FROM `creature_ai_texts` WHERE `entry` IN (-304094, -304095);
+INSERT INTO `creature_ai_texts` (`entry`, `content_default`, `content_loc3`, `sound`, `type`, `language`, `emote`, `comment`) VALUES 
+('-304094', 'You didn''t think that I was going to let you walk in here and take the Heart of the Storm, did you?', 'Du hast nicht wirklich gedacht, das ich dich hier hereinlaufen und das Herz des Sturms mitnehmen lasse?', '0', '0', '0', '0', 'NPC Overseer Narvir say first'),
+('-304095', 'You may have killed Valduran, but that will not stop me from completing the colossus.',  'Du magst zwar Valduran getötet haben, aber das wird mich nicht davon abhalten den Kolossus zu vollenden!',  '0', '0', '0', '0', 'NPC Overseer Narvir say second');

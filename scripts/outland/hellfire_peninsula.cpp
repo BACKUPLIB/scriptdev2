@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Hellfire_Peninsula
 SD%Complete: 100
-SDComment: Quest support: 9375, 9410, 9418, 10129, 10146, 10162, 10163, 10340, 10346, 10347, 10382 (Special flight paths), 10838
+SDComment: Quest support: 9375, 9410, 9418, 10129, 10146, 10162, 10163, 10340, 10346, 10347, 10382 (Special flight paths), 10838, 10909
 SDCategory: Hellfire Peninsula
 EndScriptData */
 
@@ -33,6 +33,7 @@ npc_trollbane
 npc_wing_commander_dabiree
 npc_wing_commander_brack
 npc_wounded_blood_elf
+npc_anchronite_relic_bunny
 EndContentData */
 
 #include "precompiled.h"
@@ -745,6 +746,65 @@ bool QuestAccept_npc_wounded_blood_elf(Player* pPlayer, Creature* pCreature, con
     return true;
 }
 
+/*######
+## npc_anchronite_relic_bunny
+######*/
+
+enum
+{
+    NPC_ORC         = 16878,
+    NPC_FEL_SPIRIT  = 22454
+};
+
+struct MANGOS_DLL_DECL npc_anchronite_relic_bunnyAI : public ScriptedAI
+{
+    npc_anchronite_relic_bunnyAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {Reset();}
+
+    uint32 m_uiCheckTimer;
+    std::list<Creature*> lNewDeadOrcList;
+    std::list<uint64> lDeadOrcGUIDsList;
+
+    void Reset()
+    {
+        // save NPCs dead on m_creature create, because Forced Despawn doesn't work on NPCs that died before m_creature was created
+        lDeadOrcGUIDsList.clear();
+        m_uiCheckTimer = 3000;
+        m_creature->ForcedDespawn(300000); // despawn after 5 minutes
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(m_uiCheckTimer < uiDiff)
+        {
+            m_uiCheckTimer = 3000;
+            lNewDeadOrcList.clear();
+            GetCreatureListWithEntryInGrid(lNewDeadOrcList, m_creature, NPC_ORC, 30.0f);
+            for(std::list<Creature*>::iterator itr = lNewDeadOrcList.begin(); itr != lNewDeadOrcList.end(); ++itr)
+            {
+                if ((*itr)->isAlive())
+                    return;
+
+                if(!lDeadOrcGUIDsList.empty())
+                    for(std::list<uint64>::iterator i = lDeadOrcGUIDsList.begin(); i != lDeadOrcGUIDsList.end(); ++i)
+                        if((*itr)->GetGUID() == (*i))
+                            return;
+
+                (*itr)->SummonCreature(NPC_FEL_SPIRIT,(*itr)->GetPositionX(),(*itr)->GetPositionY(),(*itr)->GetPositionZ(),(*itr)->GetOrientation(),TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,300000);
+                (*itr)->ForcedDespawn();
+                lDeadOrcGUIDsList.push_back((*itr)->GetGUID());
+            }
+        } 
+        else
+            m_uiCheckTimer -= uiDiff;
+    }
+};
+
+CreatureAI* GetAI_npc_anchronite_relic_bunny(Creature* pCreature)
+{
+    return new npc_anchronite_relic_bunnyAI(pCreature);
+}
+
 void AddSC_hellfire_peninsula()
 {
     Script *newscript;
@@ -811,5 +871,10 @@ void AddSC_hellfire_peninsula()
     newscript->Name = "npc_wounded_blood_elf";
     newscript->GetAI = &GetAI_npc_wounded_blood_elf;
     newscript->pQuestAccept = &QuestAccept_npc_wounded_blood_elf;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_anchronite_relic_bunny";
+    newscript->GetAI = &GetAI_npc_anchronite_relic_bunny;
     newscript->RegisterSelf();
 }

@@ -50,6 +50,8 @@ enum
     SPELL_PULSING_SHOCKWAVE_AURA        = 59414
 };
 
+#define ACHIEV_SPEEDKILL_H              1867
+
 /*######
 ## Boss Loken
 ######*/
@@ -75,6 +77,9 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
 
     uint32 m_uiHealthAmountModifier;
 
+	bool m_bIsInTimeForAchiev;
+    uint32 SpeedKillTimer;
+
     void Reset()
     {
         m_bIsAura = false;
@@ -83,6 +88,9 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
         m_uiLightningNova_Timer = 20000;
         m_uiPulsingShockwave_Timer = 2000;
         m_uiResumePulsingShockwave_Timer = 15000;
+
+		m_bIsInTimeForAchiev = true;
+        SpeedKillTimer = 120000;
 
         m_uiHealthAmountModifier = 1;
 
@@ -104,6 +112,20 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_LOKEN, DONE);
+
+		if (m_bIsInTimeForAchiev && !m_bIsRegularMode)
+            {
+                if (ACHIEV_SPEEDKILL_H)
+                {
+                    Map* pMap = m_creature->GetMap();
+                    if (pMap && pMap->IsDungeon())
+                    {
+                        Map::PlayerList const &players = pMap->GetPlayers();
+                        for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(ACHIEV_SPEEDKILL_H);
+                    }
+                }
+            }
     }
 
     void KilledUnit(Unit* pVictim)

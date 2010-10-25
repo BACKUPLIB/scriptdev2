@@ -90,8 +90,8 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsRegularMode;
 
-        bool m_bIsInTimeForAchiev;
-        uint32 SpeedKillTimer;
+    bool m_bIsInTimeForAchiev;
+    uint32 SpeedKillTimer;
 
     bool phase66;
     bool phase66Over;
@@ -139,12 +139,18 @@ struct MANGOS_DLL_DECL boss_anubarakAI : public ScriptedAI
         PoundTimer = 12000;
         CarrionSwarmTimer = 13000;
 
-            m_bIsInTimeForAchiev = true;
-            SpeedKillTimer = 240000;
+        m_bIsInTimeForAchiev = true;
+        SpeedKillTimer = 240000;
 
-		    pTriggerTarget = NULL;
+	    pTriggerTarget = NULL;
 
         i = 0;
+
+		if (m_creature->GetVisibility() == VISIBILITY_OFF)
+			m_creature->SetVisibility(VISIBILITY_ON);
+		
+		if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+			m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         m_pInstance->SetData(TYPE_ANUBARAK, NOT_STARTED);
     }

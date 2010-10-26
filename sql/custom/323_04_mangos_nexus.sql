@@ -14,10 +14,11 @@ UPDATE creature SET position_x=297.002625, position_y=-242.901276, position_z=-1
 UPDATE creature_template SET dmg_multiplier=30 WHERE entry IN (26794, 26763);
 UPDATE creature_template SET `mindmg` = 266, `maxdmg` = 760 WHERE entry = 26763;
 
-UPDATE creature SET spawntimesecs=0 WHERE id=26793;
+UPDATE creature SET spawntimesecs=40 WHERE id=26793;
 
 -- eventAI
 UPDATE creature_ai_scripts SET event_param1=4500, event_param2=5500 WHERE id=2692902;
+DELETE FROM creature_ai_scripts WHERE id IN (2679305, 2679306);
 
 -- set immune masks
 UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(26731,26763,26794,26723,26796,26798);

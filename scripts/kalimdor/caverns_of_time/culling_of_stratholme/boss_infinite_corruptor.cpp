@@ -31,6 +31,8 @@ enum
    SPELL_STRIKE      = 60590
 };
 
+#define ACHIEVEMENT_H				1817
+
 struct MANGOS_DLL_DECL boss_infinite_corruptorAI : public ScriptedAI
 {
    boss_infinite_corruptorAI(Creature *pCreature) : ScriptedAI(pCreature)
@@ -61,6 +63,14 @@ struct MANGOS_DLL_DECL boss_infinite_corruptorAI : public ScriptedAI
    {
        if(m_pInstance)
          m_pInstance->SetData(TYPE_BONUS, DONE);
+
+	   Map* pMap = m_creature->GetMap();
+        if (pMap)
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                itr->getSource()->CompletedAchievement(ACHIEVEMENT_H);
+        }
    }
 
     void KilledUnit(Unit* pVictim)

@@ -48,6 +48,8 @@ enum
     NPC_TROLLGORE = 26630
 };
 
+#define ACHIEVEMENT			2151
+
 const float PosSummon1[3] = {-259.59f, -652.49f, 26.52f};
 const float PosSummon2[3] = {-261.60f, -658.71f, 26.51f};
 const float PosSummon3[3] = {-262.05f, -665.71f, 26.49f};
@@ -75,6 +77,8 @@ struct MANGOS_DLL_DECL boss_trollgoreAI : public ScriptedAI
     uint32 Wave_Timer;
     uint32 CorpseExplode_Timer;
 
+	uint32 achievCounter;
+
     void Reset()
     {
         CorpseExplode_Timer = 10000;
@@ -82,6 +86,8 @@ struct MANGOS_DLL_DECL boss_trollgoreAI : public ScriptedAI
         Crush_Timer = 10000;
         InfectedWound_Timer = 30000;
         Wave_Timer = 2000;
+
+		achievCounter = 0;
     }
 
     void Aggro(Unit* pWho)
@@ -98,6 +104,23 @@ struct MANGOS_DLL_DECL boss_trollgoreAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+		if (achievCounter < 10)
+		{
+			if (!m_bIsRegularMode)
+            {
+                if (ACHIEVEMENT)
+                {
+                    Map* pMap = m_creature->GetMap();
+                    if (pMap && pMap->IsDungeon())
+                    {
+                        Map::PlayerList const &players = pMap->GetPlayers();
+                        for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(ACHIEVEMENT);
+                    }
+                }
+            }
+		}
     }
 
     void SummonWaves()
@@ -142,6 +165,7 @@ struct MANGOS_DLL_DECL boss_trollgoreAI : public ScriptedAI
             m_creature->CastSpell(m_creature->getVictim(), m_bIsRegularMode ? SPELL_CONSUME : H_SPELL_CONSUME, true);
             m_creature->CastSpell(m_creature, m_bIsRegularMode ? SPELL_CONSUME_BUFF : H_SPELL_CONSUME_BUFF, true);
             Consume_Timer = 15000;
+			achievCounter++;
         }else Consume_Timer -= uiDiff;
 
         //Corpse Explosion

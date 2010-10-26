@@ -119,8 +119,7 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
     }
 
     void JustDied(Unit* pKiller)
-    {
-        DespawnRifts();
+    {  
         DoScriptText(SAY_DEATH, m_creature);
 
         if (m_pInstance)
@@ -136,6 +135,8 @@ struct MANGOS_DLL_DECL boss_anomalusAI : public ScriptedAI
             for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                 itr->getSource()->CompletedAchievement(ACHIEVEMENT_CHAOS_THEORY);
         }
+
+		DespawnRifts();
     }
 
     void KilledUnit(Unit* pVictim)

@@ -77,7 +77,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
     void Reset()
     {
         m_uiImpaleTimer = 15000;                            // 15 seconds
-        m_uiLocustSwarmTimer = urand(70000, 120000);        // Random time between 80 seconds and 2 minutes for initial cast
+        m_uiLocustSwarmTimer = urand(60000, 900000);        // Random time between 1 minute and 90 seconds for initial cast
         m_uiCryptGuardTimer = 0;                       
     }
 
@@ -112,11 +112,11 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
             m_creature->SummonCreature(NPC_CRYPT_GUARD,m_creature->GetPositionX()+rand()%5,
                                                        m_creature->GetPositionY()+rand()%5,
                                                        m_creature->GetPositionZ(),0,
-                                                       TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
+                                                       TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
             m_creature->SummonCreature(NPC_CRYPT_GUARD,m_creature->GetPositionX()+rand()%5,
                                                        m_creature->GetPositionY()+rand()%5,
                                                        m_creature->GetPositionZ(),0,
-                                                       TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
+                                                       TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
         }
     }
 
@@ -175,10 +175,10 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (m_uiLocustSwarmTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LOCUSTSWARM :SPELL_LOCUSTSWARM_H);
-            m_uiLocustSwarmTimer = 90000;
-            //spawn crypt guards with swarm on 10man mode
+            m_uiLocustSwarmTimer = 50000;
+          /*//spawn crypt guards with swarm on 10man mode
             if(m_bIsRegularMode)
-                m_uiCryptGuardTimer = 2000;
+                m_uiCryptGuardTimer = 2000;*/
         }
         else
             m_uiLocustSwarmTimer -= uiDiff;
@@ -190,10 +190,10 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
                 m_creature->SummonCreature(NPC_CRYPT_GUARD,m_creature->GetPositionX()+rand()%5,
                                                        m_creature->GetPositionY()+rand()%5,
                                                        m_creature->GetPositionZ(),0,
-                                                       TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,60000);
+                                                       TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
 
                 //DoCastSpellIfCan(m_creature, SPELL_SUMMONGUARD);
-                m_uiCryptGuardTimer = 0;
+                m_uiCryptGuardTimer = 40000;
             }
             else
                 m_uiCryptGuardTimer -= uiDiff;

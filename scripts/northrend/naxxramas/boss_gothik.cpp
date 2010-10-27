@@ -105,8 +105,8 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
         m_uiSummonTimer = 5000;
 
         m_uiTeleportTimer = 15000;
-        m_uiShadowboltTimer = 2500;
-        m_uiHarvestSoulTimer = 15000;
+        m_uiShadowboltTimer = 1500;
+        m_uiHarvestSoulTimer = 9000;
     }
 
     void MoveInLineOfSight(Unit* pWho)
@@ -334,7 +334,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 //Shadow Bolt
                 if (m_uiShadowboltTimer < uiDiff)
                 {
-                    if (DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ?  SPELL_SHADOWBOLT: SPELL_SHADOWBOLT_H) == CAST_OK)
+                    if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_SHADOWBOLT_H) == CAST_OK)
                         m_uiShadowboltTimer = 1500;
                 }
                 else
@@ -344,7 +344,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 if (m_uiHarvestSoulTimer < uiDiff)
                 {
 	                DoCast(m_creature->getVictim(), SPELL_HARVESTSOUL);
-	                m_uiHarvestSoulTimer = 15000;
+	                m_uiHarvestSoulTimer = 9000;
                 }
                 else
 	                m_uiHarvestSoulTimer -= uiDiff;

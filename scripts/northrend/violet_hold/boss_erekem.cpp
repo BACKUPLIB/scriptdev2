@@ -321,6 +321,10 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
         m_creature->AddSplineFlag(SPLINEFLAG_WALKMODE);
         MovementStarted = true;
         m_creature->SetInCombatWithZone();
+		m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
+        //m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void MovementInform(uint32 type, uint32 id)

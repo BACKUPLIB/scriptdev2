@@ -60,7 +60,6 @@ struct MANGOS_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
     uint64 m_uiShkafGateGUID;
     uint64 m_uiMalGate1GUID;
     uint64 m_uiMalGate2GUID;
-    uint64 m_uiMalChestGUID;
     uint64 m_uiExitGUID;
 
     void Initialize()
@@ -107,7 +106,6 @@ struct MANGOS_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
        m_uiMalganisGUID = 0;
        m_uiMalGate1GUID = 0;
        m_uiMalGate2GUID = 0;
-       m_uiMalChestGUID = 0;
        m_uiExitGUID = 0;
     }
 
@@ -210,9 +208,6 @@ struct MANGOS_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
         if (pGo->GetEntry() == GO_MALGANIS_GATE2)
             m_uiMalGate2GUID = pGo->GetGUID();
 
-        if (pGo->GetEntry() == GO_MALGANIS_CHEST || pGo->GetEntry() == GO_MALGANIS_CHEST_H)
-            m_uiMalChestGUID = pGo->GetGUID();
-
         if (pGo->GetEntry() == GO_EXIT)
             m_uiExitGUID = pGo->GetGUID();
     }
@@ -281,9 +276,6 @@ struct MANGOS_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
                 m_auiEncounter[6] = uiData;
                 if (uiData == DONE)
                 {
-                    DoRespawnGameObject(m_uiMalChestGUID, 30*MINUTE);
-                    if (GameObject* pGo = instance->GetGameObject(m_uiMalChestGUID))
-                        pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
                     if (Creature* pChromi2 = instance->GetCreature(m_uiChromi02GUID))
                         pChromi2->SetVisibility(VISIBILITY_OFF);
                     if (GameObject* pGo = instance->GetGameObject(m_uiExitGUID))
@@ -353,7 +345,6 @@ struct MANGOS_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
             case GO_SHKAF_GATE: return m_uiShkafGateGUID;
             case GO_MALGANIS_GATE1: return m_uiMalGate1GUID;
             case GO_MALGANIS_GATE2: return m_uiMalGate2GUID;
-            case GO_MALGANIS_CHEST: return m_uiMalChestGUID;
             case GO_EXIT: return m_uiExitGUID;
         }
 

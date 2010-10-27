@@ -220,7 +220,7 @@ struct MANGOS_DLL_DECL boss_malganisAI : public ScriptedAI
    { 
       m_pInstance->SetData(TYPE_PHASE, 10);
       m_pInstance->SetData(TYPE_MALGANIS, DONE);
-	  m_creature->SummonGameobject(200250, 2288.350098f, 1498.729980f, 128.414001f, -0.994837f, 9000000);
+	  m_creature->SummonGameobject(m_bIsHeroic ? 250201 :250200, 2288.350098f, 1498.729980f, 128.414001f, -0.994837f, 9000000);
       EnterEvadeMode();
    }
 

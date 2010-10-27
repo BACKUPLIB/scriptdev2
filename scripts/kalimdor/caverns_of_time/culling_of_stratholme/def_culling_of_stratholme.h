@@ -92,8 +92,6 @@ enum Data
     GO_SHKAF_GATE          = 188686,
     GO_MALGANIS_GATE1      = 187711,
     GO_MALGANIS_GATE2      = 187723,
-    GO_MALGANIS_CHEST      = 190663,
-    GO_MALGANIS_CHEST_H    = 193597,
     GO_EXIT                = 191788,
 
 

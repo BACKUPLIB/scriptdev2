@@ -334,7 +334,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 //Shadow Bolt
                 if (m_uiShadowboltTimer < uiDiff)
                 {
-                    if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_SHADOWBOLT_H) == CAST_OK)
+					if (DoCastSpellIfCan(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), SPELL_SHADOWBOLT_H) == CAST_OK)
                         m_uiShadowboltTimer = 1500;
                 }
                 else

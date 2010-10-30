@@ -77,7 +77,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
     void Reset()
     {
         m_uiImpaleTimer = 15000;                            // 15 seconds
-        m_uiLocustSwarmTimer = urand(60000, 900000);        // Random time between 1 minute and 90 seconds for initial cast
+        m_uiLocustSwarmTimer = urand(60000, 70000);        // Random time between 1 minute and 70 seconds for initial cast
         m_uiCryptGuardTimer = 0;                       
     }
 
@@ -193,7 +193,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
                                                        TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
 
                 //DoCastSpellIfCan(m_creature, SPELL_SUMMONGUARD);
-                m_uiCryptGuardTimer = 40000;
+                m_uiCryptGuardTimer = 30000;
             }
             else
                 m_uiCryptGuardTimer -= uiDiff;
@@ -222,7 +222,7 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
     {
         AcidSpit_Timer = 10000 + rand()%1000;
         Cleave_Timer = 5000 + rand()%5000;
-        Berserk_Timer = 120000;
+        Berserk_Timer = 30000;
     }
 
     void KilledUnit(Unit* pVictim)
@@ -262,13 +262,13 @@ struct MANGOS_DLL_DECL mob_crypt_guardAI : public ScriptedAI
         if (AcidSpit_Timer < diff)
         {
             DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ACID_SPIT : SPELL_ACID_SPIT_H);
-            AcidSpit_Timer = 10000 + rand()%1000;
+            AcidSpit_Timer = 7000 + rand()%1000;
         }else AcidSpit_Timer -= diff;
 
         if (Cleave_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_CLEAVE);
-            Cleave_Timer = 5000 + rand()%5000;
+            Cleave_Timer = 3000 + rand()%5000;
         }else Cleave_Timer -= diff;
 
         DoMeleeAttackIfReady();

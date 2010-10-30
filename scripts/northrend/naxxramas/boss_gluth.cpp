@@ -147,7 +147,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                         if (pTemp->isAlive())
                         {
                             if (m_creature->GetHealth() > m_creature->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
-                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.02);
+                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.03);
                             pTemp->AddThreat(m_creature, 1000000000.0f); // force move toward to Gluth
                         }
             }

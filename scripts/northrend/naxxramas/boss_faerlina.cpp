@@ -47,6 +47,9 @@ enum
     SPELL_RAINOFFIRE          = 28794                       //Not sure if targeted AoEs work if casted directly upon a pPlayer
 };
 
+#define ACHIEV_10			1997
+#define ACHIEV_25			2140
+
 static uint32 m_uiWorshippers[4] = {NPC_WORSHIPPER_1,NPC_WORSHIPPER_2,NPC_WORSHIPPER_3,NPC_WORSHIPPER_4}; 
 
 struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
@@ -67,6 +70,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     uint32 m_uiEnrageTimer;
     uint8  m_uiDeadWorshippers;
     bool   m_bHasTaunted;
+	bool   m_bAchiev;
 
     void Reset()
     {
@@ -74,6 +78,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         m_uiRainOfFireTimer = 16000;
         m_uiEnrageTimer = 60000;
         m_uiDeadWorshippers = 0;
+		m_bAchiev = true;
     }
 
     void Aggro(Unit* pWho)
@@ -124,6 +129,17 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
 
+		if (m_bAchiev)
+        {
+            Map* pMap = m_creature->GetMap();
+            if (pMap && pMap->IsDungeon())
+            {
+                Map::PlayerList const &players = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+					itr->getSource()->CompletedAchievement(m_bIsRegularMode ? ACHIEV_10 : ACHIEV_25);
+            }
+        }
+	
         if (m_pInstance)
             m_pInstance->SetData(TYPE_FAERLINA, DONE);
     }
@@ -166,6 +182,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
             if(curr > m_uiDeadWorshippers)
             {
                 m_uiDeadWorshippers = curr;
+				m_bAchiev = false; // worshipper dead? this group wouldn't earn this achievement
                 m_creature->CastSpell(m_creature->getVictim(),SPELL_WIDOWS_EMBRACE,true);
                 
                 // hack: players get hit by the spell, so remove spell from them
@@ -187,7 +204,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (m_uiPoisonBoltVolleyTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature->getVictim(), SPELL_POSIONBOLT_VOLLEY);
-            m_uiPoisonBoltVolleyTimer = 11000;
+            m_uiPoisonBoltVolleyTimer = 7000;
         }
         else
             m_uiPoisonBoltVolleyTimer -= uiDiff;
@@ -198,7 +215,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCastSpellIfCan(pTarget, SPELL_RAINOFFIRE);
 
-            m_uiRainOfFireTimer = 16000;
+            m_uiRainOfFireTimer = 9000;
         }
         else
             m_uiRainOfFireTimer -= uiDiff;

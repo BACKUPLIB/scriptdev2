@@ -111,7 +111,10 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* pWho)
     {
-        m_creature->SetInCombatWithZone();
+        if(pWho->GetDistance(m_creature) < 40)
+		{
+			m_creature->SetInCombatWithZone();
+		}
     }
         
     void Aggro(Unit* pWho)

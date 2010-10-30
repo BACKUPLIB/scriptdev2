@@ -82,6 +82,22 @@ INSERT INTO `gameobject` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`
 (160026,190090,0,1,1,-633.493469,-4572.566895,12.290501,180,100,1),-- Dorf der Bruchhauer
 (160027,190103,530,1,1,-170.170868,5530.376953,29.408014,180,100,1);-- Zuflucht des Cenarius
 
+DELETE FROM `game_event_gameobject` WHERE `guid` BETWEEN 160015 AND 160027;
+INSERT INTO `game_event_gameobject` (`guid`,`event`) VALUES 
+(160015,12),
+(160016,12),
+(160017,12),
+(160018,12),
+(160019,12),
+(160020,12),
+(160021,12),
+(160022,12),
+(160023,12),
+(160024,12),
+(160025,12),
+(160026,12),
+(160027,12);
+
 -- delete unwanted GOs
 DELETE FROM `gameobject_template` WHERE `entry` = 180412;
 
@@ -249,3 +265,7 @@ INSERT IGNORE INTO `gameobject_questrelation` (`id`,`quest`) VALUES
 (300204,12409), -- Altar der Sha`tar(Aldorgasthaus)
 (300203,12404), -- Shattrat(Seher)
 (190110,12404); -- Shattrat II(Aldor)
+
+-- remove some double buckets
+DELETE FROM `gameobject` WHERE `id` IN (SELECT `entry` FROM `gameobject_template` WHERE `name` LIKE 'candy bucket') AND `id` NOT IN (SELECT `id` FROM `gameobject_questrelation`);
+DELETE FROM `game_event_gameobject` WHERE `event` ='12' AND `guid` NOT IN (SELECT `guid` FROM `gameobject`);

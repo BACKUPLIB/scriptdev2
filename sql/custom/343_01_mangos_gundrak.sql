@@ -1,4 +1,4 @@
-DELETE FROM creature_template WHERE entry IN (105002);
+﻿DELETE FROM creature_template WHERE entry IN (105002);
 INSERT INTO creature_template(entry, difficulty_entry_1, modelid_1, modelid_2, modelid_3, modelid_4, NAME, subname, IconName, gossip_menu_id, minlevel, maxlevel, minhealth, maxhealth, minmana, maxmana, armor, faction_A, faction_H, npcflag, speed_walk, speed_run, scale, rank, mindmg, maxdmg, dmgschool, attackpower, dmg_multiplier, baseattacktime, rangeattacktime, unit_class, unit_flags, dynamicflags, family, trainer_type, trainer_spell, trainer_class, trainer_race, minrangedmg, maxrangedmg, rangedattackpower, TYPE, type_flags, lootid, pickpocketloot, skinloot, resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, spell1, spell2, spell3, spell4, PetSpellDataId, mingold, maxgold, AIName, MovementType, InhabitType, unk16, unk17, RacialLeader, questItem1, questItem2, questItem3, questItem4, questItem5, questItem6, movementId, RegenHealth, equipment_id, mechanic_immune_mask, flags_extra, ScriptName) VALUES 
 ('105002', '0', '2588', '0', '0', '0', 'Brückenwächter der Dakkari', '', '','25200','80', '80', '12445', '12445', '0', '0', '5000', '35', '35', '1', '0.1', '0.1', '1', '0', '1', '2', '0', '1', '1', '1', '1', '0', '0', '0', '0','0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0','0', '','0', '3', '1.0', '1.0', '0','0','0', '0', '0', '0', '0', '0', '1', '0', '0', '2', 'npc_bridgewatcher');
 
@@ -41,3 +41,29 @@ UPDATE creature_template SET lootid=31673 WHERE entry=31673;
 
 -- mechanic immune masks
 UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(29304,29307,29305,29306,29932,31360,31362,31365,31368,31370);
+
+-- add creature_onkill_reputation
+DELETE FROM `creature_onkill_reputation` WHERE `creature_id` IN ('29932','31367','30926','30927','30928','31368','30930','30929','30931','31365','30932','30938','30933','30530','30935','30936','30939','30934','30925','31370','30941','30942');
+INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`, `RewOnKillRepFaction2`, `MaxStanding1`, `IsTeamAward1`, `RewOnKillRepValue1`, `MaxStanding2`, `IsTeamAward2`, `RewOnKillRepValue2`, `TeamDependent`) VALUES 
+('29932', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('31367', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('30926', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30927', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30928', '1037', '1052', '7', '0', '5', '7', '0', '5', '1'), 
+('31368', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('30930', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30929', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30931', '1037', '1052', '7', '0', '5', '7', '0', '5', '1'), 
+('31365', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('30932', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30938', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30933', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30530', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('30935', '1037', '1052', '7', '0', '30', '7', '0', '30', '1'), 
+('30936', '1037', '1052', '7', '0', '30', '7', '0', '30', '1'), 
+('30939', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30934', '1037', '1052', '7', '0', '5', '7', '0', '5', '1'), 
+('30925', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('31370', '1037', '1052', '7', '0', '250', '7', '0', '250', '1'), 
+('30941', '1037', '1052', '7', '0', '15', '7', '0', '15', '1'), 
+('30942', '1037', '1052', '7', '0', '15', '7', '0', '15', '1');

@@ -160,3 +160,10 @@ INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES ('470
 UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` =32149;
 DELETE FROM `creature_ai_scripts` WHERE `id` = 3214901;
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES ('3214901', '32149', '8', '0', '100', '0', '66719', '-1', '0', '0', '25', '0', '0', '0', '41', '4000', '0', '0', '33', '35055', '6', '0', 'Fallen Hero\'s Spirit - Despawn and give quest Credit');
+
+-- fix quest 14101
+DELETE FROM `event_scripts` WHERE `id` = 21998;
+INSERT INTO `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `datalong3`, `datalong4`, `data_flags`, `dataint`, `dataint2`, `dataint3`, `dataint4`, `x`, `y`, `z`, `o`, `comments`) VALUES ('21998', '3', '10', '34980', '300000', '0', '0', '0', '0', '0', '0', '0', '10406.762', '944.801', '123.832', '4.29', '');
+UPDATE `gameobject_template` SET `data1` = '15' WHERE `entry` =300005;
+DELETE FROM `gameobject` WHERE `guid` = 960010;
+INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES ('960010', '300005', '571', '1', '1', '10407.045', '950.574', '123.325', '0', '0', '0', '0', '0', '300', '0', '0');

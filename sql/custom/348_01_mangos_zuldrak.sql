@@ -22,3 +22,12 @@ INSERT INTO creature_ai_scripts (id, creature_id, event_type, event_chance, even
 
 UPDATE creature_template SET AIName='EventAI' WHERE entry=30113;
 UPDATE creature_template SET armor=8503, faction_A=16, faction_H=16, mindmg=352, maxdmg=499, attackpower=408, dmg_multiplier=7.5, unit_class=2, minrangedmg=302, maxrangedmg=449, rangedattackpower=57 WHERE entry IN (30024, 30026);
+
+--fix quest 12861
+UPDATE `quest_template` SET `ReqSpellCast1` = '0' WHERE `entry` =12861;
+UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` IN (29686, 29700);
+
+DELETE FROM `creature_ai_scripts` WHERE `id` IN ('2968601', '2970001');
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES 
+('2968601', '29686', '0', '0', '100', '0', '55083', '-1', '0', '0', '33', '29686', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', ''),
+('2970001', '29700', '8', '0', '100', '0', '55083', '-1', '0', '0', '33', '29686', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', '');

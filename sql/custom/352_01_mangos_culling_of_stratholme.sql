@@ -57,8 +57,8 @@ UPDATE creature_template SET mechanic_immune_mask = '617299803' WHERE entry IN(2
 -- some additional fixxes for last bosses chest
 DELETE FROM gameobject_template WHERE entry IN (250200, 250201);
 INSERT INTO gameobject_template (entry, type, displayId, name, questItem1, data0, data1, data3, data11, data12, data13, data15) VALUES 
-	(250200, 3, 1387, 'Dark Runed Chest', 0, 1634, 24556, 1, 1, 1, 1, 1),
-	(250201, 3, 1387, 'Dark Runed Chest', 43697, 1634, 24589, 1, 1, 1, 1, 1);
+	(250200, 3, 1387, 'Dark Runed Chest', 0, 1634, 24556, 1, 1, 0, 1, 1),
+	(250201, 3, 1387, 'Dark Runed Chest', 43697, 1634, 24589, 1, 1, 0, 1, 1);
 
 DELETE FROM gameobject WHERE guid IN (67603, 82708);
 

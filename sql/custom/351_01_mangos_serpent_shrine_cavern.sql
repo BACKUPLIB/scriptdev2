@@ -13,7 +13,6 @@ UPDATE creature_template SET maxhealth=214130, minhealth=214130, dmg_multiplier=
 
 UPDATE creature SET curhealth=5944300 WHERE id=21212; -- Vashj
 UPDATE creature SET curhealth=4892300 WHERE id=21216; -- Hydross
-UPDATE creature SET curhealth=4322330 WHERE id=21217; -- Grauen
 UPDATE creature SET curhealth=6324499 WHERE id=21213; -- Morogrim
 UPDATE creature SET curhealth=2345390 WHERE id=21214; -- Karathrass
 UPDATE creature SET curhealth=1236849 WHERE id=21966; -- Karathrass - Add
@@ -26,3 +25,6 @@ UPDATE creature SET curhealth=214130 WHERE id=22056; -- Vashj - Add
 
 UPDATE creature_template SET dmg_multiplier=47 WHERE entry IN (21212, 21216, 21217, 21213, 21214, 21215);
 UPDATE creature_template SET dmg_multiplier=1.5 WHERE entry IN  (21966, 21965, 21964);
+
+-- Delete The Lurker Below
+DELETE FROM creature WHERE id=21217;

@@ -167,3 +167,54 @@ INSERT INTO `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, 
 UPDATE `gameobject_template` SET `data1` = '15' WHERE `entry` =300005;
 DELETE FROM `gameobject` WHERE `guid` = 960010;
 INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES ('960010', '300005', '571', '1', '1', '10407.045', '950.574', '123.325', '0', '0', '0', '0', '0', '300', '0', '0');
+
+-- fix quest 13212
+
+-- fix NPCs
+UPDATE `creature_template` SET `lootid` = 30696, `minlevel` = 79, `maxlevel` = 80, `minhealth` = 12600, `maxhealth` = 12600, `faction_A` = 974, `faction_H` = 974, `mindmg` = 560, `maxdmg` = 780, `AIName` = 'EventAI' WHERE `entry` = 30696;
+DELETE FROM `creature_loot_template` WHERE `entry` = 30696;
+INSERT INTO `creature_loot_template`(`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES
+(30696, 43526, -35, 0, 1, 1, 9, 13212, 0),
+(30696, 43527, -35, 0, 1, 1, 9, 13212, 0),
+(30696, 43528, -35, 0, 1, 1, 9, 13212, 0),
+(30696, 43529, -35, 0, 1, 1, 9, 13212, 0);
+UPDATE `creature` SET `spawntimesecs` = 300 WHERE `id` = 30696;
+-- Spawn mobs for quest
+
+DELETE FROM `creature` WHERE `guid` BETWEEN 240017 AND 240030;
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
+(982353, 30696, 571, 1, 1, 0, 0, 6439.36, 3118.73, 657.482, 0.325935, 25, 5, 0, 12600, 0, 0, 0),
+
+(240017, 30696, 571, 1, 1, 0, 0, 6474.94, 3094.87, 657.613, 3.91206, 25, 5, 0, 12600, 0, 0, 1),
+
+(240018, 30696, 571, 1, 1, 0, 0, 6437.91, 3079.93, 657.706, 0.790105, 25, 5, 0, 12600, 0, 0, 1),
+
+(240019, 30696, 571, 1, 1, 0, 0, 6468.86, 3161.92, 657.481, 3.58063, 25, 5, 0, 12600, 0, 0, 1),
+
+(240020, 30696, 571, 1, 1, 0, 0, 6431.69, 3160.01, 657.49, 2.44494, 25, 5, 0, 12600, 0, 0, 1),
+
+(240021, 30696, 571, 1, 1, 0, 0, 6467.93, 3239.73, 643.351, 0.948756, 25, 5, 0, 12600, 0, 0, 1),
+
+(240022, 30696, 571, 1, 1, 0, 0, 6435.55, 3235.87, 642.013, 2.93189, 25, 5, 0, 12600, 0, 0, 1),
+
+(240023, 30696, 571, 1, 1, 0, 0, 6468.91, 3299.68, 625.853, 1.45927, 25, 5, 0, 12600, 0, 0, 1),
+
+(240024, 30696, 571, 1, 1, 0, 0, 6488.55, 3412.61, 596.006, 1.25506, 25, 5, 0, 12600, 0, 0, 1),
+
+(240025, 30696, 571, 1, 1, 0, 0, 6520.31, 3428.6, 599.264, 0.206555, 25, 5, 0, 12600, 0, 0, 1),
+
+(240026, 30696, 571, 1, 1, 0, 0, 6633.18, 3461.18, 618.336, 0.588253, 25, 5, 0, 12600, 0, 0, 1),
+
+(240027, 30696, 571, 1, 1, 0, 0, 6704.06, 3493.2, 649.836, 5.56454, 25, 5, 0, 12600, 0, 0, 1),
+
+(240028, 30696, 571, 1, 1, 0, 0, 6757.77, 3472.94, 672.286, 2.70726, 25, 5, 0, 12600, 0, 0, 1),
+
+(240029, 30696, 571, 1, 1, 0, 0, 6787.99, 3494.42, 678.663, 4.83962, 25, 5, 0, 12600, 0, 0, 1),
+
+(240030, 30696, 571, 1, 1, 0, 0, 6849.31, 3470.87, 693.466, 2.09622, 25, 5, 0, 12600, 0, 0, 1);
+
+
+-- EventAI
+DELETE FROM `creature_ai_scripts` WHERE `id` = 3069601;
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
+(3069601, 30696, 0, 0, 100, 1, 10, 15, 20, 30, 11, 50335, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, ' ');

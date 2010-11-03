@@ -1,4 +1,4 @@
-/*  Keine Ahnung ob das so stimmt. Normalerweise haben Trainer alle die menu_id 0. Dann wird das automatisch ausgesucht.
+﻿/*  Keine Ahnung ob das so stimmt. Normalerweise haben Trainer alle die menu_id 0. Dann wird das automatisch ausgesucht.
     Eventuell haben die extra 'ne andere genommen, damit die nicht resetten können sollen etc. (ich wieß nicht wie's auf blizz ist).
  */
 DELETE FROM `gossip_menu_option` WHERE (`menu_id` BETWEEN 4469 AND 4471) AND (`id` = 14 OR `id` = 16);
@@ -38,3 +38,8 @@ INSERT INTO `gossip_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`,
 DELETE FROM `gossip_menu_option` WHERE `menu_id` = 4783 AND `id` = 1;
 INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`, `option_id`, `npc_option_npcflag`, `action_menu_id`, `action_poi_id`, `action_script_id`, `box_coded`, `box_money`, `box_text`, `cond_1`, `cond_1_val_1`, `cond_1_val_2`, `cond_2`, `cond_2_val_1`, `cond_2_val_2`, `cond_3`, `cond_3_val_1`, `cond_3_val_2`) VALUES
 (4783, 1, 0, 'GOSSIP_OPTION_QUESTGIVER', 2, 2, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+-- correct way for cooking teacher in stormwind (id 54875 willkürlich gewählt; jaja, ich hab pasdVn nachgemacht)
+DELETE FROM `points_of_interest` WHERE `entry` = 54875;
+INSERT INTO `points_of_interest`(`entry`, `x`, `y`, `icon`, `flags`, `data`, `icon_name`) VALUES(54875, -8610, 364.64, 7, 99, 0, 'Stephen Ryback');
+UPDATE `gossip_menu_option` SET `action_poi_id` = 54875 WHERE `menu_id` = 421 AND `id` = 2 AND `option_text` = 'Cooking';

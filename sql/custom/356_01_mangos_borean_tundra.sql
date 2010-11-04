@@ -207,3 +207,20 @@ UPDATE `quest_template` SET `ReqSpellCast1` = '45606' WHERE `entry` =11637;
 
 -- fix quest 11673 (mantis bug #0003113)
 UPDATE `creature_template` SET `ScriptName` = 'npc_bonker_togglevolt' WHERE `entry` =25589;
+
+--  fix Gossip Quest 11887 and 11795
+DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` = 25841; 
+UPDATE `creature_template` SET `gossip_menu_id` = '25841' WHERE `entry` = '25841';
+DELETE FROM `gossip_menu` WHERE `entry` = '25841';
+INSERT INTO `gossip_menu` (`entry`,`text_id`, `cond_1`, `cond_1_val_1` ) VALUES 
+('25841', '12489', '0', '0');
+DELETE FROM `gossip_menu_option` WHERE `menu_id` = '25841';
+INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`, `option_id`, `npc_option_npcflag`, `action_menu_id`, `action_script_id` ,`cond_1`, `cond_1_val_1`, `cond_1_val_2`, `cond_2`, `cond_2_val_1`, `cond_2_val_2`) VALUES 
+('25841', '0', '0', 'Search the body for the pilot\'s emergency toolkit.', '1', '1', '0', '46362', '9', '11887', '0', '16', '35276', '7'),
+('25841', '1', '0', 'Search for the pilot\'s insignia.', '1', '1', '0' , '46166', '9', '11795', '0', '16', '35126', '6');
+DELETE FROM `gossip_scripts` WHERE `id` IN ('46362', '46166');
+INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`)  VALUES 
+('46362', '0', '17', '35276', '1', 'Quest 11887 - add QuestGO'),
+('46362', '1', '18', '0', '0', 'Quest 11887 - despawn NPC'),
+('46166', '0', '17', '35126', '1', 'Quest 11795 - add QuestGO'),
+('46166', '1', '18', '0', '0', 'Quest 11795 - despawn NPC');

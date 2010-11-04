@@ -62,3 +62,29 @@ INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`com
 
 -- set item 44117 not lootable
 DELETE FROM `reference_loot_template` WHERE `item` = 44117; 
+
+-- items for quests 12533, 12536
+UPDATE `quest_template` SET `SrcItemId` = '38621', `SrcItemCount` = '1' WHERE `entry` = '12533';
+UPDATE `quest_template` SET `SrcItemId` = '38512', `SrcItemCount` = '1' WHERE `entry` = '12536';
+UPDATE `creature_template` SET `gossip_menu_id` = '28138' WHERE `entry` = '28138';
+DELETE FROM `npc_text` WHERE `ID` = '28138';
+INSERT INTO `npc_text` (`ID`, `text0_0`) VALUES 
+('28138', 'Stay a while and listen.');
+DELETE FROM `locales_npc_text` WHERE `entry` = '28138';
+INSERT INTO `locales_npc_text` (`entry`, `Text0_0_loc3`) VALUES 
+('28138', 'Bleib eine Weile und höre zu.');
+DELETE FROM `gossip_menu` WHERE `entry` = '28138';
+INSERT INTO `gossip_menu` (`entry`,`text_id`, `cond_1`, `cond_1_val_1` ) VALUES 
+('28138', '28138', '0', '0');
+DELETE FROM `gossip_menu_option` WHERE `menu_id` = '28138';
+INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`, `option_id`, `npc_option_npcflag`, `action_menu_id`, `action_script_id` ,`cond_1`, `cond_1_val_1`, `cond_1_val_2`, `cond_2`, `cond_2_val_1`, `cond_2_val_2`, `cond_3`, `cond_3_val_1`, `cond_3_val_2`) VALUES 
+('28138', '0', '0', 'GOSSIP_OPTION_QUESTGIVER', '2', '2', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'),
+-- todo update gossiptext (not blizzlike)
+('28138', '1', '0', 'I have lost Goregek\'s Shackles', '1', '1', '28138', '52542', '8', '12528', '0', '16', '38619', '1', '22', '12530', '0'),
+('28138', '2', '0', 'I have lost Dajik\'s Worn Chalk', '1', '1', '28138', '52544', '8', '12530', '0', '16', '38621', '1', '22', '12536', '0'),
+('28138', '3', '0', 'I have lost Zepik\'s Hunting Horn', '1', '1', '28138', '52545', '8', '12531', '0', '16', '38512', '1', '22', '12539', '0');
+DELETE FROM `gossip_scripts` WHERE `id` IN ( '52542', '52544','52545') ;
+INSERT INTO `gossip_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`)  VALUES 
+('52542', '0', '15', '52542', '0', 'add Item 38619 Goregek\'s Shackles'),
+('52544', '0', '15', '52544', '0', 'add Item 38621 Dajik\'s Worn Chalk'),
+('52545', '0', '15', '52545', '0', 'add Item 38512 Zepik\'s Hunting Horn');

@@ -23,7 +23,7 @@ INSERT INTO creature_ai_scripts (id, creature_id, event_type, event_chance, even
 UPDATE creature_template SET AIName='EventAI' WHERE entry=30113;
 UPDATE creature_template SET armor=8503, faction_A=16, faction_H=16, mindmg=352, maxdmg=499, attackpower=408, dmg_multiplier=7.5, unit_class=2, minrangedmg=302, maxrangedmg=449, rangedattackpower=57 WHERE entry IN (30024, 30026);
 
---fix quest 12861
+-- fix quest 12861
 UPDATE `quest_template` SET `ReqSpellCast1` = '0' WHERE `entry` =12861;
 UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` IN (29686, 29700);
 

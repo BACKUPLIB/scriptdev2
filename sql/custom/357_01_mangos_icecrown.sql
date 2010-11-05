@@ -142,6 +142,7 @@ INSERT INTO `gameobject_scripts` (`id`, `delay`, `command`, `datalong`, `datalon
 -- fix quest 14144 / spell 66390
 DELETE FROM `spell_script_target` WHERE `entry` = 66390;
 INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES ('66390', '1', '34852'); 
+UPDATE `creature` SET `spawntimesecs` = '180' WHERE `id` =34852;
 
 -- fix quest 13119
 -- mantis bug #0002906
@@ -159,7 +160,8 @@ DELETE FROM `item_required_target` WHERE `entry` = 47033;
 INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES ('47033', '1', '32149');
 UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` =32149;
 DELETE FROM `creature_ai_scripts` WHERE `id` = 3214901;
-INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES ('3214901', '32149', '8', '0', '100', '0', '66719', '-1', '0', '0', '25', '0', '0', '0', '41', '4000', '0', '0', '33', '35055', '6', '0', 'Fallen Hero\'s Spirit - Despawn and give quest Credit');
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES 
+('3214901', '32149', '8', '0', '100', '1', '66719', '-1', '5000', '5000', '25', '0', '0', '0', '41', '4000', '0', '0', '33', '35055', '6', '0', 'Fallen Hero's Spirit - Despawn and give quest Credit');
 
 -- fix quest 14101
 DELETE FROM `event_scripts` WHERE `id` = 21998;
@@ -218,3 +220,6 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 DELETE FROM `creature_ai_scripts` WHERE `id` = 3069601;
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
 (3069601, 30696, 0, 0, 100, 1, 10, 15, 20, 30, 11, 50335, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, ' ');
+
+-- increase dmg for two NPCs
+UPDATE `creature_template` SET `mindmg` = '500', `maxdmg` = '650' WHERE `entry` IN ('35012','34980');

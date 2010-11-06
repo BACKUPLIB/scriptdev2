@@ -1,4 +1,4 @@
--- sholazar basin fixes
+﻿-- sholazar basin fixes
 
 -- fix quest 12688
 UPDATE `creature_template` SET `ScriptName` = 'npc_engineer_helice' WHERE entry = 28787;
@@ -39,6 +39,7 @@ UPDATE `creature_template` SET `ScriptName` = 'mob_voiceofnozronn' WHERE `entry`
 -- not the best way, but EventAI of this mob is corrupted somehow, so disable this part
 -- TODO: fix EventAI instead of removing this
 UPDATE `creature_ai_scripts` SET `creature_id` = 0 WHERE `id` IN (2808301,2808306,2808309);
+UPDATE creature_template SET unit_flags=0 WHERE entry=28083;
 
 -- fix quest 12621 
 UPDATE `creature_template` SET `gossip_menu_id` = '27800' WHERE `entry` =27801;

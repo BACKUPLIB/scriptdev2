@@ -85,6 +85,9 @@ enum
     MAX_SOLDIER_COUNT                   = 71,
     MAX_ABOMINATION_COUNT               = 8,
     MAX_BANSHEE_COUNT                   = 8,
+
+	ACHIEVE_JUST_CANT_GET_ENOUGH_10		= 2184,
+	ACHIEVE_JUST_CANT_GET_ENOUGH_25		= 2185,
 };
 
 static float M_F_ANGLE = 0.2f;                              // to adjust for map rotation
@@ -133,6 +136,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     uint32 m_uiAbominationCount;
     uint32 m_uiSummonIntroTimer;
     uint32 m_uiIntroPackCount;
+	uint32 m_uiDeadAnominationCount;
 
     std::set<uint64> m_lIntroMobsSet;
     std::set<uint64> m_lAddsSet;
@@ -159,6 +163,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         m_uiBansheeCount        = 0;
         m_uiAbominationCount    = 0;
         m_uiPhase               = PHASE_INTRO;
+		m_uiDeadAnominationCount= 0;
 
         // it may be some spell should be used instead, to control the intro phase
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -178,6 +183,17 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
         DespawnAdds();
+
+		if (m_uiDeadAnominationCount >= 18)
+		{
+            Map* pMap = m_creature->GetMap();
+            if (pMap && pMap->IsDungeon())
+            {
+                Map::PlayerList const &players = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+					itr->getSource()->CompletedAchievement(m_bIsRegularMode ? ACHIEVE_JUST_CANT_GET_ENOUGH_10 : ACHIEVE_JUST_CANT_GET_ENOUGH_25);
+            }
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KELTHUZAD, DONE);
@@ -345,6 +361,9 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
     void SummonedCreatureJustDied(Creature* pSummoned)
     {
+		if (pSummoned->GetEntry() == NPC_UNSTOPPABLE_ABOM)
+			m_uiDeadAnominationCount++;			
+
         switch(pSummoned->GetEntry())
         {
             case NPC_GUARDIAN:

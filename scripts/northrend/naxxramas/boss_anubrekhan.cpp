@@ -175,10 +175,10 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (m_uiLocustSwarmTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LOCUSTSWARM :SPELL_LOCUSTSWARM_H);
-            m_uiLocustSwarmTimer = 50000;
-          /*//spawn crypt guards with swarm on 10man mode
+            m_uiLocustSwarmTimer = 60000;
+          //spawn crypt guards with swarm on 10man mode
             if(m_bIsRegularMode)
-                m_uiCryptGuardTimer = 2000;*/
+                m_uiCryptGuardTimer = 2000;
         }
         else
             m_uiLocustSwarmTimer -= uiDiff;
@@ -193,7 +193,6 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
                                                        TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
 
                 //DoCastSpellIfCan(m_creature, SPELL_SUMMONGUARD);
-                m_uiCryptGuardTimer = 30000;
             }
             else
                 m_uiCryptGuardTimer -= uiDiff;

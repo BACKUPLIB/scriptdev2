@@ -1,4 +1,4 @@
-
+﻿
 -- add new templates
 DELETE FROM gameobject_template WHERE entry BETWEEN 300200 AND 300205;
 INSERT INTO `gameobject_template` (`entry`,`type`,`displayId`,`name`,`size`,`data1`) VALUES 
@@ -269,3 +269,8 @@ INSERT IGNORE INTO `gameobject_questrelation` (`id`,`quest`) VALUES
 -- remove some double buckets
 DELETE FROM `gameobject` WHERE `id` IN (SELECT `entry` FROM `gameobject_template` WHERE `name` LIKE 'candy bucket') AND `id` NOT IN (SELECT `id` FROM `gameobject_questrelation`);
 DELETE FROM `game_event_gameobject` WHERE `event` ='12' AND `guid` NOT IN (SELECT `guid` FROM `gameobject`);
+
+INSERT INTO `game_event_gameobject` (`guid`, `event`) VALUES
+('99755', '12'),
+('99756', '12'),
+('99757', '12');

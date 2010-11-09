@@ -274,6 +274,7 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
     uint32 m_uiHowlingScreech_Timer;
     uint32 m_uiStrike_Timer;
     bool MovementStarted;
+	bool SetFlags;
 
     void Reset()
     {
@@ -282,9 +283,9 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
         m_uiStrike_Timer = urand(10000, 11000);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
-        //m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         MovementStarted = false;
+		SetFlags = true;
     }
 
     void Aggro(Unit* pWho)
@@ -321,11 +322,7 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
         m_creature->AddSplineFlag(SPLINEFLAG_WALKMODE);
         MovementStarted = true;
         m_creature->SetInCombatWithZone();
-		m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
-        //m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-    }
+	}
 
     void MovementInform(uint32 type, uint32 id)
     {
@@ -345,7 +342,6 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
         {
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
-            //m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             StartMovement(0);
         }
@@ -353,6 +349,14 @@ struct MANGOS_DLL_DECL mob_erekem_guardAI : public ScriptedAI
         //Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+		if (SetFlags)
+		{
+			m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+			SetFlags = false;
+		}
 
         if (m_uiGushingWound_Timer < uiDiff)
         {

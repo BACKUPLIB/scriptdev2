@@ -1,4 +1,4 @@
-﻿
+
 -- add new templates
 DELETE FROM gameobject_template WHERE entry BETWEEN 300200 AND 300205;
 INSERT INTO `gameobject_template` (`entry`,`type`,`displayId`,`name`,`size`,`data1`) VALUES 

@@ -1,4 +1,4 @@
-﻿/*  Keine Ahnung ob das so stimmt. Normalerweise haben Trainer alle die menu_id 0. Dann wird das automatisch ausgesucht.
+/*  Keine Ahnung ob das so stimmt. Normalerweise haben Trainer alle die menu_id 0. Dann wird das automatisch ausgesucht.
     Eventuell haben die extra 'ne andere genommen, damit die nicht resetten können sollen etc. (ich wieß nicht wie's auf blizz ist).
  */
 DELETE FROM `gossip_menu_option` WHERE (`menu_id` BETWEEN 4469 AND 4471) AND (`id` = 14 OR `id` = 16);

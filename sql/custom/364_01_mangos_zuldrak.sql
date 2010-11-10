@@ -31,3 +31,9 @@ DELETE FROM `creature_ai_scripts` WHERE `id` IN ('2968601', '2970001');
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES 
 ('2968601', '29686', '0', '0', '100', '0', '55083', '-1', '0', '0', '33', '29686', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', ''),
 ('2970001', '29700', '8', '0', '100', '0', '55083', '-1', '0', '0', '33', '29686', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', '');
+
+-- fix quest 13111
+-- ID ist 293071 because 29307 is already allocate
+UPDATE `creature_template` SET `lootid` = 293071 WHERE `entry` = 29307;
+DELETE FROM `creature_loot_template` WHERE `entry` = 293071 AND `item` = 43158;
+INSERT INTO `creature_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES (293071, 43158, -100, 0, 1, 1, 9, 13111, 0);

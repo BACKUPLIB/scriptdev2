@@ -248,7 +248,6 @@ struct MANGOS_DLL_DECL npc_heigan_eruptionAI : public ScriptedAI
     {
         CellPair pair(MaNGOS::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
         Cell cell(pair);
-        cell.data.Part.reserved = ALL_DISTRICT;
         cell.SetNoCreate();
  
         std::list<GameObject*> gameobjectList;
@@ -257,7 +256,7 @@ struct MANGOS_DLL_DECL npc_heigan_eruptionAI : public ScriptedAI
         MaNGOS::GameObjectListSearcher<AllGameObjectsWithEntryInRangeCheck> searcher(gameobjectList, check);
         TypeContainerVisitor<MaNGOS::GameObjectListSearcher<AllGameObjectsWithEntryInRangeCheck>, GridTypeMapContainer> visitor(searcher);
  
-        cell.Visit(pair, visitor, *(m_creature->GetMap()));
+        cell.Visit(pair, visitor, *(m_creature->GetMap()), *m_creature, 100);
  
         return gameobjectList;
     }

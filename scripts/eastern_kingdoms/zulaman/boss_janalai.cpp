@@ -234,7 +234,6 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
         {
             CellPair pair(MaNGOS::ComputeCellPair(x, y));
             Cell cell(pair);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             AllCreaturesOfEntryInRangeCheck check(m_creature, MOB_EGG, 100);
@@ -243,7 +242,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
             TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
            // CellLock<GridReadGuard> cell_lock(cell, pair);
-            cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
+            cell.Visit(pair, cSearcher, *(m_creature->GetMap()),*m_creature,100);
         }
 
         //error_log("Eggs %d at middle", templist.size());
@@ -269,7 +268,6 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
         {
             CellPair pair(MaNGOS::ComputeCellPair(x, y));
             Cell cell(pair);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             AllCreaturesOfEntryInRangeCheck check(m_creature, MOB_FIRE_BOMB, 100);
@@ -278,7 +276,7 @@ struct MANGOS_DLL_DECL boss_janalaiAI : public ScriptedAI
             TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             //CellLock<GridReadGuard> cell_lock(cell, pair);
-            cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
+            cell.Visit(pair, cSearcher, *(m_creature->GetMap()),*m_creature,100);
         }
         for(std::list<Creature*>::iterator i = templist.begin(); i != templist.end(); ++i)
         {
@@ -514,7 +512,6 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
         {
             CellPair pair(MaNGOS::ComputeCellPair(x, y));
             Cell cell(pair);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             AllCreaturesOfEntryInRangeCheck check(m_creature, 23817, 50);
@@ -523,7 +520,7 @@ struct MANGOS_DLL_DECL mob_janalai_hatcherAI : public ScriptedAI
             TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             //CellLock<GridReadGuard> cell_lock(cell, pair);
-            cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
+            cell.Visit(pair, cSearcher, *(m_creature->GetMap()),*m_creature,100);
         }
 
         //error_log("Eggs %d at %d", templist.size(), side);

@@ -158,7 +158,6 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
         {
             CellPair pair(MaNGOS::ComputeCellPair(x, y));
             Cell cell(pair);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             AllCreaturesOfEntryInRangeCheck check(m_creature, entry, 100);
@@ -167,7 +166,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
             TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
             // cellVisit<GridReadGuard> cell.Visit(cell, pair);
-            cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
+            cell.Visit(pair, cSearcher, *(m_creature->GetMap()),*m_creature,100);
         }
 
         for(std::list<Creature*>::iterator i = templist.begin(); i != templist.end(); ++i)
@@ -228,7 +227,6 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
 
             CellPair p(MaNGOS::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
             Cell cell(p);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             std::list<Unit *> tempUnitMap;
@@ -241,8 +239,8 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
                 TypeContainerVisitor<MaNGOS::UnitListSearcher<MaNGOS::AnyAoETargetUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
                 //CellLock<GridReadGuard> cell_lock(cell, p);
-                cell.Visit(p, world_unit_searcher, *(m_creature->GetMap()));
-                cell.Visit(p, grid_unit_searcher, *(m_creature->GetMap()));
+                cell.Visit(p, world_unit_searcher, *(m_creature->GetMap()),*m_creature,100);
+                cell.Visit(p, grid_unit_searcher, *(m_creature->GetMap()),*m_creature,100);
             }
 
             for(std::list<Unit*>::iterator i = tempUnitMap.begin(); i != tempUnitMap.end(); ++i)

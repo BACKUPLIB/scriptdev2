@@ -338,7 +338,6 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
         {
             CellPair pair(MaNGOS::ComputeCellPair(x, y));
             Cell cell(pair);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             AllCreaturesOfEntryInRangeCheck check(m_creature, entry, 100);
@@ -347,7 +346,7 @@ struct MANGOS_DLL_DECL boss_zuljinAI : public ScriptedAI
             TypeContainerVisitor<MaNGOS::CreatureListSearcher<AllCreaturesOfEntryInRangeCheck>, GridTypeMapContainer> cSearcher(searcher);
 
            //CellLock<GridReadGuard> cell_lock(cell, pair);
-            cell.Visit(pair, cSearcher, *(m_creature->GetMap()));
+            cell.Visit(pair, cSearcher, *(m_creature->GetMap()),*m_creature,100);
         }
 
         for(std::list<Creature*>::iterator i = templist.begin(); i != templist.end(); ++i)

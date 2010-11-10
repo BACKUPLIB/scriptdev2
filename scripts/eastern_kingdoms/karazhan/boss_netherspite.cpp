@@ -427,7 +427,6 @@ struct MANGOS_DLL_DECL boss_netherspiteAI : public ScriptedAI
         {
             CellPair p(MaNGOS::ComputeCellPair(portal->GetPositionX(), portal->GetPositionY()));
             Cell cell(p);
-            cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             NearestUnitForBeam u_check(portal, m_creature, radius, beam);

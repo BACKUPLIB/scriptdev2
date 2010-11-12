@@ -191,7 +191,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
                                                        m_creature->GetPositionY()+rand()%5,
                                                        m_creature->GetPositionZ(),0,
                                                        TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
-
+                m_uiCryptGuardTimer = 0;
                 //DoCastSpellIfCan(m_creature, SPELL_SUMMONGUARD);
             }
             else

@@ -183,7 +183,7 @@ INSERT INTO `creature_loot_template`(`entry`, `item`, `ChanceOrQuestChance`, `gr
 UPDATE `creature` SET `spawntimesecs` = 300 WHERE `id` = 30696;
 -- Spawn mobs for quest
 DELETE FROM `creature` WHERE `guid` BETWEEN 240017 AND 240030;
-DELETE FROM `cretaure` WHERE `guid` = 982353;
+DELETE FROM `creature` WHERE `guid` = 982353;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 (982353, 30696, 571, 1, 1, 0, 0, 6439.36, 3118.73, 657.482, 0.325935, 25, 5, 0, 12600, 0, 0, 0),
 (240017, 30696, 571, 1, 1, 0, 0, 6474.94, 3094.87, 657.613, 3.91206, 25, 5, 0, 12600, 0, 0, 1),

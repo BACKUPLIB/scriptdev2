@@ -200,7 +200,7 @@ void JustDied(Unit* killer)
 				pSwarm->SetInCombatWith(pTarget);
 				i++;
 			}while (m_bIsRegularMode ? i <= 5 : i <= 12);
-			SwarmTimer = urand(3000, 5000);
+			SwarmTimer = urand(15000, 20000);
         }else SwarmTimer -= uiDiff;
 
         DoMeleeAttackIfReady();

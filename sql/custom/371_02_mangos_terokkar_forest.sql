@@ -11,3 +11,7 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_isla_starmane' WHERE `entry` 
 
 # add escort script to NPC skywing for quest 10898
 UPDATE `creature_template` SET `ScriptName` = "npc_skywing" WHERE `entry` =22424;
+
+-- fix quest 10913
+UPDATE `spell_script_target` SET `type` = '1' WHERE `entry` =39189;
+

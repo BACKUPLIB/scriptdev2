@@ -182,6 +182,9 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
         startAchievement = false;
         getsAchievement = true;
 
+        // as long as insanity is not working
+        m_creature->SetHealth(400000);
+
 		if (m_pInstance)
             m_pInstance->SetData(TYPE_VOLAZJ, NOT_STARTED);
     } 
@@ -232,8 +235,9 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
             Map::PlayerList const &players = pMap->GetPlayers();
             for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
             {
-                if(!m_bIsRegularMode && getsAchievement)
-                    itr->getSource()->CompletedAchievement(ACHIEVEMENT_QUICK_DEMISE);
+                // as long as insanity is not working
+                //if(!m_bIsRegularMode && getsAchievement)
+                    //itr->getSource()->CompletedAchievement(ACHIEVEMENT_QUICK_DEMISE);
                 DoScriptText(WHISPER_DEATH,m_creature,itr->getSource());
             }
         }
@@ -660,19 +664,25 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
             if (mindFlayTimer < uiDiff) 
             { 
                 DoCastSpellIfCan(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), m_bIsRegularMode ? SPELL_MIND_FLAY : SPELL_MIND_FLAY_H); 
-                mindFlayTimer = urand(10000, 12000); 
+                // as long as insanity is not working
+                //mindFlayTimer = urand(10000, 12000); 
+                mindFlayTimer = urand(8000, 10000); 
             }else mindFlayTimer -= uiDiff; 
  
             if (shadowBoltSalveTimer < uiDiff) 
             { 
                 DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_SHADOW_BOLT_SALVE : SPELL_SHADOW_BOLT_SALVE_H); 
-                shadowBoltSalveTimer = urand(5000, 10000); 
+                // as long as insanity is not working
+                //shadowBoltSalveTimer = urand(5000, 10000); 
+                shadowBoltSalveTimer = urand(3000, 8000); 
             }else shadowBoltSalveTimer -= uiDiff; 
  
             if (shiverTimer < uiDiff) 
             { 
                 DoCastSpellIfCan(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0), m_bIsRegularMode ? SPELL_SHIVER : SPELL_SHIVER_H); 
-                shiverTimer = urand(13000, 14000); 
+                // as long as insanity is not working
+                //shiverTimer = urand(13000, 14000); 
+                shiverTimer = urand(10000, 11000); 
             }else shiverTimer -= uiDiff;
 			
 			DoMeleeAttackIfReady();     

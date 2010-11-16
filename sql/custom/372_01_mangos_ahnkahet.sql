@@ -1,5 +1,8 @@
 -- Ahn'kahet fixes
 
+-- open instance
+UPDATE `areatrigger_teleport` SET `required_level` = 68 WHERE `target_map` = 619;
+
 -- eventAI for trashmobs
 UPDATE `creature_template` SET `AIName` = "EventAI" WHERE `entry` IN (30176,30178);
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (30176,30178);

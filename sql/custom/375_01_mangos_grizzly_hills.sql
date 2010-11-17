@@ -79,3 +79,9 @@ INSERT INTO `creature_ai_texts` (`entry`, `content_default`, `content_loc1`, `co
 ('-2003', 'If the stone giants interfere with our work at Ulduar, I will hold you and your thane responsible. Mortal must not be allowed to come to the aid of the giants.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL),
 ('-2004', 'Return to your duties, overseer. Be certain to impress upon your workers the urgency of their tasks.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '0', '0', '0', NULL);
 
+-- fix quest 12296
+UPDATE `creature_template` SET `AIName` ='EventAI' WHERE `entry` =27482;
+
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` =27482;
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
+('2748201', '27482', '8', '0', '100', '1', '48845', '-1', '20000', '30000', '33', '27466', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Quest Credit for Quest 12296');

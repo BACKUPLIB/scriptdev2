@@ -37,6 +37,8 @@ UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16 WHERE `entry` 
 UPDATE `creature_template` SET `maxlevel` = 75 WHERE `entry` = 26627;
 # delete wrong drakkari bat rider spawns
 DELETE FROM `creature` WHERE `guid` IN (127447,127445,127446);
+-- set NPC 31399 CREATURE_FLAG_EXTRA_CIVILIAN to ignore aggro
+UPDATE `creature_template` SET `flags_extra` = `flags_extra` | 2 WHERE `entry` =31339; 
 
 -- trashmob EventAI
 # add/update eventAI für drak'tharon keep mobs

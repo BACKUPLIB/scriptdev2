@@ -1392,10 +1392,9 @@ struct MANGOS_DLL_DECL npc_salanar_the_horseman_shadow_realmAI : public Scripted
             float angle = pCreature->GetAngle(summoner);
             float radius = pCreature->GetDistance2d(summoner);
 
-            Map const *map = m_creature->GetMap();
             float x = pCreature->GetPositionX() + cos(angle)*0.7*radius;
             float y = pCreature->GetPositionY() + sin(angle)*0.7*radius;
-            float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y, pCreature->GetPositionZ()));
+            float z = std::max( m_creature->GetTerrain()->GetHeight(x, y, MAX_HEIGHT), m_creature->GetTerrain()->GetWaterLevel(x, y, pCreature->GetPositionZ()));
             pCreature->GetMotionMaster()->MovePoint(1, x, y,z);
         }
     }

@@ -1,4 +1,4 @@
-# update wotlk instance drak'tharon keep bosses
+﻿# update wotlk instance drak'tharon keep bosses
 # boss trollgore normal
 UPDATE `creature_template` SET `AIName` = "", `rank` = 3, `dmg_multiplier` = 15 WHERE `entry` = 26630;
 # boss trollgore heroic
@@ -38,7 +38,7 @@ UPDATE `creature_template` SET `maxlevel` = 75 WHERE `entry` = 26627;
 # delete wrong drakkari bat rider spawns
 DELETE FROM `creature` WHERE `guid` IN (127447,127445,127446);
 -- set NPC 31399 CREATURE_FLAG_EXTRA_CIVILIAN to ignore aggro
-UPDATE `creature_template` SET `flags_extra` = `flags_extra` | 2 WHERE `entry` =31339; 
+UPDATE `creature_template` SET `flags_extra` = `flags_extra` | 2 WHERE `entry` =31399; 
 
 -- trashmob EventAI
 # add/update eventAI für drak'tharon keep mobs

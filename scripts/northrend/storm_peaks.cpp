@@ -314,10 +314,10 @@ struct MANGOS_DLL_DECL npc_goblin_prisonerAI : public ScriptedAI
 
                     float orientation = m_creature->GetOrientation();
 
-                    Map const *map = m_creature->GetMap();
+                    //Map const *map = m_creature->GetMap();
                     float x = m_creature->GetPositionX() + cos(orientation)*3;
                     float y = m_creature->GetPositionY() + sin(orientation)*3;
-                    float z = map->GetHeight(x, y, MAX_HEIGHT);
+                    float z = m_creature->GetTerrain()->GetHeight(x, y, MAX_HEIGHT);
                     m_creature->GetMotionMaster()->MovePoint(1, x, y, z);
 
                     m_phase = 0x00;
@@ -327,10 +327,10 @@ struct MANGOS_DLL_DECL npc_goblin_prisonerAI : public ScriptedAI
                 {
                     float orientation = m_creature->GetOrientation() + (urand(0,1) ? M_PI_F /4 : -M_PI_F /4);
 
-                    Map const *map = m_creature->GetMap();
+                    //Map const *map = m_creature->GetMap();
                     float x = m_creature->GetPositionX() + cos(orientation)*10;
                     float y = m_creature->GetPositionY() + sin(orientation)*10;
-                    float z = map->GetHeight(x, y, MAX_HEIGHT);
+                    float z = m_creature->GetTerrain()->GetHeight(x, y, MAX_HEIGHT);
                     m_creature->GetMotionMaster()->MovePoint(2, x, y, z);
                     m_phase = 0x20;
                     m_timer = 1000;

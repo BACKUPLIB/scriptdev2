@@ -754,6 +754,54 @@ CreatureAI* GetAI_npc_bessy(Creature* pCreature)
      return new npc_bessyAI(pCreature);
 }
 
+/*######
+## npc_mark_v
+######*/
+
+enum
+{
+	QUEST_MARK_V_IS_ALIVE = 10191
+};
+
+struct MANGOS_DLL_DECL npc_mark_vAI : public npc_escortAI
+{
+	npc_mark_vAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+	void Reset() 
+	{
+		m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+		m_creature->setFaction(35);
+	}
+	void WaypointReached(uint32 uiPointId)
+	{
+		switch (uiPointId)
+		{
+		    case 34:
+				if (Player* pPlayer = GetPlayerForEscort())
+					pPlayer->GroupEventHappens(QUEST_MARK_V_IS_ALIVE, m_creature);
+				break;
+		}
+	}
+};
+
+bool QuestAccept_npc_mark_v(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+	if (pQuest->GetQuestId() == QUEST_MARK_V_IS_ALIVE)
+	{
+		pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+		pCreature->setFaction(FACTION_ESCORT_N_NEUTRAL_PASSIVE);
+
+		if (npc_mark_vAI* pEscortAI = dynamic_cast<npc_mark_vAI*>(pCreature->AI()))
+			pEscortAI->Start (false, pPlayer->GetGUID(), pQuest);
+	}
+	return true;
+}
+
+CreatureAI* GetAI_npc_mark_v(Creature* pCreature)
+{
+	return new npc_mark_vAI(pCreature);
+}
+
 void AddSC_netherstorm()
 {
     Script* pNewScript;
@@ -795,4 +843,10 @@ void AddSC_netherstorm()
     pNewScript->GetAI = &GetAI_npc_bessy;
     pNewScript->pQuestAccept = &QuestAccept_npc_bessy;
     pNewScript->RegisterSelf();
+
+	pNewScript = new Script;
+	pNewScript->Name = "npc_mark_v";
+	pNewScript->GetAI = &GetAI_npc_mark_v;
+	pNewScript->pQuestAccept = &QuestAccept_npc_mark_v;
+	pNewScript->RegisterSelf();
 }

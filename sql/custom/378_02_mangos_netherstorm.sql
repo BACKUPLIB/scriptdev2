@@ -1,4 +1,4 @@
-# fix mantis bug 2162
+﻿# fix mantis bug 2162
 # fix quest 10182
 DELETE FROM `event_scripts` WHERE `id` = 12608;
 INSERT INTO `event_scripts` (`id`,`command`,`datalong`,`datalong2`,`comments`) VALUES (12608,8,19549,1,"");
@@ -26,3 +26,7 @@ DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN('20777', '20610');
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
 ('2077701', '20777', '8', '0', '100', '1', '35771', '-1', '25000', '30000', '33', '20982', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Quest Credit for Quest 10427'),
 ('2061001', '20610', '8', '0', '100', '1', '35771', '-1', '25000', '30000', '33', '20982', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Quest Credit for Quest 10427');
+
+-- fix quest 10191
+UPDATE `creature_template` SET `ScriptName` = 'npc_mark_v', `unit_flags` = '2' WHERE `entry` =19589;
+

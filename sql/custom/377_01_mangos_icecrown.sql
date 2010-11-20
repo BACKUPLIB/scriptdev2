@@ -211,7 +211,7 @@ UPDATE `creature_template` SET `mindmg` = '500', `maxdmg` = '650' WHERE `entry` 
 -- fix quest 12813
 UPDATE `creature_template` SET `AIName` ='EventAI' WHERE `entry` IN('29330', '29329', '29338', '29333');
 
-DELETE FROM `creature_ai_Scripts` WHERE `creature_id` IN('29330', '29329', '29338', '29333');
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN('29330', '29329', '29338', '29333');
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
 ('2933001', '29330', '8', '0', '100', '1', '52741', '-1', '45000', '45000', '33', '29398', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Quest Credit for Quest 12813'),
 ('2932901', '29329', '8', '0', '100', '1', '52741', '-1', '45000', '45000', '33', '29398', '6', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Quest Credit for Quest 12813'),

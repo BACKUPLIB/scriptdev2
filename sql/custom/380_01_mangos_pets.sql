@@ -159,3 +159,6 @@ UPDATE `creature_template` SET `minhealth` = '64', `maxhealth` = '64' WHERE `ent
 -- fix item 54343
 -- not perfect, but it works! / 40281
 UPDATE `creature_template` SET `modelid_1` = '21733', `minhealth` = '4270', `maxhealth` = '4270', `minmana` = '3990', `maxmana` = '3990' WHERE `entry` =40281;
+
+-- fix NPC 36871
+UPDATE `creature_template` SET `minhealth` = '1', `maxhealth` = '1' WHERE `entry` =36871;

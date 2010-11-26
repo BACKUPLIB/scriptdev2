@@ -1796,8 +1796,14 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
      m_creature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
      m_creature->SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
 
-     m_uiFrostboltTimer = urand(5000,12000);
-     m_uiFireblastTimer = urand(4000,9000);
+     m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID,   owner->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID));
+     m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID+1, owner->GetUInt32Value(PLAYER_VISIBLE_ITEM_17_ENTRYID));
+     m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID+2, owner->GetUInt32Value(PLAYER_VISIBLE_ITEM_18_ENTRYID));
+     m_creature->SetSpeedRate(MOVE_RUN, owner->GetSpeedRate(MOVE_RUN), true);
+
+
+     m_uiFrostboltTimer = urand(0,3000);
+     m_uiFireblastTimer = urand(0,3000);
      inCombat = false;
      movement = false;
 
@@ -1844,6 +1850,7 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
         m_creature->CombatStop(true);
         if (owner && !m_creature->hasUnitState(UNIT_STAT_FOLLOW))
         {
+            angle = m_creature->GetAngle(owner);
             m_creature->GetMotionMaster()->Clear(false);
             m_creature->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST + 3.0f,angle);
         }
@@ -1880,21 +1887,21 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
             if (m_uiFrostboltTimer <= diff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_FROSTBOLT);
-                m_uiFrostboltTimer = urand(4000,8000);
+                m_uiFrostboltTimer = urand(1000,6000);
             } else m_uiFrostboltTimer -= diff;
 
             if (m_uiFireblastTimer <= diff)
             {
                 DoCastSpellIfCan(m_creature->getVictim(),SPELL_FIREBLAST);
-                m_uiFireblastTimer = urand(4000,8000);
+                m_uiFireblastTimer = urand(1000,6000);
             } else m_uiFireblastTimer -= diff;
 
         } else if (!movement) {
-                                  DoStartMovement(m_creature->getVictim(), 30.0f);
+                                  DoStartMovement(m_creature->getVictim(), 20.0f);
                                   movement = true;
                                }
 
-        DoMeleeAttackIfReady();
+        //DoMeleeAttackIfReady();
     }
 };
 

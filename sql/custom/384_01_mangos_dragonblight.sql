@@ -1,4 +1,4 @@
--- fixes for dragonblight
+﻿-- fixes for dragonblight
 
 -- fix quest 12173
 UPDATE `creature_template` SET `unit_flags` = 512 WHERE `entry` = 27135;
@@ -45,3 +45,10 @@ INSERT INTO `gossip_menu_option` (`menu_id`, `id`, `option_icon`, `option_text`,
 DELETE FROM `gossip_scripts` WHERE `id` = 65535;
 INSERT INTO `gossip_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `comments`) VALUES
 ('65535', '0', '15', '47740', '2', '');
+
+-- fix quest 12126,12125,12127
+DELETE FROM `spell_scripts` WHERE `id` IN (47703,50252,47724);
+INSERT INTO `spell_scripts` (`id`,`delay`,`command`,`datalong`,`datalong2`,`comments`) VALUES 
+(47703,0,15,50254,1,"Quest 12126 - Create Quest Item"),
+(50252,0,15,50250,1,"Quest 12125 - Create Quest Item"),
+(47724,0,15,50239,1,"Quest 12127 - Create Quest Item");

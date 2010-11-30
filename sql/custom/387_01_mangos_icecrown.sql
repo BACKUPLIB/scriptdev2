@@ -237,3 +237,8 @@ INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inv
 -- fix quest 13139
 DELETE FROM `creature` WHERE `guid` =200039;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES ('200039', '30677', '571', '1', '1', '0', '0', '6258.371094', '49.697300', '388.298370', '1.101786', '120', '5', '0', '1', '0', '0', '0');
+
+-- fix NPC 30596
+DELETE FROM `creature` WHERE `guid` =260001;
+INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`) VALUES 
+('260001', '30596', '571', '6363.70', '231.60', '396.05', '5.12');

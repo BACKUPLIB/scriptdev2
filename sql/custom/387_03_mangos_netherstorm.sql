@@ -1,4 +1,4 @@
-# fix mantis bug 2162
+﻿# fix mantis bug 2162
 # fix quest 10182
 DELETE FROM `event_scripts` WHERE `id` = 12608;
 INSERT INTO `event_scripts` (`id`,`command`,`datalong`,`datalong2`,`comments`) VALUES (12608,8,19549,1,"");
@@ -30,3 +30,5 @@ INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inv
 -- fix quest 10191
 UPDATE `creature_template` SET `ScriptName` = 'npc_mark_v', `unit_flags` = '2' WHERE `entry` =19589;
 
+-- fix quest 10855
+UPDATE `quest_template` SET `SpecialFlags` = '0' WHERE `entry` =10855;

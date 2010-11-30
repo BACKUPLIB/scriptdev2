@@ -2150,6 +2150,52 @@ CreatureAI* GetAI_npc_amphitheater_of_anguish(Creature* pCreature)
     return new npc_amphitheater_of_anguishAI(pCreature);
 }
 
+/*######
+## npc_winter_reveler
+######*/
+
+enum
+{
+   SPELL_CREATE_SNOWFLAKES  = 45036,
+   SPELL_CREATE_MISTLETOE   = 26206,
+   SPELL_CREATE_FRESH_HOLLY = 26207,
+
+   SPELL_MISTLETOE          = 26218
+
+};
+
+struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
+{
+    npc_winter_revelerAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+      Reset();
+	}
+
+   void Reset() {}
+
+   void ReceiveEmote(Player* pPlayer, uint32 uiTextEmote)
+   {
+      if(uiTextEmote == TEXTEMOTE_KISS && !pPlayer->HasAura(SPELL_MISTLETOE))
+      {
+         switch(urand(0, 2))
+            {
+                case 0: DoCastSpellIfCan(pPlayer, SPELL_CREATE_SNOWFLAKES);
+                  break;
+                case 1: DoCastSpellIfCan(pPlayer, SPELL_CREATE_MISTLETOE);
+                  break;
+                case 2: DoCastSpellIfCan(pPlayer, SPELL_CREATE_FRESH_HOLLY);
+                  break;
+            }
+         pPlayer->CastSpell(pPlayer, SPELL_MISTLETOE, true);
+      }
+   }
+};
+
+CreatureAI* GetAI_npc_winter_reveler(Creature* pCreature)
+{
+    return new npc_winter_revelerAI(pCreature);
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2248,5 +2294,10 @@ void AddSC_npcs_special()
 	newscript = new Script;
     newscript->Name = "npc_amphitheater_of_anguish";
     newscript->GetAI = &GetAI_npc_amphitheater_of_anguish;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_winter_reveler";
+    newscript->GetAI = &GetAI_npc_winter_reveler;
     newscript->RegisterSelf();
 }

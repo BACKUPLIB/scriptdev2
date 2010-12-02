@@ -2196,6 +2196,48 @@ CreatureAI* GetAI_npc_winter_reveler(Creature* pCreature)
     return new npc_winter_revelerAI(pCreature);
 }
 
+/*######
+## npc_catrina
+######*/
+
+enum
+{
+   SPELL_HONOR_THE_DEAD     = 65386,
+
+   ACHIEV_DEAD_MENS_PARTY   = 3456
+
+};
+
+struct MANGOS_DLL_DECL npc_catrinaAI : public ScriptedAI
+{
+    npc_catrinaAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+      Reset();
+   }
+
+   void Reset()
+   {
+
+   }
+
+   void ReceiveEmote(Player* pPlayer, uint32 uiTextEmote)
+   {
+      if(uiTextEmote == TEXTEMOTE_DANCE && !pPlayer->HasAura(SPELL_HONOR_THE_DEAD))
+      {
+         if(!pPlayer->GetAchievementMgr().HasAchievement(3456))
+         {
+            pPlayer->CompletedAchievement(ACHIEV_DEAD_MENS_PARTY);
+         }
+         pPlayer->CastSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
+      }
+   }
+};
+
+CreatureAI* GetAI_npc_catrina(Creature* pCreature)
+{
+    return new npc_catrinaAI(pCreature);
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2300,4 +2342,9 @@ void AddSC_npcs_special()
     newscript->Name = "npc_winter_reveler";
     newscript->GetAI = &GetAI_npc_winter_reveler;
     newscript->RegisterSelf();
+
+	newscript = new Script;
+	newscript->Name = "npc_catrina";
+	newscript->GetAI = &GetAI_npc_catrina;
+	newscript->RegisterSelf();
 }

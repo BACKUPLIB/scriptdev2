@@ -1,4 +1,4 @@
-﻿# fix mantis bug 2162
+# fix mantis bug 2162
 # fix quest 10182
 DELETE FROM `event_scripts` WHERE `id` = 12608;
 INSERT INTO `event_scripts` (`id`,`command`,`datalong`,`datalong2`,`comments`) VALUES (12608,8,19549,1,"");

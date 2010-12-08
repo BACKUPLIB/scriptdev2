@@ -57,3 +57,10 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 DELETE FROM `creature` WHERE `id` = 31216;
 INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`) VALUES
 ('260000', '31216', '571', '8243.66', '1089.81', '816.15', '3.17');
+
+-- fix special winter veil loot for some bosses
+DELETE FROM `creature_loot_template` WHERE `entry` IN (26731, 29310, 27655) AND `item` IN (21524, 21525);
+INSERT INTO `creature_loot_template` (`entry`, `item`, `lootcondition`, `condition_value1`) VALUES
+('26731', '21524', '12', '2'),
+('29310', '21524', '12', '2'),
+('27655', '21525', '12', '2');

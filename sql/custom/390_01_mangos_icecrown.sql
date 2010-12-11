@@ -242,3 +242,6 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`
 DELETE FROM `creature` WHERE `guid` =260001;
 INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`) VALUES 
 ('260001', '30596', '571', '6363.70', '231.60', '396.05', '5.12');
+
+-- fix quest 13118
+UPDATE `quest_template` SET `ReqCreatureOrGOId1` = '31037', `ReqCreatureOrGOId2` = '31039', `ReqCreatureOrGOId3` = '31043' WHERE `entry` =13118;

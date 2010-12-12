@@ -1,4 +1,4 @@
-﻿-- un goro crater fixes
+-- un goro crater fixes
 
 -- fix quest 9051
 UPDATE `quest_template` SET `ReqCreatureOrGOId1` = '6498' WHERE `entry` =9051;
@@ -10,3 +10,9 @@ INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_cha
 DELETE FROM `creature` WHERE `guid` =200041;
 INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`) VALUES 
 ('200041', '28601', '1', '-6027.365723', '-1250.199097', '-146.764404', '3.122257', '300');
+
+DELETE FROM `creature_loot_template` WHERE `entry` = 28601 AND `item` = 38708;
+INSERT INTO `creature_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES
+(28601, 38708, -100, 0, 1, 1, 0, 0, 0);
+
+UPDATE `creature_template` SET `minlevel` = '78', `maxlevel` = '78', `minhealth` = '11770', `maxhealth` = '11770', `minmana` = '7618', `maxmana` = '7618', `faction_A` = '21', `faction_H` = '21', `lootid` = '28601', `questItem1` = '0' WHERE `entry` =28601; 

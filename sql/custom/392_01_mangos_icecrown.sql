@@ -245,3 +245,25 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `positi
 
 -- fix quest 13118
 UPDATE `quest_template` SET `ReqCreatureOrGOId1` = '31037', `ReqCreatureOrGOId2` = '31039', `ReqCreatureOrGOId3` = '31043' WHERE `entry` =13118;
+
+-- fix quest 14096
+UPDATE `creature_template` SET `lootid` = '34728' WHERE `entry` =34728;
+UPDATE `creature_template` SET `lootid` = '34734' WHERE `entry` =34734;
+
+DELETE FROM `creature_loot_template` WHERE `entry` = 34728 AND `item` = 46895;
+DELETE FROM `creature_loot_template` WHERE `entry` = 34734 AND `item` = 46895;
+
+INSERT INTO `creature_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES
+('34728', '46895', '-100', '0', '1', '1', '0', '0', '0'),
+('34734', '46895', '-100', '0', '1', '1', '0', '0', '0');
+
+DELETE FROM `spell_script_target` WHERE `entry` = 66531 AND `type` = 1 AND `targetEntry` = 34716;
+DELETE FROM `spell_script_target` WHERE `entry` = 66531 AND `type` = 1 AND `targetEntry` = 34956;
+
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+('66531', '1', '34716'),
+('66531', '1', '34956');
+
+UPDATE `quest_template` SET `ReqSpellCast1` = '66531', `ReqSpellCast2` = '66531' WHERE `entry` =14096;
+
+UPDATE `gameobject_template` SET `data2` = '60000' WHERE `entry` =195310;

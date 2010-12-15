@@ -267,3 +267,14 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 UPDATE `quest_template` SET `ReqSpellCast1` = '66531', `ReqSpellCast2` = '66531' WHERE `entry` =14096;
 
 UPDATE `gameobject_template` SET `data2` = '60000' WHERE `entry` =195310;
+
+-- fix quest 13125 / NPCs 30829, 30830, 30831
+DELETE FROM `creature` WHERE `guid` BETWEEN '240031' AND '240033';
+INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`) VALUES
+('240031', '30830', '571', '7196.497', '642.017', '489.022', '4.126'),
+('240032', '30829', '571', '6839.000', '595.069', '426.229', '4.006'),
+('240033', '30831', '571', '6862.289', '407.908', '471.692', '1.124');
+
+UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '183000', `maxhealth` = '183000', `minmana` = '117000', `maxmana` = '117000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30829;
+UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30830;
+UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `minmana` = '156000', `maxmana` = '156000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30831;

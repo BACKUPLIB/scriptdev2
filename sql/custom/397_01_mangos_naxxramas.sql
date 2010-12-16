@@ -41,9 +41,9 @@ UPDATE creature_template SET minhealth=1198000, maxhealth=1198000 WHERE entry=16
 UPDATE creature SET curhealth=1198000 WHERE id=16060;
 
 -- open 25 man mode
--- includes bosses faerlina, maexxna, noth, patchwerk, grobbulus and gluth
+-- includes bosses anub rekhan, faerlina, maexxna, noth, patchwerk, grobbulus and gluth
 UPDATE `creature` SET `spawnmask` = 3 WHERE `map` = 533 AND `spawnmask` = 1;
-UPDATE `creature` SET `spawnmask` = 1 WHERE `id` IN (15928, 15929, 15930, 15936, 15989, 15990, 16011, 16061, 16803, 16063, 16064, 16065, 30549);
+UPDATE `creature` SET `spawnmask` = 1 WHERE `id` IN (15989, 15990, 16011, 16061, 16803, 16063, 16064, 16065, 30549);
 
 -- grand widow faerlina
 -- add missing spell to worshippers

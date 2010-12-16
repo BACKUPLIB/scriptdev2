@@ -115,9 +115,11 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     {
         if(pSpell->Id == SPELL_WIDOWS_EMBRACE)
         {
-            if(m_creature->HasAura(SPELL_ENRAGE,EFFECT_INDEX_2))
+			if (pCaster != m_creature)
+				pCaster->DealDamage(pCaster, pCaster->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            if(m_creature->HasAura(SPELL_ENRAGE,EFFECT_INDEX_2) || m_creature->HasAura(H_SPELL_ENRAGE,EFFECT_INDEX_2))
             {
-                m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
+				m_creature->RemoveAurasDueToSpell(m_bIsRegularMode ? SPELL_ENRAGE : H_SPELL_ENRAGE);
                 m_uiEnrageTimer = 60000;
             }
             else
@@ -203,7 +205,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         // Poison Bolt Volley
         if (m_uiPoisonBoltVolleyTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), SPELL_POSIONBOLT_VOLLEY);
+			DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_POSIONBOLT_VOLLEY : H_SPELL_POSIONBOLT_VOLLEY);
             m_uiPoisonBoltVolleyTimer = 7000;
         }
         else
@@ -223,7 +225,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         //Enrage_Timer
         if (m_uiEnrageTimer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
+			DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_ENRAGE : H_SPELL_ENRAGE);
             m_uiEnrageTimer = 61000;
         }
         else 

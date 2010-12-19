@@ -278,3 +278,11 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `positi
 UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '183000', `maxhealth` = '183000', `minmana` = '117000', `maxmana` = '117000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30829;
 UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30830;
 UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `minmana` = '156000', `maxmana` = '156000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30831;
+
+-- fix quest 12810 / NPC 29392
+UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` =29392;
+
+DELETE FROM creature_ai_scripts WHERE id IN (2939201,2939202);
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `comment`) VALUES
+(2939201, 29392, 0, 0, 100, 1, 4000, 4000, 9000, 9000, 11, 3391, 0, 0, 0, 0, 0, 0, 'Ravenous Jaws - Trash'),
+(2939202, 29392, 8, 0, 100, 0, 6509, -1, 0, 0, 33, 29391, 6, 0, 41, 0, 0, 0, 'Ravenous Jaws - Collect Blood from the surrounding waters after spell hit');

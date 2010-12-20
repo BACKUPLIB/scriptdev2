@@ -122,3 +122,14 @@ INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES
 ('37438', '1', '27235'),
 ('37438', '1', '27236'),
 ('37438', '1', '27237');
+
+-- fix quest 12267
+-- todo Npc 27355 normaly is not attackable until spell 48790 ist castet 
+
+DELETE FROM `creature` WHERE `id`=27450;
+INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+(101156,27450,571,1,1,13069,0,4421.543457,1865.774658,166.259888,0.279253,300,5,0,1,0,0,1);
+
+DELETE FROM `spell_script_target` WHERE `entry` = 48790;
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+(48790, 1, 27450);

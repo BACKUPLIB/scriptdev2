@@ -133,3 +133,18 @@ INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equ
 DELETE FROM `spell_script_target` WHERE `entry` = 48790;
 INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 (48790, 1, 27450);
+
+-- fix quest 12078
+
+DELETE FROM `item_required_target` WHERE `entry` = 36771 AND `type` = 1 AND `targetEntry` = 26359;
+INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES
+('36771', '1', '26359');
+
+DELETE FROM `spell_script_target` WHERE `entry` = 47431 AND `type` = 1 AND `targetEntry` = 26359;
+INSERT INTO `mangos`.`spell_script_target` (`entry` ,`type` ,`targetEntry`)VALUES
+('47431', '1', '26359');
+
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 26359;
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `comment`) VALUES
+(2635901, 26359, 9, 0, 100, 1, 0, 5, 10000, 15000, 11, 43358, 1, 0, 'Ice Heart Jormungar Spawn - Cast Gut Rip'),
+(2635902, 26359, 8, 0, 100, 0, 47431, -1, 0, 0, 41, 0, 0, 0, 'Ice Heart Jormungar Spawn - Despawn on Spellhit 47431');

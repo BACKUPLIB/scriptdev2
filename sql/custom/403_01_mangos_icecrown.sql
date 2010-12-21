@@ -286,3 +286,20 @@ DELETE FROM creature_ai_scripts WHERE id IN (2939201,2939202);
 INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `comment`) VALUES
 (2939201, 29392, 0, 0, 100, 1, 4000, 4000, 9000, 9000, 11, 3391, 0, 0, 0, 0, 0, 0, 'Ravenous Jaws - Trash'),
 (2939202, 29392, 8, 0, 100, 0, 6509, -1, 0, 0, 33, 29391, 6, 0, 41, 0, 0, 0, 'Ravenous Jaws - Collect Blood from the surrounding waters after spell hit');
+
+-- fix quest 14090
+DELETE FROM `item_required_target` WHERE `entry` = 46885 AND `type` = 1 AND `targetEntry` = 29618;
+INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES
+('46885', '1', '29618');
+
+UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` =29618;
+
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 29618;
+INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`) VALUES
+(2961801, 29618, 8, 0, 100, 0, 66474, -1, 0, 0, 1, -296181, -296182, -296183, 33, 34899, 6, 0, '41', '5000', '0', '0', 'Snowblind Follower - Random Say on Spellhit 66474 And give Quest Credit And Despawn');
+
+DELETE FROM `creature_ai_texts` WHERE `entry` IN (-296181, -296182, -296183);
+INSERT INTO `mangos`.`creature_ai_texts` (`entry`, `content_default`, `sound`, `type`, `language`, `emote`, `comment`) VALUES 
+('-296181', 'Net not stop me! No... net stop me.', '0', '0', '0', '0', 'Snowblind Follower - Say 1 on Spellhit 66474'),
+('-296182', 'You no take... me!', '0', '0', '0', '0', 'Snowblind Follower - Say 2 on Spellhit 66474'),
+('-296183', 'Me not afraid!', '0', '0', '0', '0', 'Snowblind Follower - Say 3 on Spellhit 66474');

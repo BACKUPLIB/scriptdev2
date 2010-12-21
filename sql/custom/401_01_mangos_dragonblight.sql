@@ -141,7 +141,7 @@ INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES
 ('36771', '1', '26359');
 
 DELETE FROM `spell_script_target` WHERE `entry` = 47431 AND `type` = 1 AND `targetEntry` = 26359;
-INSERT INTO `mangos`.`spell_script_target` (`entry` ,`type` ,`targetEntry`)VALUES
+INSERT INTO `spell_script_target` (`entry` ,`type` ,`targetEntry`)VALUES
 ('47431', '1', '26359');
 
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` = 26359;

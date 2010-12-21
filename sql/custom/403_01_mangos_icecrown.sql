@@ -299,7 +299,7 @@ INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inv
 (2961801, 29618, 8, 0, 100, 0, 66474, -1, 0, 0, 1, -296181, -296182, -296183, 33, 34899, 6, 0, '41', '5000', '0', '0', 'Snowblind Follower - Random Say on Spellhit 66474 And give Quest Credit And Despawn');
 
 DELETE FROM `creature_ai_texts` WHERE `entry` IN (-296181, -296182, -296183);
-INSERT INTO `mangos`.`creature_ai_texts` (`entry`, `content_default`, `sound`, `type`, `language`, `emote`, `comment`) VALUES 
+INSERT INTO `creature_ai_texts` (`entry`, `content_default`, `sound`, `type`, `language`, `emote`, `comment`) VALUES 
 ('-296181', 'Net not stop me! No... net stop me.', '0', '0', '0', '0', 'Snowblind Follower - Say 1 on Spellhit 66474'),
 ('-296182', 'You no take... me!', '0', '0', '0', '0', 'Snowblind Follower - Say 2 on Spellhit 66474'),
 ('-296183', 'Me not afraid!', '0', '0', '0', '0', 'Snowblind Follower - Say 3 on Spellhit 66474');

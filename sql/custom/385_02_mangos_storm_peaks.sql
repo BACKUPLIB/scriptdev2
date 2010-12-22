@@ -1,4 +1,4 @@
-﻿-- fixes for storm peak
+-- fixes for storm peak
 
 -- fix quest 12843 (they took our men)
 UPDATE `gameobject_template` SET `data2` = 191544 WHERE `entry` = 191544;

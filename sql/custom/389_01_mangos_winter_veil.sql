@@ -1,4 +1,4 @@
-﻿-- fixes for winter veil event
+-- fixes for winter veil event
 
 -- fix NPC winter reveler & achievement 1687
 UPDATE `creature_template` SET `ScriptName` = 'npc_winter_reveler' WHERE `entry` =15760;

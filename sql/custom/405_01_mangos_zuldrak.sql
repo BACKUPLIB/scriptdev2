@@ -37,3 +37,8 @@ UPDATE `creature_template` SET `lootid` = 29307 WHERE `entry` = 29307; -- apply 
 UPDATE `creature_loot_template` SET `ChanceOrQuestChance` = -100 WHERE `entry` = 29307 AND `item` = 43158;
 DELETE FROM `creature_loot_template` WHERE `entry` = 31365 AND `item` = 43158; -- hero loot
 INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`groupid`,`mincountOrRef`,`maxcount`) VALUES (31365,43158,-100,0,1,1);
+
+-- fix quest dependencies 12954
+UPDATE `quest_template` SET `NextQuestId` = '12933', `NextQuestInChain` = '12934' WHERE `entry` =12954;
+UPDATE `quest_template` SET `NextQuestId` = '12933', `NextQuestInChain` = '12934' WHERE `entry` =12932;
+UPDATE `quest_template` SET `PrevQuestId` = '0', `NextQuestInChain` = '12934' WHERE `entry` =12933;

@@ -321,3 +321,6 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 ('60310', '1', '32266');
 
 UPDATE `quest_template` SET `ReqSpellCast1` = '60310' WHERE `entry` IN (13356, 13357, 13322, 13321);
+
+-- fix quest 14142
+UPDATE `quest_template` SET `ReqSpellCast1` = '66531', `ReqSpellCast2` = '66531' WHERE `entry` =14142;

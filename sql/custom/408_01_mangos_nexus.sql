@@ -46,4 +46,4 @@ INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`,
 ('30519', '1037', '1052', '7', '0', '15', '7', '0', '15', '1');
 
 -- fix NPC 26105 / Quest 11905
-UPDATE `mangos`.`creature_template` SET `flags_extra` = '128' WHERE `creature_template`.`entry` =26105;
+UPDATE `creature_template` SET `flags_extra` = '128' WHERE `entry` =26105;

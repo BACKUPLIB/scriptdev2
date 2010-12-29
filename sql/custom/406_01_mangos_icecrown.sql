@@ -303,3 +303,21 @@ INSERT INTO `creature_ai_texts` (`entry`, `content_default`, `sound`, `type`, `l
 ('-296181', 'Net not stop me! No... net stop me.', '0', '0', '0', '0', 'Snowblind Follower - Say 1 on Spellhit 66474'),
 ('-296182', 'You no take... me!', '0', '0', '0', '0', 'Snowblind Follower - Say 2 on Spellhit 66474'),
 ('-296183', 'Me not afraid!', '0', '0', '0', '0', 'Snowblind Follower - Say 3 on Spellhit 66474');
+
+-- fix quests 13356, 13357, 13322, 13321
+-- needs SD2 support for aura spells
+DELETE FROM `creature` WHERE `id` = 32266;
+INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
+(200045, 32266, 571, 1, 1, 0, 0, 7989.7, 2328.67, 484.492, 4.89133, 300, 0, 0, 1, 0, 0, 0),
+(200044, 32266, 571, 1, 1, 0, 0, 8039.36, 2374.53, 484.931, 0.387858, 300, 0, 0, 1, 0, 0, 0),
+(200046, 32266, 571, 1, 1, 0, 0, 7998.15, 2366.79, 484.193, 5.35943, 300, 0, 0, 1, 0, 0, 0);
+
+DELETE FROM `item_required_target` WHERE `entry` = 44304 AND `type` = 1 AND `targetEntry` = 32266;
+INSERT INTO `item_required_target` (`entry`, `type`, `targetEntry`) VALUES
+('44304', '1', '32266');
+
+DELETE FROM `spell_script_target` WHERE `entry` = 60310 AND `type` = 1 AND `targetEntry` = 32266;
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+('60310', '1', '32266');
+
+UPDATE `quest_template` SET `ReqSpellCast1` = '60310' WHERE `entry` IN (13356, 13357, 13322, 13321);

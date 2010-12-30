@@ -93,6 +93,8 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
     uint32 m_uiShadowboltTimer;
     uint32 m_uiHarvestSoulTimer;
 
+    std::set<uint64> m_lDeadsideAdds;
+
     void Reset()
     {
         m_uiPhase = PHASE_SPEECH;
@@ -197,6 +199,23 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
 
             m_creature->SummonCreature(uiSummonEntry, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), (*itr)->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
             --uiCount;
+        }
+    }
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (m_pInstance->IsInRightSideGothArea(pSummoned))
+            pSummoned->AI()->AttackStart(m_creature->getVictim());
+
+        if (!m_pInstance->IsInRightSideGothArea(pSummoned))
+        {
+            pSummoned->SetInCombatWithZone();
+            m_lDeadsideAdds.insert(pSummoned->GetGUID());
+            // prevent Deadside Adds to enter live side before combat gate is open
+            if (!HasPlayersInLeftSide())
+            {
+                pSummoned->SetSpeedRate(MOVE_RUN, 0.0001f);
+            }
         }
     }
 
@@ -308,6 +327,15 @@ struct MANGOS_DLL_DECL boss_gothikAI : public ScriptedAI
                 {
                     if (m_creature->GetHealthPercent() < 30.0f)
                     {
+                        // reset speed of Deadside Adds upon opening combat gate
+                        for(std::set<uint64>::const_iterator itr = m_lDeadsideAdds.begin(); itr != m_lDeadsideAdds.end(); ++itr)
+                        {
+                            if (Creature* pDeadsideAdds = m_pInstance->instance->GetCreature(*itr))
+                            {
+                                pDeadsideAdds->SetSpeedRate(MOVE_RUN, 1.14f);
+                            }
+                        }
+
                         if (m_pInstance->IsInRightSideGothArea(m_creature))
                         {
                             DoScriptText(EMOTE_GATE, m_creature);

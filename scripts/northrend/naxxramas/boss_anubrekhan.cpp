@@ -187,10 +187,11 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if(m_uiCryptGuardTimer)
             if (m_uiCryptGuardTimer < uiDiff)
             {
-                m_creature->SummonCreature(NPC_CRYPT_GUARD,m_creature->GetPositionX()+rand()%15,
-                                                       m_creature->GetPositionY()+rand()%15,
-                                                       m_creature->GetPositionZ(),0,
-                                                       TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+				{
+					if (Creature* CryptGuard = m_creature->SummonCreature(NPC_CRYPT_GUARD, 3308.59f, -3476.29f, 287.16f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000))
+						CryptGuard->AI()->AttackStart(pTarget);
+				}
                 m_uiCryptGuardTimer = m_uiLocustSwarmTimer + 2000;
                 //DoCastSpellIfCan(m_creature, SPELL_SUMMONGUARD);
             }

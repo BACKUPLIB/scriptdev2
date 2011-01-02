@@ -475,6 +475,8 @@
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\boss_zumrah.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\instance_zulfarrak.cpp" />
     <ClCompile Include="..\scripts\kalimdor\zulfarrak\zulfarrak.cpp" />
+	<ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\boss_malygos.cpp" />
+	<ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\instance_eye_of_eternity.cpp" />
     <ClCompile Include="..\scripts\northrend\zuldrak.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_jedoga.cpp" />
     <ClCompile Include="..\scripts\northrend\azjol-nerub\ahnkahet\boss_nadox.cpp" />
@@ -561,7 +563,6 @@
     <ClCompile Include="..\scripts\northrend\naxxramas\boss_sapphiron.cpp" />
     <ClCompile Include="..\scripts\northrend\naxxramas\boss_thaddius.cpp" />
     <ClCompile Include="..\scripts\northrend\naxxramas\instance_naxxramas.cpp" />
-    <ClCompile Include="..\scripts\northrend\nexus\eye_of_eternity\boss_malygos.cpp" />
     <ClCompile Include="..\scripts\northrend\nexus\nexus\boss_anomalus.cpp" />
     <ClCompile Include="..\scripts\northrend\nexus\nexus\boss_keristrasza.cpp" />
     <ClCompile Include="..\scripts\northrend\nexus\nexus\boss_ormorok.cpp" />
@@ -709,7 +710,6 @@
     <ClCompile Include="..\scripts\outland\tempest_keep\the_eye\boss_void_reaver.cpp" />
     <ClCompile Include="..\scripts\outland\tempest_keep\the_eye\instance_the_eye.cpp" />
     <ClCompile Include="..\scripts\outland\tempest_keep\the_eye\the_eye.cpp" />
-    <ClCompile Include="..\scripts\outland\tempest_keep\the_mechanar\boss_gatewatcher_gyrokill.cpp" />
     <ClCompile Include="..\scripts\outland\tempest_keep\the_mechanar\boss_gatewatcher_ironhand.cpp" />
     <ClCompile Include="..\scripts\outland\tempest_keep\the_mechanar\boss_nethermancer_sepethrea.cpp" />
     <ClCompile Include="..\scripts\outland\tempest_keep\the_mechanar\boss_pathaleon_the_calculator.cpp" />

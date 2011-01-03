@@ -1,4 +1,4 @@
-﻿--  Arachnid Quarter
+--  Arachnid Quarter
 UPDATE `creature_template` SET `ScriptName`='mob_crypt_guard' WHERE `entry` IN (16573);
 UPDATE `creature_template` SET `ScriptName`='mob_worshippers' WHERE `entry`='16506';
 UPDATE `creature_template` SET `ScriptName`='mob_webwrap' WHERE `entry`='16486';

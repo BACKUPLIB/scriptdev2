@@ -26,6 +26,7 @@ npc_bunthen_plainswind
 npc_clintar_dw_spirit
 npc_great_bear_spirit
 npc_silva_filnaveth
+npc_keeper_remulos
 EndContentData */
 
 #include "precompiled.h"
@@ -333,6 +334,143 @@ bool GossipSelect_npc_silva_filnaveth(Player* pPlayer, Creature* pCreature, uint
 }
 
 /*######
+## npc_keeper_remulos
+######*/
+
+enum
+{
+	QUEST_WALKING_LEGENDS     = 8447,
+
+	NPC_MALFURION_STORMRAGE   = 15362,
+
+	SPELL_NIGHTMARE_OBJECT    = 25004,
+
+	SAY_START_REMULOS         = -1059999,
+	SAY_ARRIVE_REMULOS        = -1059998,
+	SAY_CONVERSATION_01       = -1059997,
+	SAY_CONVERSATION_02       = -1059996,
+	SAY_CONVERSATION_03       = -1059995,
+	SAY_CONVERSATION_04       = -1059994,
+	SAY_CONVERSATION_05       = -1059993,
+	SAY_CONVERSATION_06       = -1059992,
+	SAY_CONVERSATION_07       = -1059991,
+	SAY_CONVERSATION_08       = -1059990,
+	SAY_CONVERSATION_09       = -1059989,
+	SAY_RETURN_REMULOS        = -1059988
+};
+
+struct MANGOS_DLL_DECL npc_keeper_remulosAI : public npc_escortAI
+{
+	npc_keeper_remulosAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+	uint32 m_uiTalkTimer;
+	uint32 m_uiTalkCount;
+	uint64 summonedGUID;
+
+	void Reset() 
+	{
+		m_uiTalkTimer = 5000;
+		m_uiTalkCount = 0;
+	}
+
+	void WaypointReached(uint32 uiPointId)
+	{
+		if (Player* pPlayer = GetPlayerForEscort())
+		{
+			if(uiPointId == 4)
+			{
+				   DoScriptText (SAY_ARRIVE_REMULOS, m_creature, pPlayer);
+				   SetEscortPaused(true);
+		    }
+		}
+	}
+
+	void UpdateEscortAI(const uint32 uiDiff)
+	{
+		if (HasEscortState(STATE_ESCORT_PAUSED))
+		{
+			if (m_uiTalkTimer < uiDiff)
+			{
+				++m_uiTalkCount;
+				m_uiTalkTimer = 9000;
+
+				switch(m_uiTalkCount)
+				{
+				   case 1:
+					   m_creature->CastSpell (7728.237f, -2316.874f, 452.679f, SPELL_NIGHTMARE_OBJECT, false);
+					   break;
+				   case 2:
+					   m_creature->SummonCreature (NPC_MALFURION_STORMRAGE, 7728.237f, -2316.874f, 452.679f, 6.17f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 85000);
+					   break;
+				   case 3:
+					   if (Creature* pCreature = (Creature*)m_creature->GetMap()->GetUnit(summonedGUID))
+						   DoScriptText (SAY_CONVERSATION_01, pCreature);
+					   break;
+				   case 4:
+					   DoScriptText (SAY_CONVERSATION_02, m_creature);
+					   break;
+				   case 5:
+					   if (Creature* pCreature = (Creature*)m_creature->GetMap()->GetUnit(summonedGUID))
+						   DoScriptText (SAY_CONVERSATION_03, pCreature);
+					   break;
+				   case 6:
+					   DoScriptText (SAY_CONVERSATION_04, m_creature);
+					   break;
+				   case 7:
+					   if (Creature* pCreature = (Creature*)m_creature->GetMap()->GetUnit(summonedGUID))
+						   DoScriptText (SAY_CONVERSATION_05, pCreature);
+					   break;
+				   case 8:
+					   DoScriptText (SAY_CONVERSATION_06, m_creature);
+					   break;
+				   case 9:
+					   if (Creature* pCreature = (Creature*)m_creature->GetMap()->GetUnit(summonedGUID))
+						   DoScriptText (SAY_CONVERSATION_07, pCreature);
+					   break;
+				   case 10:
+					   if (Creature* pCreature = (Creature*)m_creature->GetMap()->GetUnit(summonedGUID))
+						   DoScriptText (SAY_CONVERSATION_08, pCreature);
+					   break;
+				   case 11:
+					   DoScriptText (SAY_CONVERSATION_09, m_creature);
+					   break;
+				   case 12:
+					   DoScriptText (SAY_RETURN_REMULOS, m_creature);
+					   if (Player* pPlayer = GetPlayerForEscort())
+						   pPlayer->GroupEventHappens(QUEST_WALKING_LEGENDS, m_creature);
+					   SetEscortPaused(false);
+					   break;
+				}
+			}
+			else 
+				m_uiTalkTimer -= uiDiff;
+		}
+	}
+
+	void JustSummoned (Creature* pSummoned)
+	{
+		summonedGUID = pSummoned->GetGUID();
+	}
+};
+
+bool QuestAccept_npc_keeper_remulos(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+	if (pQuest->GetQuestId() == QUEST_WALKING_LEGENDS)
+	{
+		DoScriptText (SAY_START_REMULOS, pCreature, pPlayer);
+
+		if (npc_keeper_remulosAI* pRemulosAI = dynamic_cast<npc_keeper_remulosAI*>(pCreature->AI()))
+			pRemulosAI->Start(false, pPlayer->GetGUID(), pQuest, true);
+	}
+	return true;
+}
+
+CreatureAI* GetAI_npc_keeper_remulos(Creature* pCreature)
+{
+	return new npc_keeper_remulosAI(pCreature);
+}
+
+/*######
 ##
 ######*/
 
@@ -363,4 +501,10 @@ void AddSC_moonglade()
     newscript->pGossipHello =  &GossipHello_npc_silva_filnaveth;
     newscript->pGossipSelect = &GossipSelect_npc_silva_filnaveth;
     newscript->RegisterSelf();
+
+	newscript = new Script;
+	newscript->Name = "npc_keeper_remulos";
+	newscript->GetAI = &GetAI_npc_keeper_remulos;
+	newscript->pQuestAcceptNPC = &QuestAccept_npc_keeper_remulos;
+	newscript->RegisterSelf();
 }

@@ -525,6 +525,108 @@ bool GossipSelect_npc_silvermoon_harry(Player* pPlayer, Creature* pCreature, uin
     return true;
 }
 
+/*######
+## npc_alliance_banner
+######*/
+
+enum
+{
+    NPC_DEFENDER    = 24015,
+    QUEST_ROCK_IT   = 11429,
+};
+
+struct MANGOS_DLL_DECL npc_alliance_bannerAI : public ScriptedAI
+{
+    npc_alliance_bannerAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset (); }
+
+    uint32 m_uiWaveCount;
+    uint32 m_uiWaveTimer;
+    bool m_bInFight;
+    Creature* pAttacker;
+
+    void Reset() 
+    {
+        m_uiWaveCount = 0;
+        m_uiWaveTimer = 6000;
+        m_bInFight = false;
+        pAttacker = NULL;
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if(m_creature->IsPet())
+			if(Player* pPlayer = m_creature->GetMap()->GetPlayer(((Pet*) m_creature)->GetOwnerGuid()))
+            {
+                 pPlayer->SendQuestFailed(QUEST_ROCK_IT);
+            }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        m_creature->StopMoving();
+
+        if(m_uiWaveCount < 3)
+        {
+            if(!m_bInFight)
+            {
+                if(m_uiWaveTimer < uiDiff)
+                {
+                    if(Creature* pTemp = m_creature->SummonCreature(NPC_DEFENDER,m_creature->GetPositionX()+rand()%40+10, m_creature->GetPositionY()+rand()%40+10,m_creature->GetPositionZ(),0,TEMPSUMMON_CORPSE_TIMED_DESPAWN,10000))
+                    {
+                        pAttacker = pTemp;
+                        if(m_creature->IsPet())
+                        {
+							pTemp->AI()->AttackStart(m_creature->GetMap()->GetPlayer(((Pet*)m_creature)->GetOwnerGuid()));
+                        }
+                        else
+                            pTemp->AI()->AttackStart(m_creature);
+                        m_bInFight = true;
+                    }
+                    m_uiWaveTimer = 7000;
+                }
+                else
+                    m_uiWaveTimer -= uiDiff;
+            }
+            else
+                if(pAttacker && pAttacker->isDead())
+                {
+                    ++m_uiWaveCount;
+                    m_bInFight = false;
+                }
+        }
+        else
+            if(m_creature->IsPet())
+				if(Player* pPlayer = m_creature->GetMap()->GetPlayer(((Pet*) m_creature)->GetOwnerGuid()))
+                    pPlayer->AreaExploredOrEventHappens(QUEST_ROCK_IT);
+    }
+};
+
+CreatureAI* GetAI_npc_alliance_banner(Creature* pCreature)
+{
+    return new npc_alliance_bannerAI(pCreature);
+}
+
+/*######
+## Talonshrike
+######*/
+
+enum
+{
+    NPC_TALONSHRIKE     = 24518
+};
+
+bool ProcessEventId_event_spell_talonshrike_aggro(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
+{
+    if(Creature* pCreature = GetClosestCreatureWithEntry((Unit*)pSource,NPC_TALONSHRIKE,150.f))
+    {
+        pCreature->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        pCreature->AI()->AttackStart((Unit*)pSource);
+        return true;
+    }
+
+    return false;
+}
+
 void AddSC_howling_fjord()
 {
     Script* pNewScript;
@@ -564,5 +666,15 @@ void AddSC_howling_fjord()
     pNewScript->GetAI = &GetAI_npc_silvermoon_harry;
     pNewScript->pGossipHello = &GossipHello_npc_silvermoon_harry;
     pNewScript->pGossipSelect = &GossipSelect_npc_silvermoon_harry;
+    pNewScript->RegisterSelf();
+
+	pNewScript = new Script;
+    pNewScript->Name = "npc_alliance_banner";
+    pNewScript->GetAI = &GetAI_npc_alliance_banner;
+    pNewScript->RegisterSelf();
+
+	pNewScript = new Script;
+    pNewScript->Name = "event_spell_talonshrike_aggro";
+    pNewScript->pProcessEventId = &ProcessEventId_event_spell_talonshrike_aggro;
     pNewScript->RegisterSelf();
 }

@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Azuremyst_Isle
 SD%Complete: 75
-SDComment: Quest support: 9283, 9528, 9537, 9554(special flight path, proper model for mount missing). Injured Draenei cosmetic only
+SDComment: Quest support: 9283, 9528, 9537, 9554(special flight path, proper model for mount missing). Injured Draenei cosmetic only, 9531
 SDCategory: Azuremyst Isle
 EndScriptData */
 
@@ -27,6 +27,7 @@ npc_engineer_spark_overgrind
 npc_injured_draenei
 npc_magwin
 npc_susurrus
+npc_geezle
 EndContentData */
 
 #include "precompiled.h"
@@ -183,8 +184,9 @@ enum
     EMOTE_SHELL             = -1000185,
     SAY_ATTACK              = -1000186,
 
-    AREA_COVE               = 3579,
-    AREA_ISLE               = 3639,
+	AREA_COVE_              = 3579,
+    AREA_ISLE_              = 3639,
+
     QUEST_GNOMERCY          = 9537,
     FACTION_HOSTILE         = 14,
     SPELL_DYNAMITE          = 7978
@@ -200,7 +202,7 @@ struct MANGOS_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
         m_uiNpcFlags = pCreature->GetUInt32Value(UNIT_NPC_FLAGS);
         Reset();
 
-        if (pCreature->GetAreaId() == AREA_COVE || pCreature->GetAreaId() == AREA_ISLE)
+        if (pCreature->GetAreaId() == AREA_COVE_ || pCreature->GetAreaId() == AREA_ISLE_)
             m_bIsTreeEvent = true;
     }
 
@@ -426,6 +428,114 @@ bool GossipSelect_npc_susurrus(Player* pPlayer, Creature* pCreature, uint32 uiSe
 }
 
 /*######
+## npc_geezle
+######*/
+
+enum
+{
+    C_SPARK                 = 17243,
+
+    GO_NAGA_FLAG            = 181694,
+
+    AREA_COVE               = 3579,
+    AREA_ISLE               = 3639,
+
+    SAY_GEEZLE1             = -1002050,
+    SAY_GEEZLE2             = -1002051,
+    SAY_GEEZLE3             = -1002052,
+
+    Q_TREE_COMPANY          = 9531,
+
+    AURA_TREE_DISGUISE      = 30298
+};
+
+float SparkSpawnPoint[]={-5046.07f,-11258.55f,7.508f};
+
+struct MANGOS_DLL_DECL npc_geezleAI : public npc_escortAI
+{
+    npc_geezleAI(Creature* pCreature) : npc_escortAI(pCreature)
+    {
+        Reset();
+    }
+
+    bool EventStarted;
+    uint8 Phase;
+    uint16 RPTimer;
+    Creature* EngSpark;
+
+    void Reset()
+    {
+        Phase=0;
+        RPTimer=23000;
+        EventStarted=false;
+        EngSpark=NULL;
+    }
+
+    void WaypointReached(uint32)
+    {
+    }
+
+    void UpdateEscortAI(const uint32 diff)
+    {
+        if (!EventStarted)
+        {
+            Creature* Spark = GetClosestCreatureWithEntry(m_creature,C_SPARK,1000.0f);
+            if (Spark)
+            {
+                if ((Spark->GetAreaId()==AREA_COVE) || (Spark->GetAreaId()==AREA_ISLE)) //tree event already active
+                {
+                    //((TemporarySummon*)m_creature)->UnSummon();
+					m_creature->ForcedDespawn();
+                    error_log("SD2 : npc_geezle - Tree event is already active!");
+                    return;
+                }
+            }
+            if (Spark = m_creature->SummonCreature(C_SPARK,SparkSpawnPoint[0],SparkSpawnPoint[1],SparkSpawnPoint[2],0,TEMPSUMMON_TIMED_DESPAWN,150000))
+            {
+                EngSpark=Spark;
+                EventStarted=true;
+                Start(false);
+            }
+            return;
+        }
+
+        if (RPTimer<diff)
+        {
+            switch (Phase)
+            {
+            case 0:
+                if (EngSpark)
+                {
+                    m_creature->SetInFront(EngSpark);
+                    EngSpark->SetInFront(m_creature);
+                }
+                DoScriptText(SAY_GEEZLE1,m_creature);
+                RPTimer=20000;
+                Phase++;
+                break;
+            case 1:
+                DoScriptText(SAY_GEEZLE2,m_creature);
+                RPTimer=26000;
+                Phase++;
+                break;
+            case 2:
+                DoScriptText(SAY_GEEZLE3,m_creature);
+                RPTimer=65000;
+                Phase++;
+                break;
+            default: break;
+            }
+        }
+        else RPTimer-=diff;
+    }
+};
+
+CreatureAI* GetAI_npc_geezleAI(Creature* pCreature)
+{
+    return new npc_geezleAI(pCreature);
+}
+
+/*######
 ##
 ######*/
 
@@ -460,5 +570,10 @@ void AddSC_azuremyst_isle()
     newscript->Name = "npc_susurrus";
     newscript->pGossipHello =  &GossipHello_npc_susurrus;
     newscript->pGossipSelect = &GossipSelect_npc_susurrus;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_geezle";
+    newscript->GetAI = &GetAI_npc_geezleAI;
     newscript->RegisterSelf();
 }

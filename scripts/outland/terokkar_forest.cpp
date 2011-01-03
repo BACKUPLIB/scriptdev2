@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Terokkar_Forest
 SD%Complete: 80
-SDComment: Quest support: 9889, 10009, 10873, 10896, 10446/10447, 10852, 10887, 10922, 11096, 11093. Skettis->Ogri'la Flight
+SDComment: Quest support: 9889, 10009, 10873, 10896, 10446/10447, 10852, 10887, 10922, 11096, 11093, 10051/10052. Skettis->Ogri'la Flight
 SDCategory: Terokkar Forest
 EndScriptData */
 
@@ -36,6 +36,8 @@ npc_skyguard_handler_deesak
 npc_slim
 go_veil_skith_cage
 npc_captive_child
+npc_skywing
+npc_isla_starmane
 EndContentData */
 
 #include "precompiled.h"
@@ -969,6 +971,191 @@ CreatureAI* GetAI_npc_captive_child(Creature* pCreature)
     return new npc_captive_child(pCreature);
 }
 
+/*#####
+## npc_skywing
+#####*/
+
+enum
+{
+    SAY_START = -1999927,
+    SAY_SPAWN = -1999928,
+    SAY_END = -1999926,
+
+    QUEST_SKYWING = 10898,
+    NPC_LUANGA_THE_IMPRISONER = 18533
+};
+
+struct MANGOS_DLL_DECL npc_skywingAI : public npc_escortAI
+{
+    npc_skywingAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 43:
+                DoScriptText(SAY_SPAWN, m_creature, pPlayer);
+                DoSpawnCreature(NPC_LUANGA_THE_IMPRISONER, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                break;
+            case 44:
+                DoScriptText(SAY_END, m_creature, pPlayer);
+                pPlayer->GroupEventHappens(QUEST_SKYWING, m_creature);
+                break;
+        }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if(!pPlayer)
+            return;
+
+        pPlayer->SendQuestFailed(QUEST_SKYWING);
+    }
+
+    void Reset() { }
+};
+
+bool QuestAccept_npc_skywing(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_SKYWING)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_skywingAI* pEscortAI = dynamic_cast<npc_skywingAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+    }
+return true;
+}
+
+CreatureAI* GetAI_npc_skywing(Creature* pCreature)
+{
+return new npc_skywingAI(pCreature);
+}
+
+/*######
+## npc_isla_starmane
+######*/
+
+enum
+{
+	SAY_BEGIN          = -1999939,
+    SAY_END_A          = -1999940,
+	SAY_END_H          = -1999941,
+
+	QUEST_EFTW_A       = 10051,
+	QUEST_EFTW_H       = 10052,
+
+    SPELL_WRATH        = 9739,
+    SPELL_ROOTS        = 33844,
+    SPELL_MOONFIRE     = 15798
+};
+
+struct MANGOS_DLL_DECL npc_isla_starmaneAI : public npc_escortAI
+{
+    npc_isla_starmaneAI(Creature* c) : npc_escortAI(c) { Reset(); }
+
+    uint32 m_uiWrathTimer;
+    uint32 m_uiRootsTimer;
+    uint32 m_uiMoonfireTimer;
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 13:
+                if (pPlayer->GetTeam() == ALLIANCE)
+			    {
+                    pPlayer->GroupEventHappens(QUEST_EFTW_A, m_creature);
+				    DoScriptText(SAY_END_A, m_creature, pPlayer);
+			    }
+                else if (pPlayer->GetTeam() == HORDE)
+			    {
+                    pPlayer->GroupEventHappens(QUEST_EFTW_H, m_creature);
+				    DoScriptText(SAY_END_H, m_creature, pPlayer);
+			    }
+                m_creature->SetInFront(pPlayer);
+                break;
+            default: break;
+        }
+    }
+
+	void Reset()
+	{
+        m_uiWrathTimer = urand(5000,10000);
+        m_uiRootsTimer = urand(6000,12000);
+        m_uiMoonfireTimer = urand(7000,14000);
+	}
+
+    void UpdateEscortAI(const uint32 uiDiff)
+    {
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        if(m_uiWrathTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_WRATH);
+            m_uiWrathTimer = urand(10000,20000);
+        }
+        else m_uiRootsTimer -= uiDiff;
+
+        if(m_uiRootsTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_ROOTS);
+            m_uiRootsTimer = urand(12000,15000);
+        }
+        else m_uiRootsTimer -= uiDiff;
+
+        if(m_uiMoonfireTimer < uiDiff)
+        {
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_MOONFIRE);
+            m_uiMoonfireTimer = urand(10000,20000);
+        }
+        else m_uiMoonfireTimer -= uiDiff;
+
+        DoMeleeAttackIfReady();
+    }
+
+    void JustDied(Unit* killer)
+    {
+        if (Player* pPlayer = GetPlayerForEscort())
+        {
+            if (pPlayer->GetTeam() == ALLIANCE)
+                pPlayer->FailQuest(QUEST_EFTW_A);
+            else if (pPlayer->GetTeam() == HORDE)
+                pPlayer->FailQuest(QUEST_EFTW_H);
+        }
+    }
+};
+
+bool QuestAccept_npc_isla_starmane(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_EFTW_H || pQuest->GetQuestId() == QUEST_EFTW_A)
+    {
+		DoScriptText(SAY_BEGIN, pCreature, pPlayer);
+
+        if (npc_isla_starmaneAI* pEscortAI = dynamic_cast<npc_isla_starmaneAI*>(pCreature->AI()))
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_isla_starmaneAI(Creature* pCreature)
+{
+    return new npc_isla_starmaneAI(pCreature);
+}
+
 void AddSC_terokkar_forest()
 {
     Script *newscript;
@@ -1047,5 +1234,17 @@ void AddSC_terokkar_forest()
     newscript = new Script;
     newscript->Name = "npc_captive_child";
     newscript->GetAI = &GetAI_npc_captive_child;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_skywing";
+    newscript->GetAI = &GetAI_npc_skywing;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_skywing;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name= "npc_isla_starmane";
+    newscript->GetAI = &GetAI_npc_isla_starmaneAI;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_isla_starmane;
     newscript->RegisterSelf();
 }

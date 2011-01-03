@@ -741,6 +741,348 @@ CreatureAI* GetAI_npc_beryl_sorcerer(Creature* pCreature)
     return new npc_beryl_sorcererAI(pCreature);
 }
 
+/*######
+## npc_orphaned_calf
+######*/
+
+enum
+{
+    QUEST_KHUNOK_WILL_KNOW      = 11878,
+    NPC_KHUNOK                  = 25862,
+    NPC_CALF                    = 25861,
+};
+
+struct MANGOS_DLL_DECL npc_orphaned_calfAI : public FollowerAI
+{
+    npc_orphaned_calfAI(Creature* pCreature) : FollowerAI(pCreature) 
+    {        
+        if (pCreature->GetOwner() && pCreature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
+        { 
+            if(const Quest *quest = GetQuestTemplateStore(QUEST_KHUNOK_WILL_KNOW))
+                StartFollow((Player*)pCreature->GetOwner(),0,quest);
+            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);  
+        }
+        Reset();}
+
+    uint32 m_uiTimer;
+
+    void Reset() {m_uiTimer = 900000; }
+
+    void UpdateAI(const uint32 diff)
+    {
+        // despawn after 15 minutes
+        if(m_uiTimer < diff)
+            m_creature->ForcedDespawn();
+        else m_uiTimer -= diff;
+        
+        if(Unit* khunok = GetClosestCreatureWithEntry(m_creature,NPC_KHUNOK,5.0f))
+            if(Player* pPlyr = (Player*) m_creature->GetOwner())
+                if(pPlyr->GetQuestStatus(QUEST_KHUNOK_WILL_KNOW) == QUEST_STATUS_INCOMPLETE)
+                {
+                    pPlyr->AreaExploredOrEventHappens(QUEST_KHUNOK_WILL_KNOW);
+                    SetFollowComplete();
+                }
+    }
+};
+
+CreatureAI* GetAI_npc_orphaned_calf(Creature* pCreature)
+{
+    return new npc_orphaned_calfAI(pCreature);
+}
+
+/*######
+## npc_nerubar_victim
+######*/
+
+#define WARSONG_PEON            25270
+#define QUEST_TAKEN_BY_SCOURGE  11611
+#define SPELL_SUMMON_PEON       45532
+
+
+const uint32 nerubarVictims[3] =
+{
+    45526, 45527, 45514
+};
+
+
+struct MANGOS_DLL_DECL npc_nerubar_victimAI : public ScriptedAI
+{
+    npc_nerubar_victimAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset (); }
+
+    void Reset() {}
+
+    void JustDied(Unit* Killer)
+    {
+        if (Killer->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (((Player*)Killer)->GetQuestStatus(QUEST_TAKEN_BY_SCOURGE) == QUEST_STATUS_INCOMPLETE)
+            {
+                uint8 uiRand = urand(0,3);
+                if (!uiRand)
+                {
+                    Killer->CastSpell(m_creature,SPELL_SUMMON_PEON,true);
+                    ((Player*)Killer)->KilledMonsterCredit(WARSONG_PEON);
+                }
+                else if (uiRand <= 2)
+                    Killer->CastSpell(m_creature, nerubarVictims[urand(0,2)], true);
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_nerubar_victim(Creature* pCreature)
+{
+    return new npc_nerubar_victimAI(pCreature);
+}
+
+/*######
+## npc_seaforium_depth_charge
+######*/
+
+enum
+{
+    SPELL_CHARGE_EXPLODE            = 45502,
+};
+
+const uint32 holes[4] =
+{
+    25402, 25403, 25404, 25405
+};
+
+struct MANGOS_DLL_DECL npc_seaforium_depth_chargeAI : public ScriptedAI
+{
+    npc_seaforium_depth_chargeAI(Creature* pCreature) : ScriptedAI(pCreature){ Reset(); }
+
+    uint32 m_uiExplosionTimer;
+
+    void Reset()
+    {
+        m_uiExplosionTimer = 5000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if(m_uiExplosionTimer)
+        {
+            if(m_uiExplosionTimer < uiDiff)
+            {
+                m_creature->CastSpell(m_creature,SPELL_CHARGE_EXPLODE,true);  
+                //maybe not nice but works
+                std::list<Creature*> list;
+                for(int i=0;i<4;i++)
+                {
+                    //check wich hole was destroyed
+                    GetCreatureListWithEntryInGrid(list,m_creature,holes[i],15.0f);
+                    if(!list.empty())
+                    {
+                        if(Player* pPlayer = (Player*) m_creature->GetOwner())
+                            pPlayer->KilledMonsterCredit(holes[i]);
+                        list.clear();
+                    }
+                }
+                m_uiExplosionTimer = 0;
+                m_creature->ForcedDespawn();
+            }
+            else 
+                m_uiExplosionTimer -= uiDiff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_seaforium_depth_charge(Creature* pCreature)
+{
+    return new npc_seaforium_depth_chargeAI(pCreature);
+}
+
+/*#####
+## npc_storm_totem
+#####*/
+
+enum
+{
+    QUEST_MASTER_THE_STORM  = 11895,
+    NPC_STORM_TEMPEST       = 26045,
+    NPC_STORM_TOTEM         = 26048
+};
+
+struct MANGOS_DLL_DECL npc_storm_totemAI : public ScriptedAI
+{
+    npc_storm_totemAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+
+    Map*    pMap;
+    uint32  m_uiCheckTimer;
+    std::list<uint64> list;
+
+    void Reset()
+    {
+        pMap = m_creature->GetMap();
+        m_uiCheckTimer = 1000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        for (std::list<uint64>::iterator itr = list.begin(); itr != list.end(); ++itr)
+        {
+            if(Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                if(pPlayer->GetQuestStatus(QUEST_MASTER_THE_STORM) == QUEST_STATUS_INCOMPLETE && m_creature->GetDistance2d(pPlayer) < 1.0f)
+                {
+                    DoSpawnCreature(NPC_STORM_TEMPEST,rand()%5,rand()%5,0,0,TEMPSUMMON_DEAD_DESPAWN,30000);
+                    list.clear();
+                    return;
+                }
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_storm_totem(Creature* pCreature)
+{
+    return new npc_storm_totemAI(pCreature);
+}
+
+/*#####
+## npc_sage_earth_and_sky
+#####*/
+
+bool QuestAccept_npc_sage_earth_and_sky(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_MASTER_THE_STORM)
+    {
+        if(Creature* pTotem = GetClosestCreatureWithEntry(pCreature,NPC_STORM_TOTEM,30.0f))
+            ((npc_storm_totemAI*) pTotem->AI())->list.push_back(pPlayer->GetGUID());
+    }
+    return true;
+}
+
+/*#####
+## go_tadpole_cage
+#####*/
+
+enum
+{
+    NPC_TADPOLE = 25201,
+    QUEST_TADPOLES = 11560
+};
+
+const int32 textNotOnQuest[3] =
+{
+-1039999, -1039998, -1039997      
+};
+
+const int32 textOnQuest[4] =
+{
+   -1039996, -1039995, -1039994, -1039993 
+};
+
+bool ProcessEventId_go_tadpole_cage(uint32 uiEventId, Object* pSource, Object* pTarget, bool bIsStart)
+{
+    if(Player* pPlayer = (Player*) pSource)
+        if(GameObject* pGo = (GameObject*) pTarget)
+        {
+            if(Creature* pTadpole = GetClosestCreatureWithEntry(pGo,NPC_TADPOLE,0.5))
+                if(pPlayer->GetQuestStatus(QUEST_TADPOLES) == QUEST_STATUS_INCOMPLETE)
+                {
+                    DoScriptText(textOnQuest[urand(0,3)],pTadpole,pPlayer);
+                    ((FollowerAI*)pTadpole->AI())->StartFollow(pPlayer);
+                    pPlayer->KilledMonsterCredit(NPC_TADPOLE);
+                    // FIXME: GO has to be set not-usable instead of despawn
+                    // pGo->Delete();
+                }
+                else
+                    DoScriptText(textNotOnQuest[urand(0,2)],pTadpole,pPlayer);
+        }
+    return true;
+}
+
+/*#####
+## npc_tadpole
+#####*/
+
+//maybe a simple followerAI can be made easier then this?
+struct MANGOS_DLL_DECL npc_tadpoleAI : public FollowerAI
+{
+    npc_tadpoleAI(Creature* pCreature) : FollowerAI(pCreature) { Reset(); }
+
+    uint32 m_uiDespawnTimer;
+
+    void Reset(){ m_uiDespawnTimer = 60000; }
+
+    void UpdateFollowerAI(const uint32 uiDiff)
+    {
+        // despawn after following 1 minute
+        if(HasFollowState(STATE_FOLLOW_INPROGRESS))
+            if(m_uiDespawnTimer < uiDiff)
+            {
+                SetFollowComplete(false);
+                m_creature->ForcedDespawn();
+            }
+
+        FollowerAI::UpdateFollowerAI(uiDiff);
+    }
+};
+
+CreatureAI* GetAI_npc_tadpole(Creature* pCreature)
+{
+    return new npc_tadpoleAI(pCreature);
+}
+
+/*#####
+## npc_bonker_togglevolt
+#####*/
+
+enum
+{
+    SAY_BEGIN                     = -1029999,
+    SAY_ANGRY                     = -1029998,
+    SAY_COMPLETE                  = -1029997,
+
+    QUEST_GET_ME_OUTA_HERE        = 11673
+};
+
+struct MANGOS_DLL_DECL npc_bonker_togglevoltAI : public npc_escortAI
+{
+    npc_bonker_togglevoltAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 6:
+                DoScriptText(SAY_ANGRY, m_creature, pPlayer);
+                break;
+			case 13:
+				DoScriptText(SAY_COMPLETE, m_creature, pPlayer);
+				pPlayer->GroupEventHappens(QUEST_GET_ME_OUTA_HERE, m_creature);
+				break;
+        }
+    }
+
+    void Reset() {}
+};
+
+bool QuestAccept_npc_bonker_togglevolt(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_GET_ME_OUTA_HERE)
+    {
+        DoScriptText(SAY_BEGIN, pCreature, pPlayer);
+
+        if (npc_bonker_togglevoltAI* pEscortAI = dynamic_cast<npc_bonker_togglevoltAI*>(pCreature->AI()))
+        {
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_bonker_togglevolt(Creature* pCreature)
+{
+    return new npc_bonker_togglevoltAI(pCreature);
+}
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -804,5 +1146,46 @@ void AddSC_borean_tundra()
     newscript = new Script;
     newscript->Name = "npc_beryl_sorcerer";
     newscript->GetAI = &GetAI_npc_beryl_sorcerer;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_orphaned_calf";
+    newscript->GetAI = &GetAI_npc_orphaned_calf;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_nerubar_victim";
+    newscript->GetAI = &GetAI_npc_nerubar_victim;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_seaforium_depth_charge";
+    newscript->GetAI = &GetAI_npc_seaforium_depth_charge;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_storm_totem";
+    newscript->GetAI = &GetAI_npc_storm_totem;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_sage_earth_and_sky";
+	newscript->pQuestAcceptNPC = &QuestAccept_npc_sage_earth_and_sky;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "go_tadpole_cage";
+    newscript->pProcessEventId = &ProcessEventId_go_tadpole_cage;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_tadpole";
+    newscript->GetAI = &GetAI_npc_tadpole;
+    newscript->RegisterSelf();
+
+	newscript = new Script;
+    newscript->Name = "npc_bonker_togglevolt";
+    newscript->GetAI = &GetAI_npc_bonker_togglevolt;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_bonker_togglevolt;
     newscript->RegisterSelf();
 }

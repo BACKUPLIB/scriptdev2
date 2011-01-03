@@ -297,6 +297,164 @@ bool GossipSelect_npc_vekjik(Player* pPlayer, Creature* pCreature, uint32 uiSend
     return true;
 }
 
+/*######
+## mob_voiceofnozronn
+######*/
+enum nozronnsay
+{
+SAY_NOZRONN1 = -1594190,
+SAY_NOZRONN2 = -1594191,
+SAY_NOZRONN3 = -1594192,
+SAY_NOZRONN4 = -1594193,
+SAY_NOZRONN5 = -1594194,
+QUEST_BONES_OF_NOZRONN = 12544
+};
+
+
+struct MANGOS_DLL_DECL mob_voiceofnozronnAI : public ScriptedAI
+{
+    mob_voiceofnozronnAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+
+    uint32 saytimer;
+    uint32 step;
+    uint64 m_uiPlayerGUID;
+
+    void Reset()
+    {
+        saytimer = 1000;
+        step = 0;
+        m_uiPlayerGUID = 0;
+    }
+
+	void UpdateAI(const uint32 diff)
+	{
+        if(saytimer < diff)
+	    {
+            switch(step)
+            {
+                case 0:
+					if(Player* pPlayer = GetPlayerAtMinimumRange(20.0f))
+					{
+                        m_uiPlayerGUID = pPlayer->GetGUID();
+                        DoScriptText(SAY_NOZRONN1, m_creature);
+                        saytimer += 5000;
+                        step++;
+					    break;
+					} 
+                    break;
+                case 1:
+                    DoScriptText(SAY_NOZRONN2, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 2:
+                    DoScriptText(SAY_NOZRONN3, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 3:
+                    DoScriptText(SAY_NOZRONN4, m_creature);
+                    saytimer += 5000;
+                    step++;
+                    break;
+                case 4:
+                    if(Player* pPlayer = (Player*) m_creature->GetMap()->GetUnit(m_uiPlayerGUID))
+                        if (pPlayer->GetQuestStatus(QUEST_BONES_OF_NOZRONN) == QUEST_STATUS_INCOMPLETE)
+					    {
+                            pPlayer->KilledMonsterCredit(28256, m_creature->GetGUID());
+                            //pPlayer->CompleteQuest(QUEST_BONES_OF_NOZRONN);
+                            DoScriptText(SAY_NOZRONN5, m_creature);
+                            step++;
+                            break;
+                        }
+                    break;
+            }
+
+	    } else saytimer -= diff;
+	}
+
+};
+
+CreatureAI* GetAI_mob_voiceofnozronnAI(Creature* pCreature)
+{
+    return new mob_voiceofnozronnAI(pCreature);
+}
+
+/*#####
+## npc_engineer_helice
+#####*/
+
+/*
+TODO:
+implement following actions along escorting:
+Engineer Helice says: Let's get the hell out of here. (done)
+Engineer Helice says: Listen up, Venture Company goons! Rule #1: Never keep the prisoner near the explosives.
+Engineer Helice says: Or THIS is what you get.
+<Packs of dynamite explodes>
+Engineer Helice says: It's getting a little hot over here. Shall we move on?
+Engineer Helice says: Oh, look, it's another cartload of explosives! Let's help them dispose of it.
+<Packs of dynamite explodes>
+Engineer Helice says: You really shouldn't play with this stuff. Someone could get hurt.
+Engineer Helice says: We made it! Thank you for getting me out of that hell hole. Tell Hemet to expect me!(done)
+*/
+
+enum
+{
+    QUEST_ENGINEERING_A_DISASTER  = 12688,
+    HELICE_SAY_START			  = -1039981,
+    HELICE_SAY_END				  = -1039982
+};
+
+struct MANGOS_DLL_DECL npc_engineer_heliceAI : public npc_escortAI
+{
+    npc_engineer_heliceAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 10:
+                pPlayer->GroupEventHappens(QUEST_ENGINEERING_A_DISASTER, m_creature);
+                DoScriptText(HELICE_SAY_END,m_creature,pPlayer);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void Reset() 
+    { 
+        m_creature->setFaction(35);
+    }
+};
+
+bool QuestAccept_npc_engineer_helice(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ENGINEERING_A_DISASTER)
+    {
+
+        if (npc_engineer_heliceAI* pEscortAI = dynamic_cast<npc_engineer_heliceAI*>(pCreature->AI()))
+        {
+            //FIXME: probably not the right faction
+            //set npc enemy to monsters
+            pCreature->setFaction(pPlayer->getFaction());
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+            DoScriptText(HELICE_SAY_START,pCreature,pPlayer);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_engineer_helice(Creature* pCreature)
+{
+    return new npc_engineer_heliceAI(pCreature);
+}
+
 void AddSC_sholazar_basin()
 {
     Script* pNewScript;
@@ -319,5 +477,16 @@ void AddSC_sholazar_basin()
     pNewScript->Name = "npc_vekjik";
     pNewScript->pGossipHello = &GossipHello_npc_vekjik;
     pNewScript->pGossipSelect = &GossipSelect_npc_vekjik;
+    pNewScript->RegisterSelf();
+
+	pNewScript = new Script;
+    pNewScript->Name = "mob_voiceofnozronn";
+    pNewScript->GetAI = &GetAI_mob_voiceofnozronnAI;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_engineer_helice";
+    pNewScript->GetAI = &GetAI_npc_engineer_helice;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_engineer_helice;
     pNewScript->RegisterSelf();
 }

@@ -1,18 +1,18 @@
 /* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
 
 /* ScriptData
 SDName: Boss_Four_Horsemen
@@ -27,98 +27,93 @@ EndScriptData */
 enum
 {
     //all horsemen
-    SPELL_SHIELDWALL        = 29061,
-    SPELL_BESERK            = 26662,
+    SPELL_SHIELDWALL = 29061,
+    SPELL_BESERK = 26662,
 
     //lady blaumeux
-    SAY_BLAU_AGGRO          = -1533044,
-    SAY_BLAU_TAUNT1         = -1533045,
-    SAY_BLAU_TAUNT2         = -1533046,
-    SAY_BLAU_TAUNT3         = -1533047,
-    SAY_BLAU_SPECIAL        = -1533048,
-    SAY_BLAU_SLAY           = -1533049,
-    SAY_BLAU_DEATH          = -1533050,
+    SAY_BLAU_AGGRO = -1533044,
+    SAY_BLAU_TAUNT1 = -1533045,
+    SAY_BLAU_TAUNT2 = -1533046,
+    SAY_BLAU_TAUNT3 = -1533047,
+    SAY_BLAU_SPECIAL = -1533048,
+    SAY_BLAU_SLAY = -1533049,
+    SAY_BLAU_DEATH = -1533050,
 
-    EMOTE_UNYIELDING_PAIN   = -1533156,                     // NYI
-
-    SPELL_MARK_OF_BLAUMEUX  = 28833,
-    SPELL_UNYILDING_PAIN    = 57381,
-    SPELL_VOIDZONE          = 28863,
-    H_SPELL_VOIDZONE        = 57463,
-    SPELL_SHADOW_BOLT       = 57374,
-    H_SPELL_SHADOW_BOLT     = 57464,
+    SPELL_MARK_OF_BLAUMEUX = 28833,
+    SPELL_UNYILDING_PAIN = 57381,
+    SPELL_VOIDZONE = 28863,
+    H_SPELL_VOIDZONE = 57463,
+    SPELL_SHADOW_BOLT = 57374,
+    H_SPELL_SHADOW_BOLT = 57464,
 
     //baron rivendare
-    SAY_RIVE_AGGRO1         = -1533065,
-    SAY_RIVE_AGGRO2         = -1533066,
-    SAY_RIVE_AGGRO3         = -1533067,
-    SAY_RIVE_SLAY1          = -1533068,
-    SAY_RIVE_SLAY2          = -1533069,
-    SAY_RIVE_SPECIAL        = -1533070,
-    SAY_RIVE_TAUNT1         = -1533071,
-    SAY_RIVE_TAUNT2         = -1533072,
-    SAY_RIVE_TAUNT3         = -1533073,
-    SAY_RIVE_DEATH          = -1533074,
+    SAY_RIVE_AGGRO1 = -1533065,
+    SAY_RIVE_AGGRO2 = -1533066,
+    SAY_RIVE_AGGRO3 = -1533067,
+    SAY_RIVE_SLAY1 = -1533068,
+    SAY_RIVE_SLAY2 = -1533069,
+    SAY_RIVE_SPECIAL = -1533070,
+    SAY_RIVE_TAUNT1 = -1533071,
+    SAY_RIVE_TAUNT2 = -1533072,
+    SAY_RIVE_TAUNT3 = -1533073,
+    SAY_RIVE_DEATH = -1533074,
 
     SPELL_MARK_OF_RIVENDARE = 28834,
-    SPELL_UNHOLY_SHADOW     = 28882,
-    H_SPELL_UNHOLY_SHADOW   = 57369,
+    SPELL_UNHOLY_SHADOW = 28882,
+    H_SPELL_UNHOLY_SHADOW = 57369,
 
     //thane korthazz
-    SAY_KORT_AGGRO          = -1533051,
-    SAY_KORT_TAUNT1         = -1533052,
-    SAY_KORT_TAUNT2         = -1533053,
-    SAY_KORT_TAUNT3         = -1533054,
-    SAY_KORT_SPECIAL        = -1533055,
-    SAY_KORT_SLAY           = -1533056,
-    SAY_KORT_DEATH          = -1533057,
+    SAY_KORT_AGGRO = -1533051,
+    SAY_KORT_TAUNT1 = -1533052,
+    SAY_KORT_TAUNT2 = -1533053,
+    SAY_KORT_TAUNT3 = -1533054,
+    SAY_KORT_SPECIAL = -1533055,
+    SAY_KORT_SLAY = -1533056,
+    SAY_KORT_DEATH = -1533057,
 
-    SPELL_MARK_OF_KORTHAZZ  = 28832,
-    SPELL_METEOR            = 26558,                        // m_creature->getVictim() auto-area spell but with a core problem
+    SPELL_MARK_OF_KORTHAZZ = 28832,
+    SPELL_METEOR = 26558, // m_creature->getVictim() auto-area spell but with a core problem
 
     //sir zeliek
-    SAY_ZELI_AGGRO          = -1533058,
-    SAY_ZELI_TAUNT1         = -1533059,
-    SAY_ZELI_TAUNT2         = -1533060,
-    SAY_ZELI_TAUNT3         = -1533061,
-    SAY_ZELI_SPECIAL        = -1533062,
-    SAY_ZELI_SLAY           = -1533063,
-    SAY_ZELI_DEATH          = -1533064,
+    SAY_ZELI_AGGRO = -1533058,
+    SAY_ZELI_TAUNT1 = -1533059,
+    SAY_ZELI_TAUNT2 = -1533060,
+    SAY_ZELI_TAUNT3 = -1533061,
+    SAY_ZELI_SPECIAL = -1533062,
+    SAY_ZELI_SLAY = -1533063,
+    SAY_ZELI_DEATH = -1533064,
 
-    EMOTE_CONDEMATION       = -1533157,                     // NYI
-
-    SPELL_MARK_OF_ZELIEK    = 28835,
-    SPELL_HOLY_WRATH        = 28883,
-    H_SPELL_HOLY_WRATH      = 57466,
-    SPELL_HOLY_BOLT         = 57376,
-    H_SPELL_HOLY_BOLT       = 57465,
-    SPELL_CONDEMNATION      = 57377, 
+    SPELL_MARK_OF_ZELIEK = 28835,
+    SPELL_HOLY_WRATH = 28883,
+    H_SPELL_HOLY_WRATH = 57466,
+    SPELL_HOLY_BOLT = 57376,
+    H_SPELL_HOLY_BOLT = 57465,
+    SPELL_CONDEMNATION = 57377,
 
     // horseman spirits
-    NPC_SPIRIT_OF_BLAUMEUX    = 16776,
-    NPC_SPIRIT_OF_RIVENDARE    = 0,                          //creature entry not known yet
-    NPC_SPIRIT_OF_KORTHAZZ    = 16778,
-    NPC_SPIRIT_OF_ZELIREK    = 16777,
+    NPC_SPIRIT_OF_BLAUMEUX = 16776,
+    NPC_SPIRIT_OF_RIVENDARE = 0, //creature entry not known yet
+    NPC_SPIRIT_OF_KORTHAZZ = 16778,
+    NPC_SPIRIT_OF_ZELIREK = 16777,
 };
 
 /*walk coords*/
-#define WALKX_BLAU                2462.112f
-#define WALKY_BLAU                -2956.598f
-#define WALKZ_BLAU                241.276f
+#define WALKX_BLAU 2462.112f
+#define WALKY_BLAU -2956.598f
+#define WALKZ_BLAU 241.276f
 
-#define WALKX_RIVE                2579.571f
-#define WALKY_RIVE                -2960.945f
-#define WALKZ_RIVE                241.32f
+#define WALKX_RIVE 2579.571f
+#define WALKY_RIVE -2960.945f
+#define WALKZ_RIVE 241.32f
 
-#define WALKX_KORT                2529.108f
-#define WALKY_KORT                -3015.303f
-#define WALKZ_KORT                241.32f
-    
-#define WALKX_ZELI                2521.039f
-#define WALKY_ZELI                -2891.633f
-#define WALKZ_ZELI                241.276f
+#define WALKX_KORT 2529.108f
+#define WALKY_KORT -3015.303f
+#define WALKZ_KORT 241.32f
+#define WALKX_ZELI 2521.039f
+#define WALKY_ZELI -2891.633f
+#define WALKZ_ZELI 241.276f
 
-#define HIGH_THREAT               50.0f
+#define HIGH_THREAT 50.0f
 
 struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
 {
@@ -143,8 +138,8 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
 
     void Reset()
     {
-        Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
-        VoidZone_Timer = 12000;                             // right
+        Mark_Timer = 20000; // First Horsemen Mark is applied at 20 sec.
+        VoidZone_Timer = 12000; // right
         Cast_Timer = 9000;
         Move_Check = true;
         Chase = true;
@@ -242,7 +237,7 @@ struct MANGOS_DLL_DECL boss_lady_blaumeuxAI : public ScriptedAI
         if (m_creature->getVictim() && Move_Check)
         {
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            m_creature->GetMotionMaster()->MovePoint(0, WALKX_BLAU, WALKY_BLAU, WALKZ_BLAU);
+            m_creature->GetMotionMaster()->MovePoint(0.f, WALKX_BLAU, WALKY_BLAU, WALKZ_BLAU);
             Move_Check = false;
         }
         
@@ -441,8 +436,8 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
 
     void Reset()
     {
-        Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
-        Meteor_Timer = 30000;                               // wrong
+        Mark_Timer = 20000; // First Horsemen Mark is applied at 20 sec.
+        Meteor_Timer = 30000; // wrong
         
         Move_Check = true;
         Attack_Check = true;
@@ -524,7 +519,7 @@ struct MANGOS_DLL_DECL boss_thane_korthazzAI : public ScriptedAI
         if (Meteor_Timer < uiDiff)
         {
             DoCast(m_creature->getVictim(),SPELL_METEOR);
-            Meteor_Timer = 20000;                           // wrong
+            Meteor_Timer = 20000; // wrong
         }else Meteor_Timer -= uiDiff;
 
         DoMeleeAttackIfReady();
@@ -559,8 +554,8 @@ struct MANGOS_DLL_DECL boss_sir_zeliekAI : public ScriptedAI
 
     void Reset()
     {
-        Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
-        HolyWrath_Timer = 12000;                            // right
+        Mark_Timer = 20000; // First Horsemen Mark is applied at 20 sec.
+        HolyWrath_Timer = 12000; // right
         Cast_Timer = 9000;
         Move_Check = true;
         Chase = true;

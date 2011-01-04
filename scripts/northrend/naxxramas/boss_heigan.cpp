@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,46 +16,57 @@
 
 /* ScriptData
 SDName: Boss_Heigan
-SD%Complete: 0
-SDComment: Place Holder
+SD%Complete: 65
+SDComment: Missing traps dance
 SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
 #include "naxxramas.h"
 
-#define SAY_AGGRO1          -1533109
-#define SAY_AGGRO2          -1533110
-#define SAY_AGGRO3          -1533111
-#define SAY_SLAY            -1533112
-#define SAY_TAUNT1          -1533113
-#define SAY_TAUNT2          -1533114
-#define SAY_TAUNT3          -1533115
-#define SAY_TAUNT4          -1533116
-#define SAY_TAUNT5          -1533117
-#define SAY_DEATH           -1533118
+enum
+{
+    PHASE_GROUND            = 1,
+    PHASE_PLATFORM          = 2,
 
-//Spell used by floor peices to cause damage to players
-#define SPELL_ERUPTION      29371
+    SAY_AGGRO1              = -1533109,
+    SAY_AGGRO2              = -1533110,
+    SAY_AGGRO3              = -1533111,
+    SAY_SLAY                = -1533112,
+    SAY_TAUNT1              = -1533113,
+    SAY_TAUNT2              = -1533114,
+    SAY_TAUNT3              = -1533115,
+    SAY_TAUNT4              = -1533117,
+    SAY_CHANNELING          = -1533116,
+    SAY_DEATH               = -1533118,
+    EMOTE_TELEPORT          = -1533136,
+    EMOTE_RETURN            = -1533137,
 
-//Spells by boss
-#define SPELL_DISRUPTION    29310
-#define SPELL_FEAVER        29998
-#define H_SPELL_FEAVER      55011
-#define SPELL_PLAGUED_CLOUD 29350
+    SPELL_ERUPTION          = 29371,                        //Spell used by floor pieces to cause damage to players
 
-//Spell by eye stalks
-#define SPELL_MIND_FLAY     26143
+    //Spells by boss
+    SPELL_DECREPIT_FEVER_N  = 29998,
+    SPELL_DECREPIT_FEVER_H  = 55011,
+    SPELL_DISRUPTION        = 29310,
+    SPELL_TELEPORT          = 30211,
+    SPELL_PLAGUE_CLOUD      = 29350,
+
+    //Spell by eye stalks
+    SPELL_MIND_FLAY         = 26143,
+
+    HEIGAN_TRIGGER          = 45101
+};
 
 #define POS_X 2793.86f
 #define POS_Y -3707.38f
 #define POS_Z 276.627f
 #define POS_O 0.593f
 
-#define TRIGGER_X 2769
-#define TRIGGER_Y -3671
+#define TRIGGER_X 2769.f
+#define TRIGGER_Y -3671.f
 #define TRIGGER_Z 273.667f
-#define TRIGGER_O 0
+#define TRIGGER_O 0.f
+
 
 struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 {
@@ -142,12 +153,12 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
             Erupt_Timer = 5000;
             Phase_Timer = 45000;
-            DoCast(m_creature, SPELL_PLAGUED_CLOUD);
+            DoCast(m_creature, SPELL_PLAGUE_CLOUD);
         }
     }
     void Aggro(Unit *who)
     {
-        m_creature->SummonCreature(15384, TRIGGER_X, TRIGGER_Y, TRIGGER_Z, TRIGGER_O, TEMPSUMMON_DEAD_DESPAWN, 0);
+        m_creature->SummonCreature(HEIGAN_TRIGGER, TRIGGER_X, TRIGGER_Y, TRIGGER_Z, TRIGGER_O, TEMPSUMMON_DEAD_DESPAWN, 0);
         SetPhase(1);
         switch (rand()%3)
         {
@@ -184,20 +195,20 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
         }else Phase_Timer -= diff;
 
        /* if (Erupt_Timer < diff)
-        {
-            m_pInstance->SetData(DATA_HEIGAN_ERUPT, eruptSection);
+{
+m_pInstance->SetData(DATA_HEIGAN_ERUPT, eruptSection);
 
-            if (eruptSection == 0)
-                eruptDirection = true;
-            else if (eruptSection == 3)
-                eruptDirection = false;
+if (eruptSection == 0)
+eruptDirection = true;
+else if (eruptSection == 3)
+eruptDirection = false;
 
-            eruptDirection ? ++eruptSection : --eruptSection;
-            if(phase == 1)
-            {
-                Erupt_Timer = 10000;
-            }else Erupt_Timer = 3000;
-        }else Erupt_Timer -= diff; */
+eruptDirection ? ++eruptSection : --eruptSection;
+if(phase == 1)
+{
+Erupt_Timer = 10000;
+}else Erupt_Timer = 3000;
+}else Erupt_Timer -= diff; */
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim() || phase != 1)
             return;
@@ -210,7 +221,7 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
         if (Feaver_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FEAVER : H_SPELL_FEAVER);
+            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_DECREPIT_FEVER_N : SPELL_DECREPIT_FEVER_H);
             Feaver_Timer = 30000+rand()%10000;
         }else Feaver_Timer -= diff;
 
@@ -238,13 +249,15 @@ struct MANGOS_DLL_DECL npc_heigan_eruptionAI : public ScriptedAI
         CellPair pair(MaNGOS::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
         Cell cell(pair);
         cell.SetNoCreate();
-
+ 
         std::list<GameObject*> gameobjectList;
-
+ 
         AllGameObjectsWithEntryInRangeCheck check(m_creature, entry, 100);
         MaNGOS::GameObjectListSearcher<AllGameObjectsWithEntryInRangeCheck> searcher(gameobjectList, check);
-        cell.VisitAllObjects(m_creature, searcher, 100);
-
+        TypeContainerVisitor<MaNGOS::GameObjectListSearcher<AllGameObjectsWithEntryInRangeCheck>, GridTypeMapContainer> visitor(searcher);
+ 
+        cell.Visit(pair, visitor, *(m_creature->GetMap()), *m_creature, 100);
+ 
         return gameobjectList;
     }
     //Let's Dance!
@@ -514,3 +527,4 @@ void AddSC_boss_heigan()
     newscript->GetAI = &GetAI_npc_heigan_eruptionAI;
     newscript->RegisterSelf();
 }
+

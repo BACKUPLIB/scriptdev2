@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -31,14 +31,17 @@ enum
     SAY_SLAY              = -1533019,
     SAY_DEATH             = -1533020,
 
-    EMOTE_GENERIC_BERSERK   = -1000004,
-    EMOTE_GENERIC_ENRAGED   = -1000003,
+    EMOTE_BERSERK         = -1533021,
+    EMOTE_ENRAGE          = -1533022,
 
     SPELL_HATEFULSTRIKE   = 28308,
     SPELL_HATEFULSTRIKE_H = 59192,
     SPELL_ENRAGE          = 28131,
     SPELL_BERSERK         = 26662,
-    SPELL_SLIMEBOLT       = 32309
+    SPELL_SLIMEBOLT       = 32309,
+
+    ACHIEVEMENT_SPEEDKILL_10  = 1856,
+    ACHIEVEMENT_SPEEDKILL_25  = 1857
 };
 
 struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
@@ -50,7 +53,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         Reset();
     }
 
-    ScriptedInstance* m_pInstance;
+    ScriptedInstance *m_pInstance;
     bool m_bIsRegularMode;
 
     uint32 m_uiHatefulStrikeTimer;
@@ -59,6 +62,10 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     bool   m_bEnraged;
     bool   m_bBerserk;
 
+    uint32 m_uiSpeedKillTimer;
+    bool m_bIsInTimeForAchievement;
+    bool m_bSpeedKillTimerStarted;
+
     void Reset()
     {
         m_uiHatefulStrikeTimer = 1000;                      //1 second
@@ -66,6 +73,10 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         m_uiSlimeboltTimer = 10000;
         m_bEnraged = false;
         m_bBerserk = false;
+
+        m_bIsInTimeForAchievement = true;
+        m_uiSpeedKillTimer = 180000;
+        m_bSpeedKillTimerStarted = false;
     }
 
     void KilledUnit(Unit* pVictim)
@@ -80,6 +91,14 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
 
+        if(m_bIsInTimeForAchievement)
+        {
+            Map* pMap = m_creature->GetMap();
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end();++itr)
+                itr->getSource()->CompletedAchievement( m_bIsRegularMode ? ACHIEVEMENT_SPEEDKILL_10 : ACHIEVEMENT_SPEEDKILL_25);
+        }
+
         if (m_pInstance)
             m_pInstance->SetData(TYPE_PATCHWERK, DONE);
     }
@@ -87,6 +106,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(urand(0, 1)?SAY_AGGRO1:SAY_AGGRO2, m_creature);
+        m_bSpeedKillTimerStarted = true;
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_PATCHWERK, IN_PROGRESS);
@@ -113,20 +133,33 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
             if (Unit* pTempTarget = m_creature->GetMap()->GetUnit((*iter)->getUnitGuid()))
             {
-                if (pTempTarget->GetHealth() > uiHighestHP && m_creature->IsWithinDistInMap(pTempTarget, ATTACK_DISTANCE))
+                if (m_creature->IsWithinDistInMap(pTempTarget, ATTACK_DISTANCE))
                 {
-                    uiHighestHP = pTempTarget->GetHealth();
-                    pTarget = pTempTarget;
+                    if (pTempTarget->GetHealth() > uiHighestHP)
+                    {
+                       uiHighestHP = pTempTarget->GetHealth();
+                       pTarget = pTempTarget;
+                    }
+                    --uiTargets;
                 }
             }
-            --uiTargets;
+
         }
+
         if (pTarget)
-            DoCast(pTarget, m_bIsRegularMode ? SPELL_HATEFULSTRIKE : SPELL_HATEFULSTRIKE_H);
+            DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_HATEFULSTRIKE : SPELL_HATEFULSTRIKE_H);
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if(m_bSpeedKillTimerStarted)
+            if (m_uiSpeedKillTimer < uiDiff)
+            {
+                m_bIsInTimeForAchievement = false;
+            }
+            else
+                m_uiSpeedKillTimer -= uiDiff;
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -144,11 +177,9 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         {
             if (m_creature->GetHealthPercent() < 5.0f)
             {
-                if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
-                {
-                    DoScriptText(EMOTE_GENERIC_ENRAGED, m_creature);
-                    m_bEnraged = true;
-                }
+                DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
+                DoScriptText(EMOTE_ENRAGE, m_creature);
+                m_bEnraged = true;
             }
         }
 
@@ -157,11 +188,9 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
         {
             if (m_uiBerserkTimer < uiDiff)
             {
-                if (DoCastSpellIfCan(m_creature, SPELL_BERSERK) == CAST_OK)
-                {
-                    DoScriptText(EMOTE_GENERIC_BERSERK, m_creature);
-                    m_bBerserk = true;
-                }
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK);
+                DoScriptText(EMOTE_BERSERK, m_creature);
+                m_bBerserk = true;
             }
             else
                 m_uiBerserkTimer -= uiDiff;
@@ -171,7 +200,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
             // Slimebolt - casted only while Berserking to prevent kiting
             if (m_uiSlimeboltTimer < uiDiff)
             {
-                DoCast(m_creature->getVictim(), SPELL_SLIMEBOLT);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_SLIMEBOLT);
                 m_uiSlimeboltTimer = 5000;
             }
             else

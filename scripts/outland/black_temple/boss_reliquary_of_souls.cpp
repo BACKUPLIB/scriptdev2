@@ -33,7 +33,7 @@ EndScriptData */
 #define SUFF_SAY_SLAY3              -1564051
 #define SUFF_SAY_RECAP              -1564052
 #define SUFF_SAY_AFTER              -1564053
-#define EMOTE_BOSS_GENERIC_ENRAGED  -1000006
+#define SUFF_EMOTE_ENRAGE           -1564054
 
 //Desire
 #define DESI_SAY_FREED              -1564055
@@ -225,7 +225,6 @@ struct MANGOS_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
                     //m_creature->SetInCombatWith(who);     // Don't know what is like retail
                     //who->SetInCombatWith(m_creature);
                     m_creature->SetInCombatWithZone();      // Same goes here, but setting to zone will prevent bug if the only player of threatList dies
-
                 }
             }
         }
@@ -675,11 +674,9 @@ struct MANGOS_DLL_DECL boss_essence_of_sufferingAI : public ScriptedAI
 
         if (EnrageTimer < diff)
         {
-            if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
-            {
-                DoScriptText(EMOTE_BOSS_GENERIC_ENRAGED, m_creature);
-                EnrageTimer = 60000;
-            }
+            DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
+            DoScriptText(SUFF_EMOTE_ENRAGE, m_creature);
+            EnrageTimer = 60000;
         }else EnrageTimer -= diff;
 
         if (SoulDrainTimer < diff)

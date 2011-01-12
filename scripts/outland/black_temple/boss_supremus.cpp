@@ -31,7 +31,7 @@ EndScriptData */
 //Spells
 #define SPELL_HURTFUL_STRIKE        41926
 #define SPELL_DEMON_FIRE            40029
-#define SPELL_MOLTEN_FLAME          40253
+#define SPELL_MOLTEN_FLAME          36057
 #define SPELL_VOLCANIC_ERUPTION     40276
 #define SPELL_VOLCANIC_FIREBALL     40118
 #define SPELL_VOLCANIC_GEYSER       42055
@@ -81,7 +81,7 @@ struct MANGOS_DLL_DECL molten_flameAI : public ScriptedAI
         m_creature->AddThreat(target, 50000000.0f);
         m_creature->GetMotionMaster()->MoveChase(target);
         DoCastSpellIfCan(m_creature, SPELL_DEMON_FIRE, CAST_TRIGGERED);
-        // DoCastSpellIfCan(m_creature, SPELL_MOLTEN_FLAME, CAST_TRIGGERED); // This spell damages self, so disabled for now
+        DoCastSpellIfCan(m_creature, SPELL_MOLTEN_FLAME, CAST_TRIGGERED);
         TargetLocked = true;
     }
 
@@ -96,7 +96,8 @@ struct MANGOS_DLL_DECL molten_flameAI : public ScriptedAI
             {
                 if (SupremusGUID)
                 {
-                    Unit* Supremus = m_creature->GetMap()->GetCreature(SupremusGUID);
+                    Unit* Supremus = NULL;
+                    Supremus = m_creature->GetMap()->GetUnit( SupremusGUID);
                     if (Supremus && (!Supremus->isAlive()))
                         m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
@@ -120,7 +121,7 @@ struct MANGOS_DLL_DECL npc_volcanoAI : public ScriptedAI
         CheckTimer = 1000;
         SupremusGUID = 0;
         FireballTimer = 500;
-        GeyserTimer = 2000;
+        GeyserTimer = 0;
     }
 
     void AttackStart(Unit* who) {}
@@ -133,7 +134,8 @@ struct MANGOS_DLL_DECL npc_volcanoAI : public ScriptedAI
         {
             if (SupremusGUID)
             {
-                Unit* Supremus = m_creature->GetMap()->GetCreature(SupremusGUID);
+                Unit* Supremus = NULL;
+                Supremus = m_creature->GetMap()->GetUnit( SupremusGUID);
                 if (Supremus && (!Supremus->isAlive()))
                     m_creature->DealDamage(m_creature, m_creature->GetHealth(), 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
@@ -199,28 +201,17 @@ struct MANGOS_DLL_DECL boss_supremusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_SUPREMUS, DONE);
     }
 
-    float CalculateRandomCoord(float initial)
-    {
-        float coord = 0;
-
-        switch(urand(0, 1))
-        {
-            case 0: coord = initial + 20 + rand()%20; break;
-            case 1: coord = initial - 20 - rand()%20; break;
-        }
-
-        return coord;
-    }
-
     Creature* SummonCreature(uint32 entry, Unit* target)
     {
         if (target && entry)
         {
-            Creature* Summon = m_creature->SummonCreature(entry, CalculateRandomCoord(target->GetPositionX()), CalculateRandomCoord(target->GetPositionY()), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
+            Creature* Summon = m_creature->SummonCreature(entry, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
             if (Summon)
             {
                 Summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 Summon->setFaction(m_creature->getFaction());
+                Summon->SetSpeedRate(MOVE_WALK, 0.7f);
+                Summon->SetSpeedRate(MOVE_RUN, 0.7f);
                 return Summon;
             }
         }
@@ -321,19 +312,12 @@ struct MANGOS_DLL_DECL boss_supremusAI : public ScriptedAI
                 if (!target)
                     target = m_creature->getVictim();
 
-                if (target)
+                if (target && !urand(0, 8))
                 {
-                    if (Creature* pVolcano = SummonCreature(CREATURE_VOLCANO, target))
-                    {
-                        DoCastSpellIfCan(target, SPELL_VOLCANIC_ERUPTION);
-
-                        if (npc_volcanoAI* pVolcanoAI = dynamic_cast<npc_volcanoAI*>(pVolcano->AI()))
-                            pVolcanoAI->SetSupremusGUID(m_creature->GetGUID());
-                    }
-
+                    DoCastSpellIfCan(target, SPELL_VOLCANIC_ERUPTION);
                     DoScriptText(EMOTE_GROUND_CRACK, m_creature);
-                    SummonVolcanoTimer = 10000;
                 }
+                SummonVolcanoTimer = 1000;
             }else SummonVolcanoTimer -= diff;
         }
 

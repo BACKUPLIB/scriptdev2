@@ -555,14 +555,15 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
             if (m_uiFrostBlastTimer < uiDiff)
             {
-                if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_FROST_BLAST) == CAST_OK)
-                {
-                    if (urand(0, 1))
-                        DoScriptText(SAY_FROST_BLAST, m_creature);
+				if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
+					if(DoCastSpellIfCan(pTarget, SPELL_FROST_BLAST) == CAST_OK)
+					{
+						if (urand(0, 1))
+						DoScriptText(SAY_FROST_BLAST, m_creature);
 
-                    m_uiFrostBlastTimer = urand(30000, 60000);
-                }
-            }
+						m_uiFrostBlastTimer = urand(30000, 60000);
+					}
+			}
             else
                 m_uiFrostBlastTimer -= uiDiff;
 

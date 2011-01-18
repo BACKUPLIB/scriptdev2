@@ -2342,6 +2342,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\revision.h" />
+    <None Include="..\config.h.in" />
   </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@ extern void AddSC_battleground();
 //custom
 extern void AddSC_npc_arena_honor();
 extern void AddSC_mob_teleguy();
+extern void AddSC_sc_ov_master();
 
 //examples
 extern void AddSC_example_creature();
@@ -536,6 +537,7 @@ void AddScripts()
     //custom
     AddSC_npc_arena_honor();
     AddSC_mob_teleguy();
+	AddSC_sc_ov_master();
 
     //examples
     AddSC_example_creature();

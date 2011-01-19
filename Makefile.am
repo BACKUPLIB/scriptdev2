@@ -54,6 +54,7 @@ include/sc_instance.h \
 scripts/battlegrounds/battleground.cpp \
 scripts/custom/npc_arena_honor.cpp \
 scripts/custom/teleguy.cpp \
+scripts/custom/sc_ov_master.cpp \
 scripts/eastern_kingdoms/alterac_mountains.cpp \
 scripts/eastern_kingdoms/arathi_highlands.cpp \
 scripts/eastern_kingdoms/blasted_lands.cpp \

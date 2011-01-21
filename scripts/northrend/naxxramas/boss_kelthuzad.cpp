@@ -612,8 +612,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
             DoMeleeAttackIfReady();
         }
-    }
-};
+    };
 
 CreatureAI* GetAI_boss_kelthuzad(Creature* pCreature)
 {

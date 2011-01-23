@@ -1,3 +1,5 @@
+-- instance karazhan fixes
+
 -- netherspite
 /* Portale: not attackable, not selectable, NullAI zur Sicherheit */
 UPDATE `creature_template` SET `unit_flags` = 0x02000002, `AIName` = 'NullAI' WHERE `entry` IN(17367,17368,17369);

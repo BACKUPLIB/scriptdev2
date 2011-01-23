@@ -1,4 +1,4 @@
-# update naxxramas instance
+-- instance naxxramas fixes
 
 -- remove non existing script
 UPDATE `creature_template` SET `ScriptName` = '' WHERE `entry` IN (16486, 16506, 16360);

@@ -6,6 +6,9 @@ DELETE FROM `event_scripts` WHERE `id` = 12608;
 INSERT INTO `event_scripts` (`id`,`command`,`datalong`,`datalong2`,`comments`) VALUES (12608,8,19549,1,"");
 UPDATE `quest_template` SET `ReqSpellCast2` = 0 WHERE `entry` = 10182;
 
+-- quest 10233 (Torching Sunfury Hold - Flags for dummy target mobs)
+UPDATE `creature_template` SET `unit_flags` = 0x00000200, `flags_extra` = 0x08 WHERE `entry` IN (19723, 19724);
+
 -- quest 10305 (Abjurist Belmara)
 DELETE FROM `event_scripts` WHERE `id` = 12607;
 INSERT INTO `event_scripts` (`id`,`command`,`datalong`,`datalong2`,`comments`) VALUES (12607,8,19547,1,"");
@@ -30,6 +33,3 @@ INSERT INTO `creature_ai_scripts` (`id`, `creature_id`, `event_type`, `event_inv
 
 -- quest 10855 (Fel Reavers, No Thanks)
 UPDATE `quest_template` SET `SpecialFlags` = '0' WHERE `entry` =10855;
-
--- quest 10233 (Torching Sunfury Hold - Flags für dummy target mobs)
-UPDATE `creature_template` SET `unit_flags` = 0x00000200, `flags_extra` = 0x08 WHERE `entry` IN (19723, 19724);

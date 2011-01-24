@@ -121,11 +121,11 @@ CreatureAI* GetAI_npc_professor_phizzlethorpe(Creature* pCreature)
 
 enum
 {
-	SAY_START                   = -1999935,
+    SAY_START                   = -1999935,
     SAY_SEARCH                  = -1999936,
     SAY_RETURN                  = -1999937,
     SAY_END                     = -1999938,
-	SAY_AGGRO_KINELORY          = -1999939,
+    SAY_AGGRO_KINELORY          = -1999939,
 
     SPELL_REJUVENATION          = 3627,
 
@@ -223,7 +223,7 @@ void AddSC_arathi_highlands()
     newscript->pQuestAcceptNPC = &QuestAccept_npc_professor_phizzlethorpe;
     newscript->RegisterSelf();
 
-	newscript = new Script;
+    newscript = new Script;
     newscript->Name = "npc_kinelory";
     newscript->GetAI = &GetAI_npc_kinelory;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_kinelory;

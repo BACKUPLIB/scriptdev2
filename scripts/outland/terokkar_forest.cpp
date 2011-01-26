@@ -977,11 +977,11 @@ CreatureAI* GetAI_npc_captive_child(Creature* pCreature)
 
 enum
 {
-    SAY_START = -1999927,
-    SAY_SPAWN = -1999928,
-    SAY_END = -1999926,
+    SAY_START                 = -1039979,
+    SAY_SPAWN                 = -1039978,
+    SAY_END                   = -1039980,
 
-    QUEST_SKYWING = 10898,
+    QUEST_SKYWING             = 10898,
     NPC_LUANGA_THE_IMPRISONER = 18533
 };
 
@@ -1045,9 +1045,9 @@ return new npc_skywingAI(pCreature);
 
 enum
 {
-	SAY_BEGIN          = -1999939,
-    SAY_END_A          = -1999940,
-	SAY_END_H          = -1999941,
+	SAY_BEGIN          = -1999839,
+    SAY_END_A          = -1999840,
+	SAY_END_H          = -1999841,
 
 	QUEST_EFTW_A       = 10051,
 	QUEST_EFTW_H       = 10052,

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,78 +17,113 @@
 /* ScriptData
 SDName: Boss_Majordomo_Executus
 SD%Complete: 90
-SDComment: Ragnaros summon missing
+SDComment: Often workaround spells
 SDCategory: Molten Core
 EndScriptData */
 
 #include "precompiled.h"
 #include "molten_core.h"
-#include "TemporarySummon.h"
 
 enum
 {
-    SAY_AGGRO               = -1409003,
-    SAY_SLAY                = -1409005,
-    SAY_SPECIAL             = -1409006,                     // Use unknown
-    SAY_LAST_ADD            = -1409019,                     // When only one add remaining
-    SAY_DEFEAT_1            = -1409007,
-    SAY_DEFEAT_2            = -1409020,
-    SAY_DEFEAT_3            = -1409021,
+	SAY_AGGRO			= -1409003,
+	SAY_SPAWN			= -1409004,
+	SAY_SLAY			= -1409005,
+	SAY_SPECIAL			= -1409006,
+	SAY_DEFEAT			= -1409007,
 
-    SAY_SUMMON_MAJ          = -1409008,
-    SAY_ARRIVAL1_RAG        = -1409009,
-    SAY_ARRIVAL2_MAJ        = -1409010,
-    SAY_ARRIVAL3_RAG        = -1409011,
-    SAY_ARRIVAL4_MAJ        = -1409022,
-    SAY_ARRIVAL5_RAG        = -1409012,
+	SAY_SUMMON_MAJ		= -1409008,
+	SAY_ARRIVAL1_RAG	= -1409009,
+	SAY_ARRIVAL2_MAJ	= -1409010,
+	SAY_ARRIVAL3_RAG	= -1409011,
+	SAY_ARRIVAL5_RAG	= -1409012,
 
-    SPELL_MAGIC_REFLECTION  = 20619,
-    SPELL_DAMAGE_REFLECTION = 21075,
-    SPELL_BLASTWAVE         = 20229,
-    SPELL_AEGIS             = 20620,
-    SPELL_TELEPORT          = 20618,
+	SPELL_MAGIC_REFLECTION	= 35158, // Spell workaround - 20619
+	SPELL_DAMAGE_REFLECTION	= 35159, // Spell workaround - 21075
+	SPELL_BLASTWAVE			= 20229,
+	SPELL_AEGIS				= 20620,                   //This is self casted whenever we are below 50%
+	SPELL_TELEPORT			= 20618,
+	SPELL_SUMMON_RAGNAROS	= 19774,
+	SPELL_FLAME_AURA		= 58579,
 
-    SPELL_TELEPORT_SELF     = 19484,
-    SPELL_SUMMON_RAGNAROS   = 19774,
+	ENTRY_FLAMEWALKER_HEALER	= 11663,
+	ENTRY_FLAMEWALKER_ELITE		= 11664,
+
+	FRIENDLY_FACTION	= 35
+};
+
+#define SPAWN_RAG_X         838.51
+#define SPAWN_RAG_Y         -829.84
+#define SPAWN_RAG_Z         -232.00
+#define SPAWN_RAG_O         1.70
+
+#define CENTER_X 120.148811f
+#define CENTER_Y 703.713684f
+#define CENTER_Z 45.111477f
+
+#define END_X 753.690430f
+#define END_Y -1179.973389f
+#define END_Z -118.373444f
+#define END_O 2.695165f
+
+static float POS_X[8] = {764.333252f, 761.579590f, 759.106323f, 756.124023f, 772.586975f, 776.704895f, 779.419373f, 783.828613f};
+static float POS_Y[8] = {-1215.194946f, -1222.640015f, -1228.976318f, -1237.590698f, -1199.444336f, -1194.604248f, -1189.251953f, -1181.874634f};
+static float POS_Z[8] = {-119.759811f, -120.066162f, -119.239403f, -119.537369f, -119.714180f, -119.977524f, -120.175232f, -120.492287f};
+static float ORIENT[8] = {2.787323f, 2.743341f, 2.743341f, 2.617677f, 2.529712f, 2.592544f, 2.677367f, 2.803031f};
+
+static uint32 GameObjectEntry = 179703;
+
+static uint32 AddEntryList[8]=
+{
+    11663,
+    11663,
+	11663,
+	11663,
+	11664,
+	11664,
+	11664,
+	11664
 };
 
 struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
 {
     boss_majordomoAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (instance_molten_core*)pCreature->GetInstanceData();
-        Reset();
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+		SelectAddEntry();
+        for(uint8 i = 0; i < 8; ++i)
+            AddGUID[i] = 0;
+			
+		Reset();
     }
 
-    instance_molten_core* m_pInstance;
+    ScriptedInstance* m_pInstance;
 
-    uint32 m_uiMagicReflectionTimer;
-    uint32 m_uiDamageReflectionTimer;
-    uint32 m_uiBlastwaveTimer;
-    uint32 m_uiTeleportTimer;
-    uint32 m_uiAegisTimer;
-    uint32 m_uiSpeechTimer;
-
-    bool m_bHasEncounterFinished;
-    uint8 m_uiAddsKilled;
-    uint8 m_uiSpeech;
-    GUIDList m_luiMajordomoAddsGUIDs;
+	uint64 AddGUID[8];
+    uint32 AddEntry[8];
+    uint32 Reflection_Timer;
+    uint32 Blastwave_Timer;
+	uint32 Teleport_Timer;
+	uint32 Teleport_self_Timer;
+	Creature* adds[8];
+	uint32 Dead_adds;
+	uint32 Say_defeat_Timer;
+	Unit* auraTarget;
+	uint32 Aura_Timer;
 
     void Reset()
     {
-        m_uiMagicReflectionTimer  = 30000;                  // Damage reflection first so we alternate
-        m_uiDamageReflectionTimer = 15000;
-        m_uiBlastwaveTimer = 10000;
-        m_uiTeleportTimer = 20000;
-        m_uiAegisTimer = 5000;
-        m_uiSpeechTimer = 1000;
+        Reflection_Timer = 25000;                     //Damage reflection first so we alternate
+        Blastwave_Timer = 10000;
+		Teleport_Timer = 20000;
+		Dead_adds = 0;
+		Say_defeat_Timer = 0;
+		Aura_Timer = 21000;
 
-        m_bHasEncounterFinished = false;
-        m_uiAddsKilled = 0;
-        m_uiSpeech = 0;
+		SpawnAdds();
     }
 
-    void KilledUnit(Unit* pVictim)
+    void KilledUnit(Unit* victim)
     {
         if (urand(0, 4))
             return;
@@ -96,191 +131,333 @@ struct MANGOS_DLL_DECL boss_majordomoAI : public ScriptedAI
         DoScriptText(SAY_SLAY, m_creature);
     }
 
-    void Aggro(Unit* pWho)
+	void SpawnAdds()
     {
-        DoScriptText(SAY_AGGRO, m_creature);
-        m_bHasEncounterFinished = false;
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_MAJORDOMO, IN_PROGRESS);
-    }
-
-    void JustReachedHome()
-    {
-        if (!m_bHasEncounterFinished)                        // Normal reached home, FAIL
+        for(uint8 i = 0; i < 8; ++i)
         {
-            if (m_pInstance)
+            Creature *pCreature = (Creature*)m_creature->GetMap()->GetUnit(AddGUID[i]);
+            if(!pCreature || !pCreature->isAlive())
             {
-                m_pInstance->SetData(TYPE_MAJORDOMO, FAIL);
-                m_pInstance->DoHandleAdds(m_luiMajordomoAddsGUIDs);
-            }
-        }
-        else                                                 // Finished the encounter, DONE
-        {
-            // Exit combat
-            m_creature->RemoveAllAuras();
-            m_creature->DeleteThreatList();
-            m_creature->CombatStop(true);
-            m_creature->LoadCreatureAddon();
-            m_creature->SetLootRecipient(NULL);
-
-            // Set friendly
-            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
-            m_creature->setFaction(FACTION_MAJORDOMO_FRIENDLY);
-
-            // Start his speech
-            m_uiSpeechTimer = 1;                        // At next tick
-            m_uiSpeech = 1;
-
-            m_pInstance->SetData(TYPE_MAJORDOMO, DONE);
-        }
-    }
-
-    void JustSummoned(Creature* pSummoned)
-    {
-        if (pSummoned->GetEntry() == NPC_FLAMEWAKER_HEALER || pSummoned->GetEntry() == NPC_FLAMEWAKER_ELITE)
-            m_luiMajordomoAddsGUIDs.push_back(pSummoned->GetGUID());
-    }
-
-    void SummonedCreatureJustDied(Creature* pSummoned)
-    {
-        if (pSummoned->GetEntry() == NPC_FLAMEWAKER_HEALER || pSummoned->GetEntry() == NPC_FLAMEWAKER_ELITE)
-            m_uiAddsKilled += 1;
-
-        // Yell if only one Add alive
-        if (m_uiAddsKilled == m_luiMajordomoAddsGUIDs.size() - 1)
-            DoScriptText(SAY_LAST_ADD, m_creature);
-
-        // All adds are killed, retreat
-        else if (m_uiAddsKilled == m_luiMajordomoAddsGUIDs.size())
-        {
-            m_bHasEncounterFinished = true;
-            m_creature->GetMotionMaster()->MoveTargetedHome();
-        }
-    }
-
-    // Unsummon Majordomo adds
-    void UnsummonMajordomoAdds()
-    {
-        for (std::list<uint64>::const_iterator itr = m_luiMajordomoAddsGUIDs.begin(); itr != m_luiMajordomoAddsGUIDs.end(); ++itr)
-        {
-            if (Creature* pAdd = m_creature->GetMap()->GetCreature(*itr))
-                if (pAdd->IsTemporarySummon())
-                    ((TemporarySummon*)pAdd)->UnSummon();
-        }
-
-        m_luiMajordomoAddsGUIDs.clear();
-    }
-
-    void DamageTaken(Unit* pDealer, uint32& uiDamage)
-    {
-        if (uiDamage > m_creature->GetHealth())
-        {
-            uiDamage = 0;
-            DoCastSpellIfCan(m_creature, SPELL_AEGIS, CAST_TRIGGERED);
-        }
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        // Handling of his combat-end speech and Ragnaros summoning
-        if (m_uiSpeech)
-        {
-            if (m_uiSpeechTimer < uiDiff)
-            {
-                switch (m_uiSpeech)
-                {
-                    case 1:
-                        DoScriptText(SAY_DEFEAT_1, m_creature);
-                        m_uiSpeechTimer = 7500;
-                        ++m_uiSpeech;
-                        break;
-                    case 2:
-                        DoScriptText(SAY_DEFEAT_2, m_creature);
-                        m_uiSpeechTimer = 8000;
-                        ++m_uiSpeech;
-                        break;
-                    case 3:
-                        DoScriptText(SAY_DEFEAT_3, m_creature);
-                        m_uiSpeechTimer = 21500;
-                        ++m_uiSpeech;
-                        break;
-                    case 4:
-                        DoCastSpellIfCan(m_creature, SPELL_TELEPORT_SELF);
-                        m_uiSpeechTimer = 1100;
-                        ++m_uiSpeech;
-                        break;
-                    case 5:
-                        // Majordomo is away now, remove his adds (TODO: perhaps handle them in a different way, unclear)
-                        UnsummonMajordomoAdds();
-                        m_uiSpeech = 0;
-                        break;
-                        // TODO: teleport to ragnaros, implement ragnaros speech here, teleport might be to handled as part of the tele-self spell
-                }
+                if(pCreature) pCreature->SetDeathState(DEAD);
+                pCreature = m_creature->SummonCreature(AddEntry[i], POS_X[i], POS_Y[i], POS_Z[i], ORIENT[i], TEMPSUMMON_DEAD_DESPAWN, 0);
+                if(pCreature) AddGUID[i] = pCreature->GetGUID();
             }
             else
-                m_uiSpeechTimer -= uiDiff;
-        }
-
-        // When encounter finished, no need to do anything anymore (important for moving home after victory)
-        if (m_bHasEncounterFinished)
-            return;
-
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
-
-        // Cast Ageis to heal self
-        if (m_uiAegisTimer <= uiDiff)
-            m_uiAegisTimer = 0;
-        else
-            m_uiAegisTimer -= uiDiff;
-
-        if (m_creature->GetHealthPercent() < 90.0f && !m_uiAegisTimer)
-        {
-            DoCastSpellIfCan(m_creature, SPELL_AEGIS);
-            m_uiAegisTimer = 10000;
-        }
-
-        // Magic Reflection Timer
-        if (m_uiMagicReflectionTimer < uiDiff)
-        {
-            if (DoCastSpellIfCan(m_creature, SPELL_MAGIC_REFLECTION) == CAST_OK)
-                m_uiMagicReflectionTimer = 30000;
-        }
-        else
-            m_uiMagicReflectionTimer -= uiDiff;
-
-        // Damage Reflection Timer
-        if (m_uiDamageReflectionTimer < uiDiff)
-        {
-            if (DoCastSpellIfCan(m_creature, SPELL_DAMAGE_REFLECTION) == CAST_OK)
-                m_uiDamageReflectionTimer = 30000;
-        }
-        else
-            m_uiDamageReflectionTimer -= uiDiff;
-
-        // Teleports the target to the heated rock in the center of the area
-        if (m_uiTeleportTimer < uiDiff)
-        {
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
             {
-                if (DoCastSpellIfCan(pTarget, SPELL_TELEPORT) == CAST_OK)
-                    m_uiTeleportTimer = 20000;
+                pCreature->AI()->EnterEvadeMode();
+                pCreature->Relocate(POS_X[i], POS_Y[i], POS_Z[i], ORIENT[i]);
+                pCreature->StopMoving();
+            }
+			
+			adds[i] = pCreature;
+		}
+    }
+
+	void SelectAddEntry()
+    {
+        std::vector<uint32> AddList;
+        
+        for(uint8 i = 0; i < 8; ++i)
+            AddList.push_back(AddEntryList[i]);
+        
+         uint8 i = 0;
+        while(AddList.size() > 8)
+        {
+            AddList.erase(AddList.begin()+i);
+            i++;
+        }
+
+        i=0;
+
+        for(std::vector<uint32>::iterator itr = AddList.begin(); itr != AddList.end(); ++itr, ++i)
+            AddEntry[i] = *itr;
+    }
+
+	void CastShield()
+	{
+		int randomShield = urand(0, 1);
+		if (randomShield == 0)
+		{
+			//Cast MagicReflection
+			DoCast(m_creature, SPELL_MAGIC_REFLECTION);
+		}
+		else
+		{
+			//Cast DamageShield
+			DoCast(m_creature, SPELL_DAMAGE_REFLECTION);
+		}
+	}
+
+    void Aggro(Unit *who)
+    {
+		if (m_pInstance)
+			m_pInstance->SetData(DATA_MAJORDOMO, IN_PROGRESS);
+
+        DoScriptText(SAY_AGGRO, m_creature);
+
+		for(uint8 i = 0; i < 8; ++i)
+        {
+            Unit* Temp = m_creature->GetMap()->GetUnit(AddGUID[i]);
+            if(Temp && Temp->isAlive())
+                ((Creature*)Temp)->AI()->AttackStart(m_creature->getVictim());
+            else
+            {
+                //EnterEvadeMode();
+                break;
             }
         }
-        else
-            m_uiTeleportTimer -= uiDiff;
+    }
 
-        // Blastwave Timer
-        if (m_uiBlastwaveTimer < uiDiff)
+	void GetFriendly()
+	{
+		m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+		m_creature->setFaction(FRIENDLY_FACTION);
+		m_creature->Relocate(END_X, END_Y, END_Z, END_O);
+		m_creature->SendMonsterMove(END_X, END_Y, END_Z, SPLINETYPE_NORMAL, SPLINEFLAG_WALKMODE, 1000);
+		m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+	}
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+		
+		if (!adds[0]->isAlive())
+			if (!adds[1]->isAlive())
+				if (!adds[2]->isAlive())
+					if (!adds[3]->isAlive())
+						if (!adds[4]->isAlive())
+							if (!adds[5]->isAlive())
+								if (!adds[6]->isAlive())
+									if (!adds[7]->isAlive())
+									{
+										GetFriendly();
+										
+										if (Say_defeat_Timer < diff)
+										{	
+											DoScriptText(SAY_DEFEAT, m_creature);
+											Say_defeat_Timer = 4294967295;
+											
+											
+										}else Say_defeat_Timer -= diff;
+
+										if (Teleport_self_Timer < diff)
+										{
+											DoCast(m_creature, SPELL_TELEPORT);
+											m_creature->SetVisibility(VISIBILITY_OFF);
+											m_creature->SetDeathState(JUST_DIED);
+											m_pInstance->SetData(DATA_MAJORDOMO, DONE);
+							
+																
+											Teleport_self_Timer = 4294967295;
+
+											m_creature->SummonCreature(11502, 836.980042f, -832.665222f, -232.000001f, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+											
+										}else Teleport_self_Timer -= diff;
+
+									}
+									
+		if (!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+		{
+		
+			Teleport_self_Timer = 40000;
+			Say_defeat_Timer = 2000;
+
+			//Cast Ageis if less than 50% hp
+			if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 50)
+			{
+				DoCast(m_creature, SPELL_AEGIS);
+			}
+
+			if (Reflection_Timer < diff)
+			{
+				//random shield cast
+				CastShield();
+				Reflection_Timer = 25000;
+			}else Reflection_Timer -= diff;
+
+			if (Teleport_Timer < diff)
+			{
+				//Teleport to middle
+				if(Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+				{
+					if (pTarget)
+					{
+						DoCast(pTarget, SPELL_TELEPORT);
+						DoTeleportPlayer(pTarget, 735.580322f,-1175.523804f,-119.220230f, 5.683450f);
+						auraTarget = pTarget;
+					}
+				}
+				Teleport_Timer = 20000;
+			}else Teleport_Timer -= diff;
+
+			if (Aura_Timer < diff)
+			{
+				DoCast(auraTarget, SPELL_FLAME_AURA);
+				Aura_Timer = Teleport_Timer + 1000;
+
+			}else Aura_Timer -= diff;
+	        
+			if (Blastwave_Timer < diff)
+			{
+				DoCast(m_creature->getVictim(),SPELL_BLASTWAVE);
+				Blastwave_Timer = 10000;
+			}else Blastwave_Timer -= diff;
+
+			DoMeleeAttackIfReady();
+			}
+		else
+		{
+			return;
+		}
+	}
+ 
+};
+
+struct MANGOS_DLL_DECL boss_majordomo_addAI : public ScriptedAI
+{
+    ScriptedInstance* pInstance;
+	
+	
+	
+    boss_majordomo_addAI(Creature* c) : ScriptedAI(c)
+    {
+        pInstance = ((ScriptedInstance*)c->GetInstanceData());
+        Reset();
+    }
+
+    void Reset() {}
+    void Aggro(Unit* who) {}
+    void JustDied(Unit* killer)
+	{
+		if(!pInstance)
+            return;
+	}
+
+    void UpdateAI(const uint32 diff)
+    {
+		// Seems as there is no IN_PROGRESS data. Creatures stays always in EnterEvadeMode.
+		// if(pInstance && pInstance->GetData(DATA_MAJORDOMO) != IN_PROGRESS)
+        //    EnterEvadeMode();
+		
+		DoMeleeAttackIfReady();
+    }
+};
+
+#define SPELL_BLAST_WAVE    20229
+#define SPELL_FIREPUNCH		20623
+
+struct MANGOS_DLL_DECL boss_eliteAI : public boss_majordomo_addAI
+{
+
+    boss_eliteAI(Creature *c) : boss_majordomo_addAI(c) {}
+	
+	uint32 Shield_timer_elite;
+	uint32 Blast_wave_timer;
+	uint32 Firepunch_timer;
+
+    void Reset()
+    {	
+		Firepunch_timer = 10000;
+		Blast_wave_timer = 12000;
+		Shield_timer_elite = 25000;
+		boss_majordomo_addAI::Reset();
+    }
+	
+	void CastShield()
+	{
+		int randomShield = urand(0, 1);
+		if (randomShield == 0)
+		{
+			//Cast MagicReflection
+			DoCast(m_creature, SPELL_MAGIC_REFLECTION);
+		}
+		else
+		{
+			//Cast DamageShield
+			DoCast(m_creature, SPELL_DAMAGE_REFLECTION);
+		}
+	}
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(!m_creature->SelectHostileTarget() || !m_creature->getVictim() )
+            return;
+		
+		if (Firepunch_timer < diff)
+		{
+			DoCast(m_creature->getVictim(), SPELL_FIREPUNCH);
+			Firepunch_timer = 10000;
+		}else Firepunch_timer -=diff;
+		
+		if (Blast_wave_timer < diff)
         {
-            if (DoCastSpellIfCan(m_creature, SPELL_BLASTWAVE) == CAST_OK)
-                m_uiBlastwaveTimer = 10000;
-        }
-        else
-            m_uiBlastwaveTimer -= uiDiff;
+            DoCast(m_creature->getVictim(),SPELL_BLAST_WAVE);
+            Blast_wave_timer = 12000;
+        }else Blast_wave_timer -= diff;
 
-        DoMeleeAttackIfReady();
+		if (Shield_timer_elite < diff)
+		{
+			//random shield cast
+			CastShield();
+			Shield_timer_elite = 25000;
+		}else Shield_timer_elite -= diff;	
+
+        boss_majordomo_addAI::UpdateAI(diff);
+    }
+};
+
+#define SPELL_SHADOW_SHOCK    20603
+
+struct MANGOS_DLL_DECL boss_healerAI : public boss_majordomo_addAI
+{
+
+    boss_healerAI(Creature *c) : boss_majordomo_addAI(c) {}
+
+	uint32 Shield_timer_healer;
+	uint32 Shadow_shock_timer;
+
+    void Reset()
+    {
+		Shield_timer_healer = 25000;
+		Shadow_shock_timer = 10000;
+		boss_majordomo_addAI::Reset();
+    }
+	
+	void CastShield()
+	{
+		int randomShield = urand(0, 1);
+		if (randomShield == 0)
+		{
+			//Cast MagicReflection
+			DoCast(m_creature, SPELL_MAGIC_REFLECTION);
+		}
+		else
+		{
+			//Cast DamageShield
+			DoCast(m_creature, SPELL_DAMAGE_REFLECTION);
+		}
+	}
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(!m_creature->SelectHostileTarget() || !m_creature->getVictim() )
+            return;
+
+		if (Shadow_shock_timer < diff)
+		{
+			DoCast(m_creature->getVictim(), SPELL_SHADOW_SHOCK);
+			Shadow_shock_timer = 10000;
+		}else Shadow_shock_timer -= diff;
+
+		if (Shield_timer_healer < diff)
+		{
+			//random shield cast
+			CastShield();
+			Shield_timer_healer = 25000;
+		}else Shield_timer_healer -= diff;
+
+        boss_majordomo_addAI::UpdateAI(diff);
     }
 };
 
@@ -289,12 +466,31 @@ CreatureAI* GetAI_boss_majordomo(Creature* pCreature)
     return new boss_majordomoAI(pCreature);
 }
 
+CreatureAI* GetAI_boss_healer(Creature* pCreature)
+{
+    return new boss_healerAI(pCreature);
+}
+
+CreatureAI* GetAI_boss_elite(Creature *_Creature)
+{
+    return new boss_eliteAI (_Creature);
+}
+
 void AddSC_boss_majordomo()
 {
-    Script* pNewScript;
-
-    pNewScript = new Script;
-    pNewScript->Name = "boss_majordomo";
-    pNewScript->GetAI = &GetAI_boss_majordomo;
-    pNewScript->RegisterSelf();
+    Script *pNewscript;
+    pNewscript = new Script;
+    pNewscript->Name = "boss_majordomo";
+    pNewscript->GetAI = &GetAI_boss_majordomo;
+    pNewscript->RegisterSelf();
+	
+	pNewscript = new Script;
+    pNewscript->Name = "boss_elite";
+    pNewscript->GetAI = &GetAI_boss_elite;
+    pNewscript->RegisterSelf();
+	
+	pNewscript = new Script;
+    pNewscript->Name = "boss_healer";
+    pNewscript->GetAI = &GetAI_boss_healer;
+    pNewscript->RegisterSelf();
 }

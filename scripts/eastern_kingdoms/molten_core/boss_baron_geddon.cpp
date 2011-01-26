@@ -17,112 +17,76 @@
 /* ScriptData
 SDName: Boss_Baron_Geddon
 SD%Complete: 100
-SDComment: Armaggedon is not working properly (core issue)
+SDComment:
 SDCategory: Molten Core
 EndScriptData */
 
 #include "precompiled.h"
-#include "molten_core.h"
 
 enum
 {
-    EMOTE_SERVICE               = -1409000,
+	EMOTE_SERVICE		= -1409000,
 
-    SPELL_INFERNO               = 19695,
-    SPELL_IGNITE_MANA           = 19659,
-    SPELL_LIVING_BOMB           = 20475,
-    SPELL_ARMAGEDDON            = 20478
+	SPELL_INFERNO		= 19695,
+	SPELL_IGNITEMANA	= 19659,
+	SPELL_LIVINGBOMB    = 20475,
+	SPELL_ARMAGEDDOM    = 20479
 };
 
 struct MANGOS_DLL_DECL boss_baron_geddonAI : public ScriptedAI
 {
-    boss_baron_geddonAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        Reset();
-    }
+    boss_baron_geddonAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    ScriptedInstance* m_pInstance;
-
-    bool m_bIsArmageddon;
-    uint32 m_uiInfernoTimer;
-    uint32 m_uiIgniteManaTimer;
-    uint32 m_uiLivingBombTimer;
+    uint32 Inferno_Timer;
+    uint32 IgniteMana_Timer;
+    uint32 LivingBomb_Timer;
 
     void Reset()
     {
-        m_bIsArmageddon = false;
-        m_uiInfernoTimer = 45000;
-        m_uiIgniteManaTimer = 30000;
-        m_uiLivingBombTimer = 35000;
+        Inferno_Timer = 45000;                              //These times are probably wrong
+        IgniteMana_Timer = 30000;
+        LivingBomb_Timer = 35000;
     }
 
-    void Aggro(Unit* pWho)
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_GEDDON, IN_PROGRESS);
-    }
-
-    void JustDied(Unit* pKiller)
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_GEDDON, DONE);
-    }
-
-    void JustReachedHome()
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_GEDDON, NOT_STARTED);
-    }
-
-    void UpdateAI(const uint32 uiDiff)
+    void UpdateAI(const uint32 diff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (m_bIsArmageddon)                                // Do nothing untill armageddon triggers
+        //If we are <2% hp cast Armageddom
+        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 2)
+        {
+            m_creature->InterruptNonMeleeSpells(true);
+
+            DoCast(m_creature,SPELL_ARMAGEDDOM);
+            DoScriptText(EMOTE_SERVICE, m_creature);
             return;
-
-        // If we are <2% hp cast Armageddom
-        if (m_creature->GetHealthPercent() <= 2.0f && !m_bIsArmageddon)
-        {
-            if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
-            {
-                DoScriptText(EMOTE_SERVICE, m_creature);
-                m_bIsArmageddon = true;
-                return;
-            }
         }
 
-        // Inferno_Timer
-        if (m_uiInfernoTimer < uiDiff)
+        //Inferno_Timer
+        if (Inferno_Timer < diff)
         {
-            if (DoCastSpellIfCan(m_creature, SPELL_INFERNO) == CAST_OK)
-                m_uiInfernoTimer = 45000;
-        }
-        else
-            m_uiInfernoTimer -= uiDiff;
+            DoCast(m_creature,SPELL_INFERNO);
+            Inferno_Timer = 45000;
+        }else Inferno_Timer -= diff;
 
-        // Ignite Mana Timer
-        if (m_uiIgniteManaTimer < uiDiff)
+        //IgniteMana_Timer
+        if (IgniteMana_Timer < diff)
         {
-            if (DoCastSpellIfCan(m_creature, SPELL_IGNITE_MANA) == CAST_OK)
-                m_uiIgniteManaTimer = 30000;
-        }
-        else
-            m_uiIgniteManaTimer -= uiDiff;
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                DoCast(target,SPELL_IGNITEMANA);
 
-        // Living Bomb Timer
-        if (m_uiLivingBombTimer < uiDiff)
+            IgniteMana_Timer = 30000;
+        }else IgniteMana_Timer -= diff;
+
+        //LivingBomb_Timer
+        if (LivingBomb_Timer < diff)
         {
-            if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-            {
-                if (DoCastSpellIfCan(pTarget, SPELL_LIVING_BOMB) == CAST_OK)
-                    m_uiLivingBombTimer = 35000;
-            }
-        }
-        else
-            m_uiLivingBombTimer -= uiDiff;
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                DoCast(target,SPELL_LIVINGBOMB);
+
+            LivingBomb_Timer = 35000;
+        }else LivingBomb_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
@@ -135,10 +99,9 @@ CreatureAI* GetAI_boss_baron_geddon(Creature* pCreature)
 
 void AddSC_boss_baron_geddon()
 {
-    Script* pNewScript;
-
-    pNewScript = new Script;
-    pNewScript->Name = "boss_baron_geddon";
-    pNewScript->GetAI = &GetAI_boss_baron_geddon;
-    pNewScript->RegisterSelf();
+    Script *pNewscript;
+    pNewscript = new Script;
+    pNewscript->Name = "boss_baron_geddon";
+    pNewscript->GetAI = &GetAI_boss_baron_geddon;
+    pNewscript->RegisterSelf();
 }

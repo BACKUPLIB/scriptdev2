@@ -201,7 +201,7 @@ CreatureAI* GetAI_npc_the_scourge_cauldron(Creature* pCreature)
 ##  npc_anchorite_truuen
 ######*/
 
-enum eTruuen
+enum
 {
     NPC_GHOST_UTHER             = 17233,
     NPC_THEL_DANIS              = 1854,
@@ -219,7 +219,7 @@ enum eTruuen
     SAY_WP_25                   = -1999987,  //Thank you my friend for making this possible. This is a day that I shall never forget! I think I will stay a while. Please return to High Priestess MacDonnell at the camp. I know that she'll be keenly interested to know of what has transpired here.
 };
 
-struct npc_anchorite_truuenAI : public npc_escortAI
+struct MANGOS_DLL_DECL npc_anchorite_truuenAI : public npc_escortAI
 {    
     npc_anchorite_truuenAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
@@ -231,6 +231,7 @@ struct npc_anchorite_truuenAI : public npc_escortAI
 
     void Reset()
     {        
+        m_creature->SetStandState(UNIT_STAND_STATE_STAND);
         m_uiChatTimer = 7000;
     }
 
@@ -243,6 +244,10 @@ struct npc_anchorite_truuenAI : public npc_escortAI
     void WaypointReached(uint32 i)
     {
         Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
         switch (i)
         {
             case 8:
@@ -297,7 +302,7 @@ struct npc_anchorite_truuenAI : public npc_escortAI
             pPlayer->FailQuest(QUEST_TOMB_LIGHTBRINGER);  
     }
 
-    void UpdateAI(const uint32 uiDiff)
+     void UpdateAI(const uint32 uiDiff)
     {
         npc_escortAI::UpdateAI(uiDiff);
         DoMeleeAttackIfReady();

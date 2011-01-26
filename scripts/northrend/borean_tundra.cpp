@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Borean_Tundra
 SD%Complete: 100
-SDComment: Quest support: 11570, 11590, 11692, 11676, 11708, 11919, 11940, 11961. Taxi vendors. 
+SDComment: Quest support: 11560, 11570, 11590, 11664, 11692, 11676, 11708, 11919, 11940, 11961. Taxi vendors. 
 SDCategory: Borean Tundra
 EndScriptData */
 
@@ -33,6 +33,15 @@ npc_lurgglbr
 npc_nexus_drake
 go_scourge_cage
 npc_beryl_sorcerer
+npc_orphaned_calf
+npc_nerubar_victim
+npc_seaforium_depth_charge
+npc_storm_totem
+npc_sage_earth_and_sky
+go_tadpole_cage
+npc_tadpole
+npc_bonker_togglevolt
+npc_mootoo
 EndContentData */
 
 #include "precompiled.h"
@@ -1083,6 +1092,66 @@ CreatureAI* GetAI_npc_bonker_togglevolt(Creature* pCreature)
     return new npc_bonker_togglevoltAI(pCreature);
 }
 
+/*#####
+## npc_mootoo
+#####*/
+
+enum
+{
+    SAY_START         = -1999932,
+    SAY_MIDDLE        = -1999933,
+    SAY_END           = -1999934,
+
+    QUEST_ESCAPE_DUST = 11664
+};
+
+struct MANGOS_DLL_DECL npc_mootooAI : public npc_escortAI
+{
+    npc_mootooAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = GetPlayerForEscort();
+
+        if (!pPlayer)
+            return;
+
+        switch(i)
+        {
+            case 10:
+                DoScriptText(SAY_MIDDLE, m_creature, pPlayer);
+                break;
+            case 15:
+                DoScriptText(SAY_END, m_creature, pPlayer);
+                pPlayer->GroupEventHappens(QUEST_ESCAPE_DUST, m_creature);
+                break;
+        }
+    }
+
+    void Reset() {}
+};
+
+bool QuestAccept_npc_mootoo(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_ESCAPE_DUST)
+    {
+        DoScriptText(SAY_START, pCreature, pPlayer);
+
+        if (npc_mootooAI* pEscortAI = dynamic_cast<npc_mootooAI*>(pCreature->AI()))
+        {
+            pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
+            pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+            //pCreature->SetByteValue(UNIT_FIELD_BYTES_1, 0, 0);
+        }
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_mootoo(Creature* pCreature)
+{
+    return new npc_mootooAI(pCreature);
+}
+
 void AddSC_borean_tundra()
 {
     Script *newscript;
@@ -1187,5 +1256,11 @@ void AddSC_borean_tundra()
     newscript->Name = "npc_bonker_togglevolt";
     newscript->GetAI = &GetAI_npc_bonker_togglevolt;
     newscript->pQuestAcceptNPC = &QuestAccept_npc_bonker_togglevolt;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_mootoo";
+    newscript->GetAI = &GetAI_npc_mootoo;
+    newscript->pQuestAcceptNPC = &QuestAccept_npc_mootoo;
     newscript->RegisterSelf();
 }

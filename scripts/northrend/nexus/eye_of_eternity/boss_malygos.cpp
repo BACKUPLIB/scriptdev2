@@ -26,7 +26,6 @@ EndScriptData */
 /*TODO:
 (13:25:29) [DEV]kelthuzad: vortex debuff an alle vergeben
 (13:25:29) [DEV]kelthuzad: kampf von vehicle plattformen aus prüfen
-(13:25:29) [DEV]kelthuzad: kisten am ende nicht lootbar (wegen vehicle)
 */
 #include "precompiled.h"
 #include "eye_of_eternity.h"
@@ -345,7 +344,12 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         m_creature->SummonCreature(NPC_ALEXSTRASZA, CENTER_X+20.0f, CENTER_Y+20.0f, AIR_Z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
         m_creature->GetMap()->CreatureRelocation(m_creature, m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z-500.0f, 0);
         m_creature->SendMonsterMove(m_creature->GetPositionX(), m_creature->GetPositionY(), FLOOR_Z-400.0f, SPLINETYPE_NORMAL , m_creature->GetSplineFlags(), 10000);
-    }
+		
+		//hack to make loot accessible
+		if (m_pInstance)
+			if (GameObject* pPlatform = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_PLATFORM)))
+				pPlatform->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
+	}
 
     void KilledUnit(Unit* pVictim)
     {
@@ -661,9 +665,8 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 //I will try to use this again, maybe I have fix...
                                 itr->getSource()->GetCamera().SetView(pVortex);
                                 //itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
-								m_creature->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
+								itr->getSource()->CastSpell(m_creature, SPELL_VORTEX_DMG_AURA, true);
                             }
-							m_creature->CastSpell(m_creature, SPELL_VORTEX_DMG_AURA, true);
 						} // end if map && vortex
                         //DoCast(m_creature, SPELL_VORTEX);
                         m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, 0);
@@ -707,10 +710,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     else if (m_uiVortexPhase == MAX_VORTEX+9)
                     {
                         m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, 0);
+						m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         m_creature->RemoveSplineFlag(SPLINEFLAG_FLYING);
                         m_uiSubPhase = 0;
                         m_creature->GetMotionMaster()->Clear();
-						m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         if (Unit* pTarget = m_creature->getVictim())
                             m_creature->GetMotionMaster()->MoveChase(pTarget);
                         SetCombatMovement(true);
@@ -1504,10 +1507,6 @@ struct MANGOS_DLL_DECL npc_whyrmrest_skytalonAI : public ScriptedAI
 
     void JustDied(Unit* killer)
     {
-		//hack to make loot accessible
-		if (m_pInstance)
-			if (GameObject* pPlatform = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_PLATFORM)))
-				pPlatform->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
 
         if (!m_creature || m_creature->GetTypeId() != TYPEID_UNIT)
             return;

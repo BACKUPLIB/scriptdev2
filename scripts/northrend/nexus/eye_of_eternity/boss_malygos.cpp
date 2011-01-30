@@ -22,6 +22,13 @@ SDAuthor: Tasssadar + PSZ + some corrections from MaxXx2021 and /dev/rsa
 SDCategory: Nexus, Eye of Eternity
 EndScriptData */
 
+
+/*TODO:
+(13:25:29) [DEV]kelthuzad: vortex debuff an alle vergeben
+(13:25:29) [DEV]kelthuzad: sobald er abhebt unangreifbar machen
+(13:25:29) [DEV]kelthuzad: kampf von vehicle plattformen aus prüfen
+(13:25:29) [DEV]kelthuzad: kisten am ende nicht lootbar (wegen vehicle)
+*/
 #include "precompiled.h"
 #include "eye_of_eternity.h"
 #include "Vehicle.h"
@@ -656,11 +663,12 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 itr->getSource()->GetCamera().SetView(pVortex);
                                 itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
                             }
-                        }
+							pVortex->CastSpell(m_creature,SPELL_VORTEX_DMG_AURA,true); // dont know if this will help
+                        } // end if map && vortex
                         //DoCast(m_creature, SPELL_VORTEX);
                         m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, 0);
                         DoCast(m_creature, SPELL_VORTEX_CHANNEL);
-                    }
+                    } // end if vortexphase == 3
                     else if (m_uiVortexPhase > 3 && m_uiVortexPhase < MAX_VORTEX+3)
                     {
                         Map* pMap = m_creature->GetMap();
@@ -678,7 +686,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 }
                             }
                         }
-                    }
+                    } // end if vortexPhase > 3 && vortexPhase < MAX+3
                     else if (m_uiVortexPhase == MAX_VORTEX+3)
                     {
                         m_creature->RemoveAurasDueToSpell(SPELL_VORTEX_CHANNEL);
@@ -695,7 +703,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 itr->getSource()->NearTeleportTo(CENTER_X, CENTER_Y, FLOOR_Z+20.0f, 0);
                             }
                         }
-                    }
+                    } // end if vortexPhase == MAX+3
                     else if (m_uiVortexPhase == MAX_VORTEX+9)
                     {
                         m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, 0);
@@ -710,7 +718,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     }
                     ++m_uiVortexPhase;
                     m_uiTimer = 500;
-                }
+                } // end if vortexPhase > 0
                 else
                     m_uiTimer -= uiDiff;
                 return;
@@ -755,6 +763,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             {
                 m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_UNK_2);
                 m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
+				m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
                 SetCombatMovement(false);
                 m_creature->GetMotionMaster()->Clear();
                 m_creature->GetMotionMaster()->MovePoint(POINT_ID_VORTEX_AIR, CENTER_X, CENTER_Y, AIR_Z);

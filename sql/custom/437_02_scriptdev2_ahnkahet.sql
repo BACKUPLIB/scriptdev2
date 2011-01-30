@@ -1,7 +1,7 @@
 -- instance Ahn'kahet fixes
 
 -- texts for boss herals volazj
-DELETE FROM `script_texts` WHERE `entry` BETWEEN -1619044 AND -1619033;
+DELETE FROM `script_texts` WHERE `entry` BETWEEN -1619039 AND -1619033;
 INSERT INTO `script_texts` (`entry`,`content_default`,`sound`,`type`, `emote`,`language`,`comment`) VALUES 
 (-1619033, 'Shgla\'yos plahf mh\'naus.', 14043, 1, 0, 0, 'volazj SAY_AGGRO'),
 (-1619034, 'Gul\'kafh an\'shel. Yoq\'al shn ky ywaq nuul.', 14044, 1, 0, 0, 'volazj SAY_INSANITY'),

@@ -3,7 +3,7 @@
 -- mob updates
 
 -- npc 25483 (Shadowsword Manafiend - Cast Drain Mana at 10% Mana)
-UPDATE creature_ai_scripts SET action1_param2=0, action1_param3=16 WHERE id = 2548303 AND action1_type = 11 AND action1_param1 = 46453;
+UPDATE creature_ai_scripts SET action1_param2=0, action1_param3=16 WHERE creature_id = 25483 AND action1_type = 11 AND action1_param1 = 46453;
 -- npc 25507 (sunblade protector)
 UPDATE `creature_template` SET `minhealth`=387450, `maxhealth`=387450 WHERE `entry` IN (25507);
 UPDATE `creature` SET `curhealth` = 387450 WHERE `id` IN (25507);

@@ -22,11 +22,6 @@ SDAuthor: Tasssadar + PSZ + some corrections from MaxXx2021 and /dev/rsa
 SDCategory: Nexus, Eye of Eternity
 EndScriptData */
 
-
-/*TODO:
-(13:25:29) [DEV]kelthuzad: vortex debuff an alle vergeben
-(13:25:29) [DEV]kelthuzad: kampf von vehicle plattformen aus prüfen
-*/
 #include "precompiled.h"
 #include "eye_of_eternity.h"
 #include "Vehicle.h"
@@ -46,6 +41,7 @@ enum
     SPELL_ARCANE_STORM_H            = 61694,
     SPELL_VORTEX                    = 56105,
     SPELL_VORTEX_DMG_AURA           = 56266, // on 10 sec, deal 2000 damage all player around caster
+	SPELL_VORTEX_DMG_TICK			= 56256, // deals 2000 dmg to caster
     SPELL_VORTEX_VISUAL             = 55873, // visual effect around platform. summon trigger
     SPELL_VORTEX_CHANNEL            = 56237, // Malygos Channel Effect
     SPELL_POWER_SPARK               = 56152, // if spark reach malygos then buff him
@@ -251,6 +247,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
     uint32 m_uiTimer;
     uint32 m_uiEnrageTimer;
     uint32 m_uiVortexTimer;
+	uint32 m_uiVortexDmgTickTimer;
     uint32 m_uiArcaneBreathTimer;
     uint32 m_uiPowerSparkTimer;
     uint32 m_uiDeepBreathTimer;
@@ -285,6 +282,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         m_uiArcaneBreathTimer = urand(13000, 16000);
         m_uiArcaneStormTimer = urand(10000, 15000);
         m_uiVortexTimer = 60000;
+		m_uiVortexDmgTickTimer = 0;
         m_uiPowerSparkTimer = urand(20000, 30000);
         m_uiDeepBreathTimer = 65000;
         m_uiShellTimer = 0;
@@ -664,8 +662,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 //Crash the server in group update far members, dunno why
                                 //I will try to use this again, maybe I have fix...
                                 itr->getSource()->GetCamera().SetView(pVortex);
-                                //itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
-								itr->getSource()->CastSpell(m_creature, SPELL_VORTEX_DMG_AURA, true);
+                                itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
                             }
 						} // end if map && vortex
                         //DoCast(m_creature, SPELL_VORTEX);
@@ -686,6 +683,12 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                         continue;
 
                                     itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);
+
+									// hack for vortex dmg spell -> deal damage tick every 2 loops == 1/sec
+									if(++m_uiVortexDmgTickTimer%2)
+									{
+										itr->getSource()->CastSpell(itr->getSource(),SPELL_VORTEX_DMG_TICK,true);
+									}
                                 }
                             }
                         }
@@ -726,7 +729,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                 else
                     m_uiTimer -= uiDiff;
                 return;
-            }
+            } // end if subphase vortex
 
             if (m_uiArcaneBreathTimer <= uiDiff)
             {
@@ -793,6 +796,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     m_uiSubPhase = SUBPHASE_TALK;
                     m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_UNK_2);
                     m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
+					m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
                     SetCombatMovement(false);
                     m_creature->GetMotionMaster()->Clear();
                     m_creature->GetMotionMaster()->MovePoint(0, CENTER_X, CENTER_Y, AIR_Z);
@@ -804,7 +808,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             }
             else
                 m_uiTimer -= uiDiff;  
-        }
+        } // end if phase 1
         else if (m_uiPhase == PHASE_ADDS)
         {
             if (m_uiSubPhase == SUBPHASE_TALK)
@@ -851,7 +855,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                         else
                             pPlayer->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, false);
                     }
-                }
+                } 
 
                 if (m_uiPhase == PHASE_DRAGONS)
                     return;
@@ -910,7 +914,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             }
             else
                 m_uiDeepBreathTimer -= uiDiff;
-        }
+        } // end if phase 2
         else if (m_uiPhase == PHASE_DRAGONS)
         {
             if (m_uiSubPhase == SUBPHASE_DESTROY_PLATFORM_1)

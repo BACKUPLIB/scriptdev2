@@ -6,4 +6,4 @@ UPDATE `creature_template` SET `mechanic_immune_mask` = 617299803 WHERE `entry` 
 -- change loot position
 UPDATE `creature` SET `position_x` = 754.554, `position_z` = 295 WHERE `guid` = 132314;
 -- fix loot
-UPDATE `creature_template` SET `lootid` = 26097 WHERE `entry` = 193905; -- atm this is the same as hero-loot
+UPDATE `gameobject_template` SET `data1` = 26097 WHERE `entry` = 193905; -- atm this is the same as hero-loot

@@ -76,7 +76,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_GROBBULUS, DONE);
         Despawnall();
     }
-    
+
     void Despawnall()
     {
         std::list<Creature*> m_pCloud;
@@ -95,7 +95,7 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
         for(std::list<Creature*>::iterator iter = m_pSpray.begin(); iter != m_pSpray.end(); ++iter)
         {
             (*iter)->ForcedDespawn();
-        } 
+        }
     }
 
     void Aggro(Unit *who)
@@ -123,10 +123,20 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
             return;
 
         if (PoisonCloud_Timer < diff)
+            if (!m_creature->CanReachWithMeleeAttack(m_creature->getVictim()))
+            {
+                if (DoCastSpellIfCan(m_creature, SPELL_SLIME_STREAM) == CAST_OK)
+                    // Give some time, to re-reach grobbulus
+                    m_uiSlimeStreamTimer = 3*IN_MILLISECONDS;
+            }
+        }
+        else
         {
-            DoCast(m_creature, SPELL_POISON_CLOUD);
-            PoisonCloud_Timer = 15000;
-        }else PoisonCloud_Timer -= diff;
+            if (m_uiSlimeStreamTimer < uiDiff)
+                m_uiSlimeStreamTimer = 0;
+            else
+                m_uiSlimeStreamTimer -= uiDiff;
+        }
 
         if (MutatingInjection_Timer < diff)
         {
@@ -200,4 +210,3 @@ void AddSC_boss_grobbulus()
     newscript->GetAI = &GetAI_npc_grobbulus_poison_cloud;
     newscript->RegisterSelf();
 }
-

@@ -3,7 +3,7 @@
 -- add npc 26633 (Ursoc)
 	DELETE FROM `creature` WHERE id = 26633;
 	INSERT INTO creature (guid, id, map, spawnMask, phaseMask, position_x, position_y, position_z, orientation, spawntimesecs, spawndist,curhealth, curmana, DeathState, MovementType) VALUES 
-	(230026, 26633, 571, 1, 1, 4922.347646, -3843.324951, 338.575836, 2.873092, 1000, 5, 212.700, 0, 0, 0);
+	(230026, 26633, 571, 1, 1, 4922.347646, -3843.324951, 338.575836, 2.873092, 1000, 0, 212700, 0, 0, 0);
 
 -- fix quest 12231 / 12247 (TODO: some of the script seems to be already done (menu_id 65535)
 	UPDATE `creature_template` SET `gossip_menu_id` = '20020' WHERE `entry` = 27275;

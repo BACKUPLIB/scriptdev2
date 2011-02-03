@@ -76,10 +76,10 @@
 
 -- add npc 30686 - mantis bug 3075
 	UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '80', `minhealth` = '88200', `maxhealth` = '88200', `minmana` = '31952', `maxmana` = '31952' WHERE `entry` =30686;
-
+	UPDATE `creature` SET `curhealth` = '88200', `curmana` = '31952' WHERE `id` =30686;
 -- add npc 32444 - mantis bug #0003080
 	DELETE FROM creature WHERE id = '32444';
-	INSERT INTO creature VALUES (240001, 32444,571,1,1,0,0,7636.58,2058.89,600.261,2.9099,25,5,0,12600,3994,0,0);
+	INSERT INTO creature VALUES (240001, 32444,571,1,1,0,0,7636.58,2058.89,600.261,2.9099,25,0,0,12600,3994,0,0);
 
 -- fix quest 13119 - mantis bug #0002906
 	UPDATE `quest_template` SET `ReqSpellCast1` = '57853', `ReqSpellCast2` = '57853', `ReqSpellCast3` = '57853', `ReqSpellCast4` = '57853' WHERE `entry` =13119;
@@ -98,7 +98,7 @@
 	DELETE FROM `creature` WHERE `guid` BETWEEN 240017 AND 240030;
 	DELETE FROM `creature` WHERE `guid` = 982353;
 	INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
-	(982353, 30696, 571, 1, 1, 0, 0, 6439.36, 3118.73, 657.482, 0.325935, 25, 5, 0, 12600, 0, 0, 0),
+	(982353, 30696, 571, 1, 1, 0, 0, 6439.36, 3118.73, 657.482, 0.325935, 25, 5, 0, 12600, 0, 0, 1),
 	(240017, 30696, 571, 1, 1, 0, 0, 6474.94, 3094.87, 657.613, 3.91206, 25, 5, 0, 12600, 0, 0, 1),
 	(240018, 30696, 571, 1, 1, 0, 0, 6437.91, 3079.93, 657.706, 0.790105, 25, 5, 0, 12600, 0, 0, 1),
 	(240019, 30696, 571, 1, 1, 0, 0, 6468.86, 3161.92, 657.481, 3.58063, 25, 5, 0, 12600, 0, 0, 1),
@@ -149,14 +149,14 @@
 	UPDATE `gameobject_template` SET `data2` = '60000' WHERE `entry` =195310;
 
 -- fix quest 13125 / NPCs 30829, 30830, 30831
-	DELETE FROM `creature` WHERE `guid` BETWEEN '240031' AND '240033';
-	INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`) VALUES
-	('240031', '30830', '571', '7196.497', '642.017', '489.022', '4.126'),
-	('240032', '30829', '571', '6839.000', '595.069', '426.229', '4.006'),
-	('240033', '30831', '571', '6862.289', '407.908', '471.692', '1.124');
 	UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '183000', `maxhealth` = '183000', `minmana` = '117000', `maxmana` = '117000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30829;
 	UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30830;
 	UPDATE `creature_template` SET `minlevel` = '79', `maxlevel` = '79', `minhealth` = '244000', `maxhealth` = '244000', `minmana` = '156000', `maxmana` = '156000', `armor` = '9000', `faction_H` = '21', `faction_A` = '21' WHERE `entry` =30831;
+	DELETE FROM `creature` WHERE `guid` BETWEEN '240031' AND '240033';
+	INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`,`spawndist`, `MovementType`, `curhealth`, `curmana`) VALUES
+	('240031', '30830', '571', '7196.497', '642.017', '489.022', '4.126', 0, 0, '244000', '0'),
+	('240032', '30829', '571', '6839.000', '595.069', '426.229', '4.006', 0, 0, '183000', '117000'),
+	('240033', '30831', '571', '6862.289', '407.908', '471.692', '1.124', 0, 0, '244000', '156000');
 
 -- fix quest 12810 / NPC 29392
 	UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` =29392;

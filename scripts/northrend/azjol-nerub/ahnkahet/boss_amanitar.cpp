@@ -98,6 +98,17 @@ struct MANGOS_DLL_DECL boss_amanitarAI : public ScriptedAI
     {
         if (m_pInstance)
             m_pInstance->SetData(TYPE_AMANITAR, DONE);
+
+		Map* pMap = m_creature->GetMap();
+        if (pMap && pMap->IsDungeon())
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+			{
+				if (itr->getSource()->HasAura(SPELL_MINI))
+					itr->getSource()->RemoveAurasDueToSpell(SPELL_MINI);
+			}
+        }
     }
     void ShowMushrooms(bool show = true)
     {

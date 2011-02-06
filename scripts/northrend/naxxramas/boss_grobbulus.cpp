@@ -123,20 +123,10 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
             return;
 
         if (PoisonCloud_Timer < diff)
-            if (!m_creature->CanReachWithMeleeAttack(m_creature->getVictim()))
-            {
-                if (DoCastSpellIfCan(m_creature, SPELL_SLIME_STREAM) == CAST_OK)
-                    // Give some time, to re-reach grobbulus
-                    m_uiSlimeStreamTimer = 3*IN_MILLISECONDS;
-            }
-        }
-        else
         {
-            if (m_uiSlimeStreamTimer < uiDiff)
-                m_uiSlimeStreamTimer = 0;
-            else
-                m_uiSlimeStreamTimer -= uiDiff;
-        }
+            DoCast(m_creature, SPELL_POISON_CLOUD);
+            PoisonCloud_Timer = 15000;
+        }else PoisonCloud_Timer -= diff;
 
         if (MutatingInjection_Timer < diff)
         {

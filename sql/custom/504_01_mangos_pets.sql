@@ -1,9 +1,13 @@
-    /* Death Knight Ghoul
-    ------------------------*/
--- set AI, remove "Huddle" (no sense for autocast with current AI) and Leap (also work's not correct) */
+-- pet fixes
+
+/*
+    Death Knight Ghoul
+  ----------------------
+*/
+-- set AI, remove "Huddle" (no sense for autocast with current AI) and Leap (also work's not correct, handled by script) */
 UPDATE creature_template SET ScriptName = "pet_dk_ghoul", spell2 = 0, spell4 = 0 WHERE entry = 26125;
 
--- levelstats
+-- levelstats, values are interpolated out of two correct values
 /*  just for me as backup:
     //              ( hp, mana, armor, mindmg, maxdmg, str, agi, sta, int, spi)
     statMap[62]= stats(3237,    0,  4623,     49,     81, 141, 319, 266, 30,  80);
@@ -96,3 +100,67 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 ( 26125, 80, 5342, 0, 10472, 75, 117, 331, 856, 361, 65, 109);
 
 UPDATE pet_scaling_data SET apbase=-100, apbasescale=147 where creature_entry=26125 AND aura = 0;
+
+
+/*
+    Greater Earth Elemental (Shaman)
+   ----------------------------------
+*/
+-- set AI, "attacks quite fast"
+UPDATE creature_template SET ScriptName = "pet_greater_earth_elemental", baseattacktime = 1500 WHERE entry = 15352;
+
+-- levelstats, values are guessed
+/*  increased hp and armor (in comparison to UDB values)
+    //                (  hp, mana, armor, mindmg, maxdmg, str, agi, sta, int, spi)
+    statMap[68]= stats(7100,    0,  7000,     50,     83, 132,  62,  96, 132, 320);
+    statMap[80]= stats(12200,   0, 14300,     60,    100, 261,  90, 162, 165, 460);
+
+*/
+DELETe FROM `pet_levelstats` WHERE `creature_entry` = 15352 AND `level` BETWEEN 66 AND 80;
+INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, `mindmg`, `maxdmg`, `str`, `agi`, `sta`, `inte`, `spi`) VALUES
+(15352, 66, 7100, 0, 7000, 50, 83, 132, 62, 96, 132, 320),
+(15352, 67, 7464, 0, 7521, 50, 84, 141, 64, 100, 134, 330),
+(15352, 68, 7828, 0, 8042, 51, 85, 150, 66, 105, 136, 340),
+(15352, 69, 8192, 0, 8564, 52, 86, 159, 68, 110, 139, 350),
+(15352, 70, 8557, 0, 9085, 52, 87, 168, 70, 114, 141, 360),
+(15352, 71, 8921, 0, 9607, 53, 89, 178, 72, 119, 143, 370),
+(15352, 72, 9285, 0, 10128, 54, 90, 187, 74, 124, 146, 380),
+(15352, 73, 9650, 0, 10650, 55, 91, 196, 76, 129, 148, 390),
+(15352, 74, 10014, 0, 11171, 55, 92, 205, 78, 133, 150, 400),
+(15352, 75, 10378, 0, 11692, 56, 93, 214, 80, 138, 153, 410),
+(15352, 76, 10742, 0, 12214, 57, 95, 224, 82, 143, 155, 420),
+(15352, 77, 11107, 0, 12735, 57, 96, 233, 84, 147, 157, 430),
+(15352, 78, 11471, 0, 13257, 58, 97, 242, 86, 152, 160, 440),
+(15352, 79, 11835, 0, 13778, 59, 98, 251, 88, 157, 162, 450),
+(15352, 80, 12200, 0, 14300, 60, 100, 261, 90, 162, 165, 460);
+
+
+
+/*
+    Greater Fire Elemental (Shaman)
+   ---------------------------------
+*/
+-- set AI
+UPDATE creature_template SET ScriptName = "pet_greater_fire_elemental" WHERE entry = 15438;
+
+-- levelstats, values are guessed
+/*  increased dmg quite much
+    //                (  hp, mana, armor, mindmg, maxdmg, str, agi, sta, int, spi)
+    statMap[68]= stats(6800, 2052,   980,    123,    164, 230, 138,  99, 320, 340);
+    statMap[80]= stats(8000, 2280,  1100,    160,    210, 366, 160, 125, 405, 460);
+*/
+DELETE FROM `pet_levelstats` WHERE `creature_entry` = 15438 AND `level` BETWEEN 68 AND 80;
+INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, `mindmg`, `maxdmg`, `str`, `agi`, `sta`, `inte`, `spi`) VALUES
+( 15438, 68, 6800, 2052, 980, 123, 164, 230, 138, 99, 320, 340),
+( 15438, 69, 6900, 2071, 990, 126, 167, 241, 139, 101, 327, 350),
+( 15438, 70, 7000, 2090, 1000, 129, 171, 252, 141, 103, 334, 360),
+( 15438, 71, 7100, 2109, 1010, 132, 175, 264, 143, 105, 341, 370),
+( 15438, 72, 7200, 2128, 1020, 135, 179, 275, 145, 107, 348, 380),
+( 15438, 73, 7300, 2147, 1030, 138, 183, 286, 147, 109, 355, 390),
+( 15438, 74, 7400, 2166, 1040, 141, 187, 298, 149, 112, 362, 400),
+( 15438, 75, 7500, 2185, 1050, 144, 190, 309, 150, 114, 369, 410),
+( 15438, 76, 7600, 2204, 1060, 147, 194, 320, 152, 116, 376, 420),
+( 15438, 77, 7700, 2223, 1070, 150, 198, 332, 154, 118, 383, 430),
+( 15438, 78, 7800, 2242, 1080, 153, 202, 343, 156, 120, 390, 440),
+( 15438, 79, 7900, 2261, 1090, 156, 206, 354, 158, 122, 397, 450),
+( 15438, 80, 8000, 2280, 1100, 160, 210, 366, 160, 125, 405, 460);

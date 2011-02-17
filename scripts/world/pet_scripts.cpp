@@ -24,6 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "PetAI.h"
 #include "Pet.h"
+#include "Totem.h"
 #include "SpellMgr.h"
 
 
@@ -46,7 +47,7 @@ struct MANGOS_DLL_DECL pet_simple_guardianAI : public PetAI
                 if (SpellEntry const *spellInfo = GetSpellStore()->LookupEntry(pPetInfo->spells[i]))
                 {
                     // skip spells without any cooldown
-                    if (!spellInfo->StartRecoveryTime && !GetSpellRecoveryTime(spellInfo))
+                    if (!spellInfo->StartRecoveryTime && !GetSpellRecoveryTime(spellInfo) && !(spellInfo->Attributes & SPELL_ATTR_PASSIVE))
                         continue;
                     // in case applying stat auras, we need to set it modifiable temporary
                     //pPet->SetCanModifyStats(true);
@@ -108,6 +109,164 @@ struct MANGOS_DLL_DECL pet_dk_ghoulAI : public pet_simple_guardianAI
     }
 };
 
+
+/*######
+## pet_greater_earth_elemental
+######*/
+
+enum
+{
+    SPELL_AOE_TAUNT         = 36213,
+    SPELL_IMMUNITY_NATURE   = 7941
+};
+
+struct MANGOS_DLL_DECL pet_greater_earth_elementalAI : public PetAI
+{
+    pet_greater_earth_elementalAI(Pet* pPet) : PetAI(pPet)
+    {
+        pPet->addSpell(SPELL_IMMUNITY_NATURE);
+        Reset();
+    }
+
+    uint32 m_timer;
+
+    void Reset()
+    {
+        m_timer = 500;
+    }
+
+    Unit* GetOriginalOwner()
+    {
+        Unit* owner = ((Pet*)m_creature)->GetOwner();
+        if (!owner)
+            return NULL;
+
+        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->IsTotem())
+            return NULL;
+
+        return ((Totem*)owner)->GetOwner();
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        PetAI::UpdateAI(uiDiff);
+
+        // kind of workaround to react also on non-hostile attackers
+        if (!m_creature->getVictim())
+            if (Unit* origOwner = GetOriginalOwner())
+            {
+                Unit* pTarget = origOwner->getAttackerForHelper();
+                if (pTarget && pTarget->IsWithinDist(m_creature, 35.0f))
+                    AttackStart(pTarget);
+            }
+
+        if (m_timer < uiDiff)
+        {
+            if (m_creature->getVictim() && !m_creature->IsNonMeleeSpellCasted(false))
+            {
+                m_creature->CastSpell(m_creature->getVictim(), SPELL_AOE_TAUNT, false);
+                m_timer = urand(2000, 6000);
+            }
+        }
+        else
+            m_timer -= uiDiff;
+    }
+};
+
+
+/*######
+## pet_greater_fire_elemental
+######*/
+
+enum
+{
+    SPELL_FIRE_NOVA = 12470,
+    SPELL_FIRE_BLAST = 57984,
+    SPELL_IMMUNITY_FIRE = 7942
+};
+
+struct MANGOS_DLL_DECL pet_greater_fire_elementalAI : public PetAI
+{
+    pet_greater_fire_elementalAI(Pet* pPet) : PetAI(pPet)
+    {
+        // Immunity: Fire
+        pPet->addSpell(SPELL_IMMUNITY_FIRE);
+        Reset();
+    }
+
+    uint32 m_timer_blast, m_timer_nova;
+    int32 m_damage_blast, m_damage_nova;
+
+    void Reset()
+    {
+        m_timer_blast = 500;
+        m_timer_nova  = 500;
+
+        // custom damage, as the core calculated damage of this spells is quite high
+        // (SPELL_ATTR_LEVEL_DAMAGE_CALCULATION)
+        m_damage_blast  = 47;
+        m_damage_nova   = 76;
+    }
+
+    Unit* GetOriginalOwner()
+    {
+        Unit* owner = ((Pet*)m_creature)->GetOwner();
+        if (!owner)
+            return NULL;
+
+        if (owner->GetTypeId() != TYPEID_UNIT || !((Creature*)owner)->IsTotem())
+            return NULL;
+
+        return ((Totem*)owner)->GetOwner();
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        PetAI::UpdateAI(uiDiff);
+
+        // kind of workaround to react also on non-hostile attackers
+        if (!m_creature->getVictim())
+            if (Unit* origOwner = GetOriginalOwner())
+            {
+                Unit* pTarget = origOwner->getAttackerForHelper();
+                if (pTarget && pTarget->IsWithinDist(m_creature, 35.0f))
+                    AttackStart(pTarget);
+            }
+
+        // fire nova
+        if (m_timer_nova < uiDiff)
+        {
+            if (m_creature->getVictim() && m_creature->getVictim()->IsWithinDist(m_creature, 6.0f) && !m_creature->IsNonMeleeSpellCasted(false))
+            {
+                m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_FIRE_NOVA, &m_damage_nova, 0, 0, false);
+                m_timer_nova = urand(5000, 10000);
+                m_timer_blast = 3000;
+            }
+        }
+        else
+            m_timer_nova -= uiDiff;
+
+        // fire blast
+        if (m_timer_blast < uiDiff)
+        {
+            if (m_creature->getVictim() && !m_creature->IsNonMeleeSpellCasted(false))
+            {
+                // cast fireblast always if out of range, and only sometimes when in melee range
+                bool cast = true;;
+                if (m_creature->CanReachWithMeleeAttack(m_creature->getVictim()))
+                    cast = !urand(0,2) ? false : true;
+                if (cast)
+                    m_creature->CastCustomSpell(m_creature->getVictim(), SPELL_FIRE_BLAST, &m_damage_blast, 0, 0, false);
+                m_timer_blast = 3000;
+                return;
+            }
+        }
+        else
+            m_timer_blast -= uiDiff;
+    }
+};
+
+
 CreatureAI* GetAI_pet_simple_guardian(Creature* pCreature)
 {
     if (pCreature->IsPet())
@@ -124,6 +283,22 @@ CreatureAI* GetAI_pet_dk_ghoul(Creature* pCreature)
         return NULL;
 }
 
+CreatureAI* GetAI_pet_greater_earth_elemental(Creature* pCreature)
+{
+    if (pCreature->IsPet())
+        return new pet_greater_earth_elementalAI((Pet*)pCreature);
+    else
+        return NULL;
+}
+
+CreatureAI* GetAI_pet_greater_fire_elemental(Creature* pCreature)
+{
+    if (pCreature->IsPet())
+        return new pet_greater_fire_elementalAI((Pet*)pCreature);
+    else
+        return NULL;
+}
+
 void AddSC_pets()
 {
     Script *newscript;
@@ -136,5 +311,15 @@ void AddSC_pets()
     newscript = new Script;
     newscript->Name = "pet_dk_ghoul";
     newscript->GetAI = &GetAI_pet_dk_ghoul;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "pet_greater_earth_elemental";
+    newscript->GetAI = &GetAI_pet_greater_earth_elemental;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "pet_greater_fire_elemental";
+    newscript->GetAI = &GetAI_pet_greater_fire_elemental;
     newscript->RegisterSelf();
 }

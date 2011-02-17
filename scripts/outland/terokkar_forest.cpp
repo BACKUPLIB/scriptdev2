@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Terokkar_Forest
 SD%Complete: 80
-SDComment: Quest support: 9889, 10009, 10873, 10896, 10446/10447, 10852, 10887, 10922, 11096, 11093, 10051/10052. Skettis->Ogri'la Flight
+SDComment: Quest support: 9889, 10009, 10873, 10896, 10446/10447, 10852, 10887, 10922, 11096, 11093, 10051, 10052. Skettis->Ogri'la Flight
 SDCategory: Terokkar Forest
 EndScriptData */
 
@@ -1211,93 +1211,93 @@ CreatureAI* GetAI_npc_isla_starmane(Creature* pCreature)
 
 void AddSC_terokkar_forest()
 {
-    Script *newscript;
+    Script* pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "mob_unkor_the_ruthless";
-    newscript->GetAI = &GetAI_mob_unkor_the_ruthless;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_unkor_the_ruthless";
+    pNewScript->GetAI = &GetAI_mob_unkor_the_ruthless;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_infested_root_walker";
-    newscript->GetAI = &GetAI_mob_infested_root_walker;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_infested_root_walker";
+    pNewScript->GetAI = &GetAI_mob_infested_root_walker;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_rotting_forest_rager";
-    newscript->GetAI = &GetAI_mob_rotting_forest_rager;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_rotting_forest_rager";
+    pNewScript->GetAI = &GetAI_mob_rotting_forest_rager;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "mob_netherweb_victim";
-    newscript->GetAI = &GetAI_mob_netherweb_victim;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "mob_netherweb_victim";
+    pNewScript->GetAI = &GetAI_mob_netherweb_victim;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_akuno";
-    newscript->GetAI = &GetAI_npc_akuno;
-    newscript->pQuestAcceptNPC = &QuestAccept_npc_akuno;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_akuno";
+    pNewScript->GetAI = &GetAI_npc_akuno;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_akuno;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_floon";
-    newscript->GetAI = &GetAI_npc_floon;
-    newscript->pGossipHello =  &GossipHello_npc_floon;
-    newscript->pGossipSelect = &GossipSelect_npc_floon;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_floon";
+    pNewScript->GetAI = &GetAI_npc_floon;
+    pNewScript->pGossipHello =  &GossipHello_npc_floon;
+    pNewScript->pGossipSelect = &GossipSelect_npc_floon;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_hungry_nether_ray";
-    newscript->GetAI = &GetAI_npc_hungry_nether_ray;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_hungry_nether_ray";
+    pNewScript->GetAI = &GetAI_npc_hungry_nether_ray;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_letoll";
-    newscript->GetAI = &GetAI_npc_letoll;
-    newscript->pQuestAcceptNPC = &QuestAccept_npc_letoll;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_letoll";
+    pNewScript->GetAI = &GetAI_npc_letoll;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_letoll;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_mana_bomb_exp_trigger";
-    newscript->GetAI = &GetAI_npc_mana_bomb_exp_trigger;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_mana_bomb_exp_trigger";
+    pNewScript->GetAI = &GetAI_npc_mana_bomb_exp_trigger;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "go_mana_bomb";
-    newscript->pGOUse = &GOUse_go_mana_bomb;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "go_mana_bomb";
+    pNewScript->pGOUse = &GOUse_go_mana_bomb;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_skyguard_handler_deesak";
-    newscript->pGossipHello =  &GossipHello_npc_skyguard_handler_deesak;
-    newscript->pGossipSelect = &GossipSelect_npc_skyguard_handler_deesak;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_skyguard_handler_deesak";
+    pNewScript->pGossipHello =  &GossipHello_npc_skyguard_handler_deesak;
+    pNewScript->pGossipSelect = &GossipSelect_npc_skyguard_handler_deesak;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_slim";
-    newscript->pGossipHello =  &GossipHello_npc_slim;
-    newscript->pGossipSelect = &GossipSelect_npc_slim;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_slim";
+    pNewScript->pGossipHello =  &GossipHello_npc_slim;
+    pNewScript->pGossipSelect = &GossipSelect_npc_slim;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "go_veil_skith_cage";
-    newscript->pGOUse = &GOUse_go_veil_skith_cage;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "go_veil_skith_cage";
+    pNewScript->pGOUse = &GOUse_go_veil_skith_cage;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name = "npc_captive_child";
-    newscript->GetAI = &GetAI_npc_captive_child;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_captive_child";
+    pNewScript->GetAI = &GetAI_npc_captive_child;
+    pNewScript->RegisterSelf();
 
-	newscript = new Script;
-    newscript->Name = "npc_skywing";
-    newscript->GetAI = &GetAI_npc_skywing;
-    newscript->pQuestAcceptNPC = &QuestAccept_npc_skywing;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "npc_isla_starmane";
+    pNewScript->GetAI = &GetAI_npc_isla_starmane;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_isla_starmane;
+    pNewScript->RegisterSelf();
 
-	newscript = new Script;
-    newscript->Name= "npc_isla_starmane";
-    newscript->GetAI = &GetAI_npc_isla_starmane;
-    newscript->pQuestAcceptNPC = &QuestAccept_npc_isla_starmane;
-    newscript->RegisterSelf();
+	pNewScript = new Script;
+    pNewScript->Name = "npc_skywing";
+    pNewScript->GetAI = &GetAI_npc_skywing;
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_skywing;
+    pNewScript->RegisterSelf();
 }

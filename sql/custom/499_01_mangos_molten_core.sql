@@ -21,3 +21,6 @@
 	DELETE FROM `creature` WHERE `id` = 12018;
 	INSERT INTO `creature` (`guid`, `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `curhealth`, `curmana`, spawndist, MovementType) VALUES
 	(230011, 12018, 409, 767.674, -1205.82, -119.415, 2.81403, 604800, 666200, 0, 0, 0);
+
+-- remove flags UNK_6, OOC_NOT_ATTACKABLE and PASSIVE from ragnaros
+	UPDATE `creature_template` SET `unit_flags` = 0 WHERE `entry` = 11502;

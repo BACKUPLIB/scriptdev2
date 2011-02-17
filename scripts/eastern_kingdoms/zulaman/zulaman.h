@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -46,12 +46,23 @@ enum InstanceZA
     DATA_HARRISON           = 16,
     DATA_SPIRIT_LYNX        = 17,
 
+    TYPE_CHESTLOOTED		= 18,
+
     DATA_J_EGGS_RIGHT       = 19,
     DATA_J_EGGS_LEFT        = 20,
 
     DATA_GO_GONG            = 21,
     DATA_GO_MALACRASS_GATE  = 22,
     DATA_GO_ENTRANCE        = 23,
+
+    DATA_HEXLORDGUID        = 24,
+    DATA_HEXLORDDOOR        = 25,
+    DATA_AKILZONDOOR        = 26,
+    DATA_ZULJINDOOR         = 27,
+    DATA_ENTRANCEDOOR       = 28,
+    DATA_HALAZZIFRONTDOOR   = 29,
+    DATA_HEXLORDGATE        = 30,
+    DATA_BOSSKILLED         = 31,
 
     NPC_EGG                 = 23817,
     NPC_SPIRIT_LYNX         = 24143

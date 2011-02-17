@@ -327,7 +327,7 @@ void AddSC_zulaman()
 
     newscript = new Script;
     newscript->Name = "go_strange_gong";
-    newscript->pGOHello = &GOHello_go_strange_gong;
+    newscript->pGossipHelloGO = &GOHello_go_strange_gong;
     newscript->RegisterSelf();
 
     newscript = new Script;

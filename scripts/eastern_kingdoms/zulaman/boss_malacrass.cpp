@@ -922,7 +922,7 @@ CreatureAI* GetAI_boss_koragg(Creature *_Creature)
 {
     return new boss_koraggAI (_Creature);
 }
-void AddSC_boss_hexlord_malacrass()
+void AddSC_boss_malacrass()
 {
     Script *newscript;
     newscript = new Script;

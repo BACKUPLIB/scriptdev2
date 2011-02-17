@@ -184,7 +184,7 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
     {
         WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
         data << field << value;
-        ((InstanceMap*)instance)->SendToPlayers(&data);
+		instance->SendToPlayers(&data);
     }
 
     const char* Save()

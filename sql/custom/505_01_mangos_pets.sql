@@ -1,8 +1,8 @@
 -- pet fixes
 
 /*
-    Death Knight Ghoul
-  ----------------------
+                    Death Knight Ghoul
+                  ----------------------
 */
 -- set AI, remove "Huddle" (no sense for autocast with current AI) and Leap (also work's not correct, handled by script) */
 UPDATE creature_template SET ScriptName = "pet_dk_ghoul", spell2 = 0, spell4 = 0 WHERE entry = 26125;
@@ -99,12 +99,59 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 ( 26125, 79, 5203, 0, 10089, 73, 114, 318, 820, 354, 62, 107),
 ( 26125, 80, 5342, 0, 10472, 75, 117, 331, 856, 361, 65, 109);
 
-UPDATE pet_scaling_data SET apbase=-100, apbasescale=147 where creature_entry=26125 AND aura = 0;
+-- AP_Ghoul = 1.47*STRENGHT - (-100)
+UPDATE pet_scaling_data SET apbase = -100, apbasescale = 147 where creature_entry = 26125 AND aura = 0;
 
 
 /*
-    Greater Earth Elemental (Shaman)
-   ----------------------------------
+                    Hunter Pets
+                   -------------
+*/
+--levelstats, values are nearly 100% correct (only lvl 70 interpolated)
+DELETE FROM `pet_levelstats` WHERE
+`creature_entry` = 1 AND
+(`level` BETWEEN '5' AND '20' OR
+`level` IN ('23','24', '25', '27', '46', '47', '48', '49', '51') OR
+`level`BETWEEN '70' AND '76');
+
+INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, `mindmg`, `maxdmg`, `str`, `agi`, `sta`, `inte`, `spi`) VALUES
+('1', '5', '101', '1', '103', '3', '5', '26', '8', '25', '20', '21'),
+('1', '6', '119', '1', '156', '3', '5', '27', '9', '26', '21', '21'),
+('1', '7', '136', '1', '221', '4', '7', '27', '9', '26', '21', '21'),
+('1', '8', '155', '1', '297', '4', '8', '29', '9', '28', '21', '22'),
+('1', '9', '175', '1', '386', '5', '9', '30', '9', '29', '21', '22'),
+('1', '10', '197', '1', '492', '5', '9', '31', '9', '30', '21', '23'),
+('1', '11', '221', '1', '518', '6', '10', '32', '10', '34', '21', '23'),
+('1', '12', '246', '1', '552', '6', '10', '33', '10', '38', '21', '24'),
+('1', '13', '272', '1', '585', '6', '11', '34', '11', '42', '21', '26'),
+('1', '14', '299', '1', '619', '7', '12', '35', '11', '46', '22', '26'),
+('1', '15', '327', '1', '653', '8', '12', '37', '12', '51', '22', '27'),
+('1', '16', '355', '1', '688', '8', '13', '38', '12', '55', '22', '28'),
+('1', '17', '385', '1', '722', '8', '14', '40', '12', '59', '22', '29'),
+('1', '18', '409', '1', '755', '9', '15', '42', '13', '63', '22', '29'),
+('1', '19', '448', '1', '789', '9', '16', '44', '13', '67', '22', '31'),
+('1', '20', '483', '1', '822', '11', '16', '45', '14', '72', '22', '32'),
+('1', '23', '604', '1', '928', '11', '18', '50', '15', '84', '23', '34'),
+('1', '24', '650', '1', '962', '11', '19', '52', '16', '88', '23', '34'),
+('1', '25', '698', '1', '992', '12', '19', '53', '16', '94', '23', '37'),
+('1', '27', '799', '1', '1061', '11', '19', '56', '17', '102', '23', '39'),
+('1', '46', '1917', '1', '2723', '30', '45', '104', '27', '188', '27', '58'),
+('1', '47', '1989', '1', '2776', '30', '46', '106', '28', '193', '27', '60'),
+('1', '48', '2061', '1', '2828', '31', '47', '108', '29', '197', '27', '60'),
+('1', '49', '2136', '1', '2883', '32', '48', '110', '29', '202', '28', '62'),
+('1', '51', '2290', '1', '2988', '33', '50', '115', '30', '212', '28', '64'),
+('1', '70', '4050', '1', '6665', '43', '66', '161', '53', '307', '33', '99'), -- interpolated values for balancing
+('1', '71', '4240', '1', '6960', '44', '67', '164', '58', '312', '33', '102'),
+('1', '72', '4427', '1', '7255', '45', '68', '167', '63', '317', '34', '105'),
+('1', '73', '4620', '1', '7550', '45', '69', '170', '68', '322', '34', '108'),
+('1', '74', '4818', '1', '7845', '47', '70', '187', '73', '328', '59', '99'),
+('1', '75', '5018', '1', '8141', '47', '72', '206', '78', '334', '61', '101'),
+('1', '76', '5219', '1', '8436', '48', '73', '226', '84', '339', '62', '102');
+
+
+/*
+                    Greater Earth Elemental (Shaman)
+                   ----------------------------------
 */
 -- set AI, "attacks quite fast"
 UPDATE creature_template SET ScriptName = "pet_greater_earth_elemental", baseattacktime = 1500 WHERE entry = 15352;
@@ -134,11 +181,16 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 (15352, 79, 11835, 0, 13778, 59, 98, 251, 88, 157, 162, 450),
 (15352, 80, 12200, 0, 14300, 60, 100, 261, 90, 162, 165, 460);
 
+-- scaling, just for completeness (also in RSA-Branch)
+DELETE FROM `pet_scaling_data` WHERE `creature_entry` = 15352;
+INSERT INTO `pet_scaling_data` (`creature_entry`, `aura`, `healthbase`, `health`, `powerbase`, `power`, `str`, `agi`, `sta`, `inte`, `spi`, `armor`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `apbase`, `apbasescale`, `attackpower`, `damage`, `spelldamage`, `spellhit`, `hit`, `expertize`, `attackspeed`, `crit`, `regen`) VALUES
+(15352, 0, 0, 1000, 0, 1500, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 200, 40, 0, 30, 100, 100, 100, 100, 0, 0);
+
 
 
 /*
-    Greater Fire Elemental (Shaman)
-   ---------------------------------
+                    Greater Fire Elemental (Shaman)
+                   ---------------------------------
 */
 -- set AI
 UPDATE creature_template SET ScriptName = "pet_greater_fire_elemental" WHERE entry = 15438;
@@ -164,3 +216,8 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 ( 15438, 78, 7800, 2242, 1080, 153, 202, 343, 156, 120, 390, 440),
 ( 15438, 79, 7900, 2261, 1090, 156, 206, 354, 158, 122, 397, 450),
 ( 15438, 80, 8000, 2280, 1100, 160, 210, 366, 160, 125, 405, 460);
+
+-- scaling, just for completeness (also in RSA-Branch)
+DELETE FROM `pet_scaling_data` WHERE `creature_entry` = 15438;
+INSERT INTO `pet_scaling_data` (`creature_entry`, `aura`, `healthbase`, `health`, `powerbase`, `power`, `str`, `agi`, `sta`, `inte`, `spi`, `armor`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `apbase`, `apbasescale`, `attackpower`, `damage`, `spelldamage`, `spellhit`, `hit`, `expertize`, `attackspeed`, `crit`, `regen`) VALUES
+(15438, 0, 0, 1000, 0, 1500, 0, 0, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 20, 200, 80, 0, 40, 100, 100, 100, 100, 0, 0);

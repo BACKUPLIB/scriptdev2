@@ -26,8 +26,8 @@ UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (6
 UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (599,575,578, 616);
 
 -- despawn unfinished phase 1 instances
--- despawn naxxramas 25, obsidiansanctum 25
-UPDATE `creature` SET `spawnMask` = `spawnMask` &~ 2 WHERE `map` IN (533,615);
+-- despawn obsidiansanctum 25
+UPDATE `creature` SET `spawnMask` = `spawnMask` &~ 2 WHERE `map` IN (615);
 
 -- despawn later difficulty instances
 -- despawn eye of eternity 25er

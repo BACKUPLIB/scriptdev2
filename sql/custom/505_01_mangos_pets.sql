@@ -107,7 +107,7 @@ UPDATE pet_scaling_data SET apbase = -100, apbasescale = 147 where creature_entr
                     Hunter Pets
                    -------------
 */
---levelstats, values are nearly 100% correct (only lvl 70 interpolated)
+-- levelstats, values are nearly 100% correct (only lvl 70 interpolated)
 DELETE FROM `pet_levelstats` WHERE
 `creature_entry` = 1 AND
 (`level` BETWEEN '5' AND '20' OR

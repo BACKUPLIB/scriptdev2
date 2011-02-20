@@ -221,3 +221,17 @@ INSERT INTO `pet_levelstats` (`creature_entry`, `level`, `hp`, `mana`, `armor`, 
 DELETE FROM `pet_scaling_data` WHERE `creature_entry` = 15438;
 INSERT INTO `pet_scaling_data` (`creature_entry`, `aura`, `healthbase`, `health`, `powerbase`, `power`, `str`, `agi`, `sta`, `inte`, `spi`, `armor`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `apbase`, `apbasescale`, `attackpower`, `damage`, `spelldamage`, `spellhit`, `hit`, `expertize`, `attackspeed`, `crit`, `regen`) VALUES
 (15438, 0, 0, 1000, 0, 1500, 0, 0, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 20, 200, 80, 0, 40, 100, 100, 100, 100, 0, 0);
+
+
+/*
+                    Snake Trap Snakes
+                   -------------------
+*/
+
+-- damage is quite huge in udb/rsa patches
+UPDATE creature_template SET mindmg = 40, maxdmg = 55 WHERE entry = 19833;
+UPDATE creature_template SET mindmg = 18, maxdmg = 28 WHERE entry = 19921;
+
+-- deadly poison trigger aura
+INSERT INTO creature_template_addon (entry, auras) VALUES ('19833', '34657 0');
+

@@ -63,6 +63,7 @@ enum
     ACHIEVEMENT_NORMAL                = 482,
     ACHIEVEMENT_HEROIC                = 493
 
+	ACHIEVEMENT_SPELL_THARONJA		  = 61863,
 };
 
 //Phasses
@@ -126,6 +127,11 @@ struct MANGOS_DLL_DECL boss_tharonjaAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+		if(Player* pPlayer = pKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
+        {
+			m_creature->CastSpell(pPlayer,ACHIEVEMENT_SPELL_THARONJA,true);
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_THARONJA, DONE);

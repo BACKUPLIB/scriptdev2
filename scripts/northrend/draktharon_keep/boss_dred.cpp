@@ -26,19 +26,16 @@ EndScriptData */
 
 enum
 {
-    SAY_KING_DRED_TALON                = -1600020,
-    SAY_CALL_FOR_RAPTOR                = -1600021,
-    
+    SAY_KING_DRED_TALON             = -1600020,
+    SAY_CALL_FOR_RAPTOR             = -1600021,
+
     SPELL_BELLOWING_ROAR            = 22686,
-    SPELL_FEARSOME_ROAR                = 48849,
-    H_SPELL_FEARSOME_ROAR            = 59422,
-    SPELL_GRIEVOUS_BITE                = 48920,
+    SPELL_FEARSOME_ROAR             = 48849,
+    H_SPELL_FEARSOME_ROAR           = 59422,
+    SPELL_GRIEVOUS_BITE             = 48920,
     SPELL_MANGLING_SLASH            = 48873,
     SPELL_PIERCING_SLASH            = 48878,
-    SPELL_RAPTOR_CALL                = 59416,            //not yet implemented
-
-    NPC_DRAKKARI_GUTRIPPER            = 26641,
-    NPC_DRAKKARI_SCYTHECLAW            = 26628
+    SPELL_RAPTOR_CALL               = 59416,            //not yet implemented
 };
 
 const float PosSummon1[3] = {-528.8f, -690.58f, 30.25f};

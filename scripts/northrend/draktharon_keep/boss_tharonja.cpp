@@ -56,12 +56,12 @@ enum
 
     SPELL_POISON_CLOUD                = 49548,
     H_SPELL_POSION_CLOUD            = 59969,
-    
+
     SPELL_RETURN_FLESH                = 53463,                //not working
 
     //achie hacks
     ACHIEVEMENT_NORMAL                = 482,
-    ACHIEVEMENT_HEROIC                = 493
+    ACHIEVEMENT_HEROIC                = 493,
 
 	ACHIEVEMENT_SPELL_THARONJA		  = 61863,
 };

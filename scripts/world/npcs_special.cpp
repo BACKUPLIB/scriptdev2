@@ -2426,7 +2426,7 @@ struct MANGOS_DLL_DECL pet_greater_earth_elementalAI : public PetAI
 
     Unit* GetOriginalOwner()
     {
-        Unit* owner = ((Pet*)m_creature)->GetOwner();
+        Unit* owner = (m_creature)->GetOwner();
         if (!owner)
             return NULL;
 
@@ -2508,7 +2508,7 @@ struct MANGOS_DLL_DECL pet_greater_fire_elementalAI : public PetAI
 
     Unit* GetOriginalOwner()
     {
-        Unit* owner = ((Pet*)m_creature)->GetOwner();
+        Unit* owner = (m_creature)->GetOwner();
         if (!owner)
             return NULL;
 

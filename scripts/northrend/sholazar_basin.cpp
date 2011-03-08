@@ -91,6 +91,11 @@ struct MANGOS_DLL_DECL npc_injured_rainspeakerAI : public npc_escortAI
                 m_creature->GetNearPoint(m_creature, fX, fY, fZ, 0.0f, 15.0f, fAngle);
 
                 m_creature->SummonCreature(NPC_FRENZYHEART_TRACKER, fX, fY, fZ, m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 30000);
+				
+				 Player* pPlayer = GetPlayerForEscort();
+                    if (pPlayer)
+                        pPlayer->GroupEventHappens(QUEST_FORTUNATE_MISUNDERSTAND, m_creature);
+
                 break;
             }
         }

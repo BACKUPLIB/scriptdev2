@@ -1375,4 +1375,4 @@ INSERT INTO `npc_vendor` (entry, item, maxcount, incrtime, ExtendedCost) VALUES
 (34078, 42115, 0, 0, 2964),
 (34078, 42123, 0, 0, 2965);
 
-UPDATE `creature` SET `spawnMask` = 0 WHERE entry IN (34093,40607);
+UPDATE `creature` SET `spawnMask` = 0 WHERE id IN (34093,40607);

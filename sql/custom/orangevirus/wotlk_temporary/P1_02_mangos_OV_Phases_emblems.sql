@@ -17,8 +17,8 @@ emblem of heroism(emblem des heldentums)	Phase 1 (Hero /10er Raid)	ID: 40752 =
 */
 
 -- set  looted emblems to emblem of heroism
-UPDATE `item_loot_template` SET `item` = 40752 WHERE `entry` IN (43346, 43347, 52676)  AND `item` IN (40753,45624,47241,49426);
-UPDATE `gameobject_loot_template` SET `item` = 40752 WHERE `entry` IN (26260, 25193, 25192 )  AND `item` IN (40753,45624,47241,49426);
+UPDATE `item_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,47241,49426);
+UPDATE `gameobject_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,47241,49426);
 -- todo creature_loot update later
 UPDATE `creature_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,47241,49426);
 -- give naxx25 bosses emblem of valor (anub'rekhan, faerlina, maexxna, noth, patchwerk, grobbulus, gluth)

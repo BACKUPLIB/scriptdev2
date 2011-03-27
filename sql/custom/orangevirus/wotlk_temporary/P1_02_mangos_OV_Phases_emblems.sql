@@ -21,8 +21,10 @@ UPDATE `item_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,4724
 UPDATE `gameobject_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,47241,49426);
 -- todo creature_loot update later
 UPDATE `creature_loot_template` SET `item` = 40752 WHERE `item` IN (40753,45624,47241,49426);
--- give naxx25 bosses emblem of valor (anub'rekhan, faerlina, maexxna, noth, patchwerk, grobbulus, gluth)
-UPDATE `creature_loot_template` SET `item` = 40753 WHERE `entry` IN (29249,29268,29278,29615,29324,29373,29417) AND `item` = 40752;
+-- give naxx25 bosses emblem of valor (anub'rekhan, faerlina, maexxna, noth, patchwerk, grobbulus, gluth, thaddius,noth,heigan,loatheb,razuvious,gothik,sapphiron,kelthuzad)
+UPDATE `creature_loot_template` SET `item` = 40753 WHERE `entry` IN (29249,29268,29278,29615,29324,29373,29417,29448,29615,29701,29718,29940,29955,29991,30061) AND `item` = 40752;
+-- horsemen chest
+UPDATE `gameobject_loot_template` SET `item` = 40753 WHERE `entry` IN  (193426) AND `item` = 40752;
 
 -- set all quest reward emblems to emblem of heroism, 
 -- note: quests with emblems as RewItemId2/3/4 are only added in the last phase (frost + triumph, patch 3.3.0) and are anyway not available (see quest query)

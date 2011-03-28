@@ -50,8 +50,9 @@ enum
     SPELL_CALL_BLOOD_BEAST_3                = 72356,
     SPELL_CALL_BLOOD_BEAST_4                = 72357,
     SPELL_CALL_BLOOD_BEAST_5                = 72358,
-    SPELL_SCENT_OF_BLOOD                    = 72769,
     SPELL_RESISTANT_SKIN                    = 72723,
+    SPELL_SCENT_OF_BLOOD_BUFF               = 72771,
+    SPELL_SCENT_OF_BLOOD_DEBUFF             = 72769,
     SPELL_ZERO_REGEN                        = 72242,
 
     // NPCs
@@ -70,6 +71,8 @@ enum
     SAY                                     = -1631109, // not used
 
     // Achievements
+    ACHIEV_GONE_MESS_10                     = 4537,
+    ACHIEV_GONE_MESS_25                     = 4613,
 };
 
 enum Equipment
@@ -95,6 +98,7 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
     bool m_bIntro;
     bool m_bIsFenzy;
     uint8 m_uiBeastCount;
+    uint8 m_uiMarkCount;
     uint32 m_uiBerserkTimer;
     uint32 m_uiBloodNovaTimer;
     uint32 m_uiBloodBeastTimer;
@@ -117,12 +121,13 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
         m_bIsFenzy = false;
 
         m_uiBeastCount = 0;
+        m_uiMarkCount = 0;
         m_uiBerserkTimer = 6*MINUTE*IN_MILLISECONDS;
         m_uiBloodNovaTimer = 20*IN_MILLISECONDS;
         m_uiBloodBeastTimer = 40*IN_MILLISECONDS;
         m_uiBoilingBloodTimer = 1*IN_MILLISECONDS;
         m_uiBoilingBloodDamageTimer = 0;
-        m_uiRuneofBloodTimer = 1*IN_MILLISECONDS;
+        m_uiRuneofBloodTimer = 0;
         m_uiBloodBoilTargetGuid = 0;
     }
 
@@ -233,6 +238,45 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
                 if (pPlayer->HasAura(SPELL_MARK))
                     pPlayer->RemoveAurasDueToSpell(SPELL_MARK);
         }
+
+        bool m_bIs10ManMode;
+        bool m_bAchievFailed;
+        switch (m_uiMode)
+        {
+            case RAID_DIFFICULTY_10MAN_NORMAL:
+            case RAID_DIFFICULTY_10MAN_HEROIC:
+                if (m_uiMarkCount < 3)
+                    m_bAchievFailed = false;
+                else
+                    m_bAchievFailed = true;
+                m_bIs10ManMode = true;
+                break;
+            case RAID_DIFFICULTY_25MAN_NORMAL:
+            case RAID_DIFFICULTY_25MAN_HEROIC:
+                if (m_uiMarkCount < 5)
+                    m_bAchievFailed = false;
+                else 
+                    m_bAchievFailed = true;
+                m_bIs10ManMode = false;
+                break;
+            default:
+                break;
+        }
+
+        if (!m_bAchievFailed)
+        {
+            AchievementEntry const *AchievGoneMess = GetAchievementStore()->LookupEntry(m_bIs10ManMode ? ACHIEV_GONE_MESS_10 : ACHIEV_GONE_MESS_25);
+            if (AchievGoneMess)
+            {
+                Map* pMap = m_creature->GetMap();
+                if (pMap && pMap->IsDungeon())
+                {
+                    Map::PlayerList const &players = pMap->GetPlayers();
+                    for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(AchievGoneMess);
+                }
+            }
+        }
     }
 
     void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)
@@ -309,6 +353,7 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
                    DoScriptText(SAY_FALLENCHAMPION, m_creature);
                    m_creature->SetPower(POWER_ENERGY, 0);
                    DoCast(pTarget, SPELL_MARK);
+                   ++m_uiMarkCount;
                }
            }
         }
@@ -399,10 +444,14 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
                 switch (m_uiMode)
                 {
                     case RAID_DIFFICULTY_10MAN_NORMAL:
-                    case RAID_DIFFICULTY_10MAN_HEROIC:
                         m_uiBeastCount = 2;
                         break;
+                    case RAID_DIFFICULTY_10MAN_HEROIC:
+                        m_uiBeastCount = 3;
+                        break;
                     case RAID_DIFFICULTY_25MAN_NORMAL:
+                        m_uiBeastCount = 4;
+                        break;
                     case RAID_DIFFICULTY_25MAN_HEROIC:
                         m_uiBeastCount = 5;
                         break;
@@ -489,6 +538,7 @@ struct MANGOS_DLL_DECL  mob_blood_beastAI : public ScriptedAI
     Creature* pOwner;
     bool m_bHasAggro;
     uint32 m_uiAggroTimer;
+    uint32 m_uiScentofBloodTimer;
 
     void Reset()
     {
@@ -496,8 +546,20 @@ struct MANGOS_DLL_DECL  mob_blood_beastAI : public ScriptedAI
 
         m_bHasAggro = false;
         m_uiAggroTimer = 2*IN_MILLISECONDS;
+        m_uiScentofBloodTimer = 1*IN_MILLISECONDS;
 
         SetCombatMovement(false);
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        Map::PlayerList const& players = m_creature->GetMap()->GetPlayers();
+        for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+        {
+            if (Player* pPlayer = itr->getSource())
+                if (pPlayer->HasAura(SPELL_SCENT_OF_BLOOD_DEBUFF))
+                    pPlayer->RemoveAurasDueToSpell(SPELL_SCENT_OF_BLOOD_DEBUFF);
+        }
     }
 
     void DamageDeal(Unit* pVictim, uint32& uiDamage)
@@ -507,6 +569,31 @@ struct MANGOS_DLL_DECL  mob_blood_beastAI : public ScriptedAI
 
         if (pOwner)
             pOwner->SetPower(POWER_ENERGY, pOwner->GetPower(POWER_ENERGY) + 2);
+    }
+
+    void ApplyScentofBloodDebuff(Creature* pCreature)
+    {
+        std::list<uint64> PlayerGuidList;
+        std::list<uint64>::iterator itr;
+
+        Map::PlayerList const& players = m_creature->GetMap()->GetPlayers();
+        for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+        {
+            if (Player* pPlayer = itr->getSource())
+                if (pPlayer->isTargetableForAttack())
+                    if (pPlayer->GetDistance(pCreature) <= ATTACK_DISTANCE)
+                        if (!pPlayer->HasAura(SPELL_SCENT_OF_BLOOD_DEBUFF))
+                            PlayerGuidList.push_back(pPlayer->GetGUID());
+        }
+
+        if (PlayerGuidList.empty())
+            return;
+
+        for (std::list<uint64>::iterator itr = PlayerGuidList.begin(); itr != PlayerGuidList.end(); ++itr)
+        {
+            if (Unit* pPlayer = pCreature->GetMap()->GetPlayer(*itr))
+                pPlayer->_AddAura(SPELL_SCENT_OF_BLOOD_DEBUFF);
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -527,8 +614,18 @@ struct MANGOS_DLL_DECL  mob_blood_beastAI : public ScriptedAI
         {
             case RAID_DIFFICULTY_10MAN_HEROIC:
             case RAID_DIFFICULTY_25MAN_HEROIC:
-                if (!m_creature->HasAura(SPELL_SCENT_OF_BLOOD))
-                    DoCast(m_creature, SPELL_SCENT_OF_BLOOD);
+                {
+                    if (!m_creature->HasAura(SPELL_SCENT_OF_BLOOD_BUFF))
+                        m_creature->_AddAura(SPELL_SCENT_OF_BLOOD_BUFF);
+
+                    if (m_uiScentofBloodTimer < uiDiff)
+                    {
+                        ApplyScentofBloodDebuff(m_creature);
+                        m_uiScentofBloodTimer = 1*IN_MILLISECONDS;
+                    }
+                    else
+                        m_uiScentofBloodTimer -= uiDiff;
+                }
                 break;
             default:
                 break;
@@ -539,7 +636,7 @@ struct MANGOS_DLL_DECL  mob_blood_beastAI : public ScriptedAI
             if (m_uiAggroTimer < uiDiff)
             {
                 SetCombatMovement(true);
-                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                m_creature->GetMotionMaster()->MoveChase(m_creature->SelectAttackingTarget(ATTACKING_TARGET_TOPAGGRO, 0));
                 m_bHasAggro = true;
             }
             else 

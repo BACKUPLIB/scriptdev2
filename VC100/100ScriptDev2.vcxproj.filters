@@ -2019,6 +2019,7 @@
     </ClCompile>
     <ClCompile Include="..\scripts\custom\ov_master.cpp">
       <Filter>scripts\custom</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\northrend\ulduar\ulduar\assembly_of_iron.cpp">
       <Filter>scripts\northrend\ulduar\ulduar</Filter>
     </ClCompile>

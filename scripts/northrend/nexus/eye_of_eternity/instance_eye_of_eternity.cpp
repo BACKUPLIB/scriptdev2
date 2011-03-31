@@ -190,6 +190,7 @@ struct MANGOS_DLL_DECL instance_eye_of_eternity : public ScriptedInstance
         }
         return 0;
     }
+
 };
 
 InstanceData* GetInstanceData_instance_eye_of_eternity(Map* pMap)

@@ -507,8 +507,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             m_bReadyForWPMove = true;
             if (m_uiSubPhase == SUBPHASE_TALK)
             {
-                DoScriptText(SAY_AGGRO2, m_creature);
-                m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                DoScriptText(SAY_AGGRO2, m_creature);                
                 AntiMagicShell();
                 m_uiShellTimer = urand(15000, 17000);
                 m_uiSubPhase = 0;
@@ -774,6 +773,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                 if (m_creature->GetHealthPercent() <= 50.0f)
                 {
                     m_creature->InterruptNonMeleeSpells(true);
+                    m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     DoScriptText(SAY_END_PHASE1, m_creature);
                     DespawnCreatures(NPC_POWER_SPARK);
                     m_uiPhase = PHASE_ADDS;
@@ -1154,7 +1154,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
     uint32 m_uiCheckTimer;
     uint32 m_uiArcaneShockTimer;
     uint32 m_uiHasteTimer;
-
+ 
     void Reset()
     {
         m_uiCheckTimer = 0;
@@ -1164,10 +1164,13 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
         m_fVehicleOldY = 0.0f;
         m_uiArcaneShockTimer = urand(8000, 9000);
         m_uiHasteTimer = urand(10000, 12000);
+        m_creature->clearUnitState(UNIT_STAT_CAN_NOT_REACT);
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
+
+            
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -1186,7 +1189,14 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
                 m_fVehicleOldX = fX;
                 m_fVehicleOldY = fY;
 
-                Unit* pTarget = m_creature->getVictim();
+                Unit* pTarget = NULL;
+
+                //We want to attack the Player on the Disc and not the Disc itself
+                if(m_creature->getVictim()->GetEntry() == 30248)
+                    pTarget = m_creature->getVictim()->GetVehicle()->GetPassenger(0);
+                else
+                    pTarget = m_creature->getVictim();
+
                 if (m_creature->IsWithinDistInMap(pTarget, 4.0f))
                 {
                     pDisk->GetMotionMaster()->Clear();

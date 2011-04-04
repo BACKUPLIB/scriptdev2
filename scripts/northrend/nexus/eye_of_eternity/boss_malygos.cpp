@@ -404,7 +404,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                     pSummoned->EnterVehicle(pDiskVehicle, 0);
             }
             pSummoned->SetInCombatWithZone();
-            pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_NON_ATTACKABLE);
+            pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
     }
 

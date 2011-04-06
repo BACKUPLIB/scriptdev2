@@ -166,7 +166,10 @@ enum
 
     //hacks
     SPELL_FLIGHT                    = 59553,
-    MODEL_ID_INVISIBLE              = 11686
+    MODEL_ID_INVISIBLE              = 11686,
+
+    ACHIEV_DENYIN_THE_SCION =2148,
+    ACHIEV_DENYIN_THE_SCION_H=2149
 };
 
 struct LocationsXY
@@ -508,7 +511,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             m_bReadyForWPMove = true;
             if (m_uiSubPhase == SUBPHASE_TALK)
             {
-                DoScriptText(SAY_AGGRO2, m_creature);                
+                DoScriptText(SAY_AGGRO2, m_creature);
                 AntiMagicShell();
                 m_uiShellTimer = urand(15000, 17000);
                 m_uiSubPhase = 0;
@@ -791,7 +794,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                 m_uiTimer = 2000;
             }
             else
-                m_uiTimer -= uiDiff;  
+                m_uiTimer -= uiDiff;
         }
         else if (m_uiPhase == PHASE_ADDS)
         {
@@ -1155,7 +1158,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
     uint32 m_uiCheckTimer;
     uint32 m_uiArcaneShockTimer;
     uint32 m_uiHasteTimer;
- 
+
     void Reset()
     {
         m_uiCheckTimer = 0;
@@ -1171,7 +1174,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
     void UpdateAI(const uint32 uiDiff)
     {
 
-            
+
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
@@ -1242,7 +1245,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
-}; 
+};
 
 /*######
 ## npc_scion_of_eternity
@@ -1262,6 +1265,21 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
     void Reset()
     {
         m_uiArcaneBarrageTimer = urand(4000, 12000);
+    }
+
+    void JustDied(Unit* killer)
+    {
+        Player* pPlayer = (Player*)killer;
+
+        if(pPlayer->GetVehicle())
+        {
+            AchievementEntry const *DenyinTheSc = GetAchievementStore()->LookupEntry(m_bIsRegularMode ? ACHIEV_DENYIN_THE_SCION : ACHIEV_DENYIN_THE_SCION_H);
+            if(DenyinTheSc)
+            {
+                pPlayer->CompletedAchievement(DenyinTheSc);
+            }
+        }
+
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -1286,7 +1304,7 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
 
         DoMeleeAttackIfReady();
     }
-}; 
+};
 
 /*######
 ## npc_hover_disk
@@ -1459,17 +1477,17 @@ CreatureAI* GetAI_npc_power_spark(Creature* pCreature)
 CreatureAI* GetAI_npc_nexus_lord(Creature* pCreature)
 {
     return new npc_nexus_lordAI(pCreature);
-} 
+}
 
 CreatureAI* GetAI_npc_scion_of_eternity(Creature* pCreature)
 {
     return new npc_scion_of_eternityAI(pCreature);
-} 
+}
 
 CreatureAI* GetAI_npc_hover_disk(Creature* pCreature)
 {
     return new npc_hover_diskAI(pCreature);
-} 
+}
 
 CreatureAI* GetAI_npc_alexstrasza(Creature* pCreature)
 {

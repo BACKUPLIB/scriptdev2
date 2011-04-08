@@ -411,16 +411,6 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         }
     }
 
-    void SummonedCreatureJustDied(Creature* pSummoned)
-    {
-        if (Creature* pDisk = m_creature->getVictim()->SummonCreature(NPC_HOVER_DISK, pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
-        {
-            pDisk->setFaction(35);
-            pDisk->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_UNK_2);
-            pDisk->CastSpell(pDisk, SPELL_FLIGHT, true);
-            pDisk->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        }
-    }
 
     bool IsThereAnyAdd()
     {
@@ -650,7 +640,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                             Map::PlayerList const &lPlayers = pMap->GetPlayers();
                             for (Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
                             {
-                                if (itr->getSource()->isDead())
+                                if (itr->getSource()->isDead() || itr->getSource()->isGameMaster())
                                     continue;
 
                                 //Far sight, should be vehicle but this is enough
@@ -674,10 +664,10 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 Map::PlayerList const &lPlayers = pMap->GetPlayers();
                                 for (Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
                                 {
-                                    if (itr->getSource()->isDead())
+                                    if (itr->getSource()->isDead() || itr->getSource()->isGameMaster())
                                         continue;
-
-                                    itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);
+                                    // temporary removed
+                                    //itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);
                                 }
                             }
                         }
@@ -920,6 +910,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                         pTempCaster->CastSpell(pTempCaster, SPELL_DESTROY_PLATFORM_BOOM, false);
                     }
 
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NON_ATTACKABLE);
                     m_creature->SetInCombatWithZone();
 
                     m_uiSubPhase = SUBPHASE_DESTROY_PLATFORM_2;

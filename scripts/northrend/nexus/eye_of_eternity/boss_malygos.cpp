@@ -41,6 +41,7 @@ enum
     SPELL_ARCANE_STORM_H            = 61694,
     SPELL_VORTEX                    = 56105,
     SPELL_VORTEX_DMG_AURA           = 56266, // on 10 sec, deal 2000 damage all player around caster
+    SPELL_VORTEX_DMG_TICK           = 56256,
     SPELL_VORTEX_VISUAL             = 55873, // visual effect around platform. summon trigger
     SPELL_VORTEX_CHANNEL            = 56237, // Malygos Channel Effect
     SPELL_POWER_SPARK               = 56152, // if spark reach malygos then buff him
@@ -259,6 +260,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
     uint32 m_uiSurgeOfPowerTimer;
     uint32 m_uiCheckTimer;
     uint32 m_uiMovingSteps;
+    uint32 m_uiVortexDmgTimer;
 
     uint64 m_uiTargetSparkPortalGUID;
     uint8 m_uiWP;
@@ -290,6 +292,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         m_uiArcanePulseTimer = 1000;
         m_uiSurgeOfPowerTimer = 8000;
         m_uiCheckTimer = 1000;
+        m_uiVortexDmgTimer = 0;
 
         m_uiTargetSparkPortalGUID = 0;
         m_uiWP = 0;
@@ -647,7 +650,8 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 //Crash the server in group update far members, dunno why
                                 //I will try to use this again, maybe I have fix...
                                 itr->getSource()->GetCamera().SetView(pVortex);
-                                itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
+                                // this one does not work somehow
+                                //itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
                             }
                         }
                         //DoCast(m_creature, SPELL_VORTEX);
@@ -661,13 +665,25 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                         {
                             if (Creature *pVortex = m_creature->SummonCreature(NPC_VORTEX, VortexLoc[m_uiVortexPhase-4].x, VortexLoc[m_uiVortexPhase-4].y, FLOOR_Z+urand(10, 25), 0, TEMPSUMMON_TIMED_DESPAWN, 3000))
                             {
+                                bool bDoVortexDmg = false;
+                                if (m_uiVortexDmgTimer < uiDiff)
+                                {
+                                    m_uiVortexDmgTimer = 1000;
+                                    bDoVortexDmg = true;
+                                }
+                                else 
+                                    m_uiVortexDmgTimer -= uiDiff;
+
                                 Map::PlayerList const &lPlayers = pMap->GetPlayers();
                                 for (Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
                                 {
                                     if (itr->getSource()->isDead() || itr->getSource()->isGameMaster())
                                         continue;
-                                    // temporary removed
-                                    //itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);
+
+                                    if (bDoVortexDmg)
+                                        itr->getSource()->CastSpell(itr->getSource(),SPELL_VORTEX_DMG_TICK,true);
+
+                                    itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);
                                 }
                             }
                         }
@@ -1187,7 +1203,7 @@ struct MANGOS_DLL_DECL npc_nexus_lordAI : public ScriptedAI
                 Unit* pTarget = NULL;
 
                 //We want to attack the Player on the Disc and not the Disc itself
-                if(m_creature->getVictim()->GetEntry() == 30248)
+                if(m_creature->getVictim()->GetEntry() == NPC_HOVER_DISK)
                     pTarget = m_creature->getVictim()->GetVehicle()->GetPassenger(0);
                 else
                     pTarget = m_creature->getVictim();
@@ -1278,16 +1294,25 @@ struct MANGOS_DLL_DECL npc_scion_of_eternityAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (VehicleKit* pDiskVehicle = m_creature->GetVehicle())
+        {
+            if (Unit* pDiskUnit = pDiskVehicle->GetBase())
+            {
+                //We want to attack the Player on the Disc and not the Disc itself
+                if(m_creature->getVictim()->GetEntry() == NPC_HOVER_DISK && m_creature->getVictim()->GetVehicle()->GetPassenger(0))
+                    m_creature->Attack(m_creature->getVictim()->GetVehicle()->GetPassenger(0), false);
+            }
+        }
+
         if (m_uiArcaneBarrageTimer <= uiDiff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
-                if (!pTarget->GetVehicle())
-                {
-                    int32 uiDmg = m_bIsRegularMode ? urand(14138, 15862) : urand(16965, 19035);
-                    m_creature->CastCustomSpell(pTarget, SPELL_ARCANE_BARRAGE, &uiDmg, 0, 0, true);
-                    m_uiArcaneBarrageTimer = urand(4000, 12000);
-                }
+                if (pTarget->GetVehicle())
+                    pTarget = pTarget->GetVehicle()->GetPassenger(0);
+                int32 uiDmg = m_bIsRegularMode ? urand(14138, 15862) : urand(16965, 19035);
+                m_creature->CastCustomSpell(pTarget, SPELL_ARCANE_BARRAGE, &uiDmg, 0, 0, true);
+                m_uiArcaneBarrageTimer = urand(4000, 12000);
             }
         }
         else
@@ -1325,6 +1350,11 @@ struct MANGOS_DLL_DECL npc_hover_diskAI : public ScriptedAI
 
     void AttackStart(Unit *pWho)
     {
+    }
+
+    void DamageTaken(Unit *done_by, uint32 &damage)
+    {   // hover disk should not be damaged
+        damage = 0;
     }
 
     void UpdateAI(const uint32 uiDiff)

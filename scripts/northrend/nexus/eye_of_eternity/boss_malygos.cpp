@@ -260,7 +260,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
     uint32 m_uiSurgeOfPowerTimer;
     uint32 m_uiCheckTimer;
     uint32 m_uiMovingSteps;
-    uint32 m_uiVortexDmgTimer;
+    uint32 m_uiVortexDmgCount;
 
     uint64 m_uiTargetSparkPortalGUID;
     uint8 m_uiWP;
@@ -292,7 +292,7 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
         m_uiArcanePulseTimer = 1000;
         m_uiSurgeOfPowerTimer = 8000;
         m_uiCheckTimer = 1000;
-        m_uiVortexDmgTimer = 0;
+        m_uiVortexDmgCount = 20;
 
         m_uiTargetSparkPortalGUID = 0;
         m_uiWP = 0;
@@ -413,7 +413,6 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
             pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
     }
-
 
     bool IsThereAnyAdd()
     {
@@ -650,8 +649,9 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                                 //Crash the server in group update far members, dunno why
                                 //I will try to use this again, maybe I have fix...
                                 itr->getSource()->GetCamera().SetView(pVortex);
-                                // this one does not work somehow
-                                //itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
+                                m_uiVortexDmgCount = 20;
+                                // this one does not work good somehow
+                                itr->getSource()->CastSpell(itr->getSource(), SPELL_VORTEX_DMG_AURA, true);
                             }
                         }
                         //DoCast(m_creature, SPELL_VORTEX);
@@ -666,21 +666,16 @@ struct MANGOS_DLL_DECL boss_malygosAI : public ScriptedAI
                             if (Creature *pVortex = m_creature->SummonCreature(NPC_VORTEX, VortexLoc[m_uiVortexPhase-4].x, VortexLoc[m_uiVortexPhase-4].y, FLOOR_Z+urand(10, 25), 0, TEMPSUMMON_TIMED_DESPAWN, 3000))
                             {
                                 bool bDoVortexDmg = false;
-                                if (m_uiVortexDmgTimer < uiDiff)
-                                {
-                                    m_uiVortexDmgTimer = 1000;
+                                if ((m_uiVortexDmgCount--)%2)
                                     bDoVortexDmg = true;
-                                }
-                                else 
-                                    m_uiVortexDmgTimer -= uiDiff;
 
                                 Map::PlayerList const &lPlayers = pMap->GetPlayers();
                                 for (Map::PlayerList::const_iterator itr = lPlayers.begin(); itr != lPlayers.end(); ++itr)
                                 {
-                                    if (itr->getSource()->isDead() || itr->getSource()->isGameMaster())
+                                    if (!itr->getSource() || itr->getSource()->isDead() || itr->getSource()->isGameMaster())
                                         continue;
 
-                                    if (bDoVortexDmg)
+                                    if (bDoVortexDmg && !itr->getSource()->HasAura(SPELL_VORTEX_DMG_AURA)) // damage on all players that do not have debuff (only 1 player gets debuff somehow)
                                         itr->getSource()->CastSpell(itr->getSource(),SPELL_VORTEX_DMG_TICK,true);
 
                                     itr->getSource()->KnockBackFrom(pVortex, -float(pVortex->GetDistance2d(itr->getSource())), 7);

@@ -616,10 +616,11 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                 if (pTarget->GetTypeId() == TYPEID_PLAYER && !pTarget->HasAura(SPELL_CHAINS_OF_KELTHUZAD_TARGET, EFFECT_INDEX_0))
                                 {
                                     m_creature->InterruptNonMeleeSpells(false);
-                                    m_creature->CastCustomSpell(pTarget, TempSpell, NULL, NULL, NULL, true);
-                                    ((Player*)pTarget)->SetClientControl(pTarget, 0);
+                                    //m_creature->CastCustomSpell(pTarget, TempSpell, NULL, NULL, NULL, true);
+                                    m_creature->CastSpell(pTarget, SPELL_CHAINS_OF_KELTHUZAD_TARGET, true);
+                                    //((Player*)pTarget)->SetClientControl(pTarget, 0);
                                     m_lChainsTargets.insert(pTarget->GetGUID());
-                                    pTarget->setFaction(14);
+                                    //pTarget->setFaction(14);
                                     ++uiChainsTargetsCount;
                                 }
                                 if (uiChainsTargetsCount>=3)

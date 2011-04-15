@@ -618,9 +618,11 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                     m_creature->InterruptNonMeleeSpells(false);
                                     //m_creature->CastCustomSpell(pTarget, TempSpell, NULL, NULL, NULL, true);
                                     m_creature->CastSpell(pTarget, SPELL_CHAINS_OF_KELTHUZAD_TARGET, true);
-                                    //((Player*)pTarget)->SetClientControl(pTarget, 0);
+                                    ((Player*)pTarget)->SetClientControl(pTarget, 0);
                                     m_lChainsTargets.insert(pTarget->GetGUID());
-                                    //pTarget->setFaction(14);
+                                    pTarget->setFaction(m_creature->getFaction());
+                                    pTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_ATTACKABLE_1);
+                                    pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE|UNIT_FLAG_PVP_ATTACKABLE);
                                     ++uiChainsTargetsCount;
                                 }
                                 if (uiChainsTargetsCount>=3)

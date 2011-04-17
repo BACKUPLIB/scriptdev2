@@ -31,11 +31,7 @@ UPDATE `gameobject_loot_template` SET `item` = 40753 WHERE `entry` IN  (193905) 
 
 -- set all quest reward emblems to emblem of heroism, 
 -- note: quests with emblems as RewItemId2/3/4 are only added in the last phase (frost + triumph, patch 3.3.0) and are anyway not available (see quest query)
--- dungeon daylie
-UPDATE `quest_template` SET `RewItemId1` = 40752 WHERE `entry` IN (13240, 13241, 13243, 13244) AND `RewItemId1` IN (40752,40753,45624,47241,49426);
--- hero daylie
-UPDATE `quest_template` SET `RewItemId1` = 40752 WHERE `entry` IN (13245, 13246, 13247, 13248, 13249, 13250, 13251, 13252, 13253, 13254, 13255, 13256, 14199) AND `RewItemId1` IN (40752,40753,45624,47241,49426);
-
+UPDATE `quest_template` SET `RewItemId1` = 40752 WHERE `RewItemId1` IN (40752,40753,45624,47241,49426);
 
 /*
 emblem of heroism(emblem des heldentums) Phase 1 (Hero /10er Raid)		ID: 40752

@@ -15,6 +15,7 @@ culling of stratholme
 naxxramas 10 & 25
 obsidiansanctum 10
 culling of stratholme 
+halls of stone
 */
 
 -- close instances of later phases
@@ -23,8 +24,8 @@ culling of stratholme
 UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (616,603,249,649,631,624,724,668,658,632,650);
 
 -- close unfinished phase 1 instances (levelMin)
--- halls of stone(72), utgarde pinnacle(75), oculus(75), eye of eternity 10
-UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (599,575,578, 616);
+-- utgarde pinnacle(75), oculus(75), eye of eternity 10
+UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (575,578, 616);
 
 -- despawn unfinished phase 1 instances
 -- despawn obsidiansanctum 25

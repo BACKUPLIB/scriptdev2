@@ -121,10 +121,8 @@ struct MANGOS_DLL_DECL boss_lord_marrowgarAI : public ScriptedAI
         m_bAchievFailed = true;
     }
 
-    void MoveInLineOfSight(Unit* pWho) 
+    void MoveInLineOfSight(Unit* pWho)
     {
-        ScriptedAI::MoveInLineOfSight(pWho);
-
         if (m_bIntro)
             return;
 
@@ -390,7 +388,7 @@ struct MANGOS_DLL_DECL boss_lord_marrowgarAI : public ScriptedAI
                     default:
                         break;
                 }
-                
+
                 m_uiBoneSliceTimer = urand(10*IN_MILLISECONDS, 25*IN_MILLISECONDS);
             }
             else
@@ -484,9 +482,13 @@ struct MANGOS_DLL_DECL boss_lord_marrowgarAI : public ScriptedAI
                                 switch (m_uiMode)
                                 {
                                     case RAID_DIFFICULTY_10MAN_HEROIC:
+                                        // spell should be casted during bonestorm (only visual)
+                                        // but after casting boss cannot move anymore
                                         //DoCast(pTarget, SPELL_BONE_SPIKE_GRAVEYARD_10_H_1);
                                         break;
                                     case RAID_DIFFICULTY_25MAN_HEROIC:
+                                        // spell should be casted during bonestorm (only visual)
+                                        // but after casting boss cannot move anymore
                                         //DoCast(pTarget, SPELL_BONE_SPIKE_GRAVEYARD_25_H_1);
                                         break;
                                     default:
@@ -648,7 +650,7 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public ScriptedAI
                     pMarrowgarAI->AchievFailed();
         }
         else
-            m_uiAchievTimer -= uiDiff; 
+            m_uiAchievTimer -= uiDiff;
     }
 };
 
@@ -696,7 +698,7 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public ScriptedAI
         m_uiColdFlameCreationTimer = 1*IN_MILLISECONDS;
         m_uiColdFlameDamageTimer = 1*IN_MILLISECONDS;
         m_uiColdFlameDespawnDelay = 10*IN_MILLISECONDS;
-        
+
         DoCast(m_creature, SPELL_COLD_FLAME_VISUAL);
     }
 
@@ -708,7 +710,7 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public ScriptedAI
     {
         if(!m_pInstance || !pSummoned)
             return;
-        
+
         pSummoned->SetCreatorGuid(m_creature->GetObjectGuid());
     }
 
@@ -742,7 +744,7 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public ScriptedAI
             }
             else
                 m_bIsFirst = false;
-            
+
             m_bIsCreator = true;
         }
 

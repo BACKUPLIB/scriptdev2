@@ -2603,7 +2603,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     if (rand()%2 == 0)
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2612,7 +2612,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     else
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                         else
@@ -2626,7 +2626,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 if (rand()%2 == 0)
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                     if (msg == EQUIP_ERR_OK)
                         pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                     else
@@ -2635,7 +2635,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 else
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                     if (msg == EQUIP_ERR_OK)
                         pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                     else
@@ -2651,7 +2651,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     if (rand()%2 == 0)
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2660,7 +2660,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     else
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                         else
@@ -2674,7 +2674,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 if (rand()%2 == 0)
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                     if (msg == EQUIP_ERR_OK)
                         pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                     else
@@ -2683,7 +2683,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 else
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                     if (msg == EQUIP_ERR_OK)
                         pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                     else
@@ -2699,7 +2699,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     if (rand()%2 == 0)
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2708,7 +2708,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     else
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                         else
@@ -2722,7 +2722,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     if (rand()%2 == 0)
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2731,7 +2731,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     else
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                         else
@@ -2747,7 +2747,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     if (rand()%2 == 0)
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2756,7 +2756,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                     else
                     {
                         ItemPosCountVec dest;
-                        uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                        InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                         else
@@ -2770,7 +2770,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 if (rand()%2 == 0)
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_SNOWFLAKES, 1, false);
                         if (msg == EQUIP_ERR_OK)
                             pPlayer->StoreNewItem(dest, ITEM_SNOWFLAKES, true);
                         else
@@ -2779,7 +2779,7 @@ struct MANGOS_DLL_DECL npc_winter_revelerAI : public ScriptedAI
                 else
                 {
                     ItemPosCountVec dest;
-                    uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
+                    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_MISTLETOE, 1, false);
                     if (msg == EQUIP_ERR_OK)
                         pPlayer->StoreNewItem(dest, ITEM_MISTLETOE, true);
                     else

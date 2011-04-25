@@ -88,10 +88,10 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
     bool   m_bCombatPhase;
     bool   m_bDelay;
-	bool   m_bIsOpenGate;
+    bool   m_bIsOpenGate;
 
-	uint32 m_uiDeathCheckTimer;
-	bool   m_bIsPlayerDeath;
+    uint32 m_uiDeathCheckTimer;
+    bool   m_bIsPlayerDeath;
 
     void Reset()
     {
@@ -105,18 +105,18 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
         m_bCombatPhase = true;
         m_bDelay = false;
         SetCombatMovement(true);
-		m_bIsOpenGate = false;
+        m_bIsOpenGate = false;
 
-		m_uiDeathCheckTimer = 1000;
-		m_bIsPlayerDeath = false;
+        m_uiDeathCheckTimer = 1000;
+        m_bIsPlayerDeath = false;
         /*
         if(m_pInstance)
-		{
+        {
             m_pInstance->SetData(TYPE_HEIGAN, NOT_STARTED);
 
             if (GameObject* pGate = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(GO_PLAG_HEIG_ENTRY_DOOR)))
                 pGate->SetGoState(GO_STATE_ACTIVE);
-		}*/
+        }*/
     }
 
     void MoveInLineOfSight(Unit *pWho) 
@@ -248,18 +248,21 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
         if (m_uiDeathCheckTimer < uiDiff)
         {
-			Map* pMap = m_creature->GetMap();
-			if(pMap)
-			{
-				Map::PlayerList const &lPlayers = pMap->GetPlayers();
-				for (Map::PlayerList::const_iterator iter = lPlayers.begin(); iter != lPlayers.end(); ++iter)
-				{
-					Player* pPlayer = iter->getSource();
+            Map* pMap = m_creature->GetMap();
+            if(pMap)
+            {
+                Map::PlayerList const &lPlayers = pMap->GetPlayers();
+                for (Map::PlayerList::const_iterator iter = lPlayers.begin(); iter != lPlayers.end(); ++iter)
+                {
+                    Player* pPlayer = iter->getSource();
 
-					if(!pPlayer->isAlive())
-						m_bIsPlayerDeath = true;
-				}
-			}
+                    if (pPlayer->isGameMaster())
+                        continue;
+
+                    if(!pPlayer->isAlive())
+                        m_bIsPlayerDeath = true;
+                }
+            }
             m_uiDeathCheckTimer = 1000;
         }else m_uiDeathCheckTimer -= uiDiff;
 
@@ -345,8 +348,13 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
                 if (!PlayerList.isEmpty())
                     for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                    {
+                        if (i->getSource()->isGameMaster())
+                            continue;
+
                         if ((i->getSource()->GetDistance2d(2769.68f, -3684.61f) > 48.0f) && (i->getSource()->GetDistance2d(2769.68f, -3684.61f) < 100.0f))
                             i->getSource()->TeleportTo(533, 2769.68f, -3684.61f, 273.66f, 5.5f);
+                    }
             }
         }
         else

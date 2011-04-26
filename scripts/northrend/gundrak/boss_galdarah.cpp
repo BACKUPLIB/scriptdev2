@@ -136,15 +136,13 @@ struct MANGOS_DLL_DECL boss_galdarahAI : public ScriptedAI
 
         DoScriptText(SAY_DEATH, m_creature);
 
-        if (pKiller->HasAura(AURA_ECK_RESIDUE) && !m_bIsRegularMode)
+        Map* pMap = m_creature->GetMap();
+        if (pMap && pMap->IsDungeon())
         {
-            Map* pMap = m_creature->GetMap();
-            if (pMap && pMap->IsDungeon())
-            {
-                Map::PlayerList const &players = pMap->GetPlayers();
-                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                if (itr->getSource()->HasAura(AURA_ECK_RESIDUE) && !m_bIsRegularMode)
                     itr->getSource()->CompletedAchievement(ACHIEV_WHAT_THE_ECK_H);
-            }
         }
     }
 

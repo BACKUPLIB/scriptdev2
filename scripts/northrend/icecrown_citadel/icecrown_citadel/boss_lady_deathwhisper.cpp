@@ -710,6 +710,7 @@ struct MANGOS_DLL_DECL boss_lady_deathwhisperAI : public ScriptedAI
                     break;
                 case RAID_DIFFICULTY_25MAN_NORMAL:
                     CallGuards();
+                    CallGuards();
                     m_uiSummonGuardsTimer = 40*IN_MILLISECONDS;
                     break;
                 case RAID_DIFFICULTY_10MAN_HEROIC:
@@ -717,6 +718,7 @@ struct MANGOS_DLL_DECL boss_lady_deathwhisperAI : public ScriptedAI
                     m_uiSummonGuardsTimer = MINUTE*IN_MILLISECONDS;
                     break;
                 case RAID_DIFFICULTY_25MAN_HEROIC:
+                    CallGuards();
                     CallGuards();
                     m_uiSummonGuardsTimer = 40*IN_MILLISECONDS;
                     break;

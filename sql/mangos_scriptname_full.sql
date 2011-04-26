@@ -129,7 +129,6 @@ UPDATE creature_template SET ScriptName='npc_doctor' WHERE entry IN (12939,12920
 UPDATE creature_template SET ScriptName='npc_injured_patient' WHERE entry IN (12936,12937,12938,12923,12924,12925);
 UPDATE creature_template SET ScriptName='npc_prof_alchemy' WHERE entry IN (17909,19052,22427);
 UPDATE creature_template SET ScriptName='npc_prof_blacksmith' WHERE entry IN (5164,11145,11146,11176,11177,11178,11191,11192,11193);
-UPDATE creature_template SET ScriptName='npc_engineering_tele_trinket' WHERE entry IN (14742,14743,21493,21494);
 UPDATE creature_template SET ScriptName='npc_prof_leather' WHERE entry IN (7866,7867,7868,7869,7870,7871);
 UPDATE creature_template SET ScriptName='npc_prof_tailor' WHERE entry IN (22208,22212,22213);
 UPDATE creature_template SET ScriptName='npc_rogue_trainer' WHERE entry IN (918,4163,3328,4583,5165,5167,13283,16684);
@@ -668,7 +667,6 @@ UPDATE creature_template SET ScriptName='npc_daegarn' WHERE entry=24151;
 UPDATE creature_template SET ScriptName='npc_deathstalker_razael' WHERE entry=23998;
 UPDATE creature_template SET ScriptName='npc_dark_ranger_lyana' WHERE entry=23778;
 UPDATE creature_template SET ScriptName='npc_greer_orehammer' WHERE entry=23859;
-UPDATE creature_template SET ScriptName='npc_mcgoyver' WHERE entry=24040;
 UPDATE creature_template SET ScriptName='npc_silvermoon_harry' WHERE entry=24539;
 
 /*  */
@@ -687,7 +685,6 @@ UPDATE instance_template SET ScriptName='instance_pit_of_saron' WHERE map=658;
 UPDATE creature_template SET ScriptName='boss_forgemaster_garfrost' WHERE entry=36494;
 
 /* ICECROWN */
-UPDATE creature_template SET ScriptName='npc_arete' WHERE entry=29344;
 UPDATE creature_template SET ScriptName='npc_dame_evniki_kapsalis' WHERE entry=34885;
 
 /* IRONFORGE */

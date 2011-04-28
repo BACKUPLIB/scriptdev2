@@ -1717,6 +1717,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             uiTargetcheck = 10000;
 
             ((Unit*)m_creature)->SetStandState(UNIT_STAND_STATE_STAND);
+            m_creature->SetVisibility(VISIBILITY_ON);
             m_creature->Mount(25279);
 
             UpdateWorldState(m_creature->GetMap(), WORLD_STATE_REMAINS, 0);

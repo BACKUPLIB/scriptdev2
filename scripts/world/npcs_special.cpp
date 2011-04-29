@@ -48,9 +48,10 @@ npc_sayge               100%    Darkmoon event fortune teller, buff player based
 npc_tabard_vendor        50%    allow recovering quest related tabards, achievement related ones need core support
 npc_locksmith            75%    list of keys needs to be confirmed
 npc_death_knight_gargoyle       AI for summoned gargoyle of deathknights
-npc_training_dummy		100%	AI for training dummies
-npc_winter_reveler		100%	Winterveil event
-npc_metzen				100%	Winterveil event
+npc_training_dummy       100%   AI for training dummies
+npc_winter_reveler       100%   Winterveil event
+npc_metzen               100%   Winterveil event
+npc_experience_eliminator       NPC to stop gaining experience
 EndContentData */
 
 /*########
@@ -2837,6 +2838,203 @@ bool GossipSelect_npc_metzen(Player* pPlayer, Creature* pCreature, uint32 uiSend
     return true;
 }
 
+/*######
+## npc_experience_eliminator
+######*/
+
+#define GOSSIP_ITEM_STOP_XP_GAIN                 "I don't want to gain experience anymore."
+#define GOSSIP_CONFIRM_STOP_XP_GAIN              "Are you sure you want to stop gaining experience?"
+#define GOSSIP_ITEM_START_XP_GAIN                "I want to be able to gain experience again."
+#define GOSSIP_CONFIRM_START_XP_GAIN             "Are you sure you want to be able to gain experience once again?"
+
+bool GossipHello_npc_experience_eliminator(Player* pPlayer, Creature* pCreature)
+{
+    pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED) ? GOSSIP_ITEM_START_XP_GAIN : GOSSIP_ITEM_STOP_XP_GAIN,
+    GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1,
+    pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED) ? GOSSIP_CONFIRM_START_XP_GAIN : GOSSIP_CONFIRM_STOP_XP_GAIN, 100000, false);
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_experience_eliminator(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if(uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        if(pPlayer->GetMoney() < 100000)
+            return true;
+
+        pPlayer->ModifyMoney(-100000);
+
+        if(pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED))
+            pPlayer->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED);
+        else
+            pPlayer->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_XP_USER_DISABLED);
+    }
+    pPlayer->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
+/*######
+## pet_spring_rabbit
+######*/
+
+enum
+{
+    NPC_SPRING_RABBIT        = 32791,
+    SPELL_RABBIT_LOVE        = 61728,
+    SPELL_BABY_BUNNY         = 61727,
+    SPELL_SPRING_ACHIEV      = 61875,
+    SPELL_BROKEN_HEART       = 62004,
+};
+
+struct MANGOS_DLL_DECL pet_spring_rabbitAI : public PetAI
+{
+    pet_spring_rabbitAI(Pet* pPet) : PetAI(pPet)
+    {
+        Reset();
+    }
+
+    bool m_bIsInLove;
+    bool m_bIsClient;
+    uint32 m_uiLoveTimer;
+    uint32 m_uiWaitTimer;
+    uint32 m_uiPhase;
+    uint64 m_uiLoverGUID;
+
+    void Reset()
+    {
+        m_bIsInLove = false;
+        m_bIsClient = false;
+        m_uiLoverGUID = 0;
+        m_uiLoveTimer = 3000;
+        m_uiWaitTimer = 7000;
+        m_uiPhase = 1;
+
+        if (Unit* pOwner = m_creature->GetOwner())
+            m_creature->GetMotionMaster()->MoveFollow(pOwner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+    }
+    
+    void SetClient(bool m_bValue)
+    {
+        if (m_bValue)
+        {
+            m_bIsInLove = m_bValue;
+            m_bIsClient = m_bValue;
+        }
+        else
+            Reset();
+    }
+
+    void MoveInLineOfSight(Unit* pWho)
+    {
+        if (!m_bIsInLove && !m_bIsClient && roll_chance_i(10))
+        {
+            if (m_creature->GetDistance(pWho) <= 6.0f)
+            { 
+                if (((Creature*)pWho)->IsPet())
+                {
+                    m_bIsInLove = true;
+                    m_uiLoverGUID = ((Creature*)pWho)->GetGUID();
+                }
+            }
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        PetAI::UpdateAI(uiDiff);
+
+        if (!m_bIsClient && m_bIsInLove)
+        {
+            if (Creature* pSpringRabbit =  m_creature->GetMap()->GetPet(m_uiLoverGUID))
+            {
+                if (m_creature->GetDistance(pSpringRabbit) <= 6.0f)
+                {
+                    switch(m_uiPhase)
+                    {
+                        case 1:
+                        {
+                            if (pet_spring_rabbitAI* pSpringRabbitAI = dynamic_cast<pet_spring_rabbitAI*>(pSpringRabbit->AI()))
+                                pSpringRabbitAI->SetClient(true);
+
+                                m_creature->CastSpell(m_creature, SPELL_RABBIT_LOVE, true);
+                                pSpringRabbit->CastSpell(pSpringRabbit, SPELL_RABBIT_LOVE, true);
+                                
+                                // Complete Achievement Criteria for Both Players
+                                if(Unit* pPlayer = m_creature->GetOwner())
+                                    pPlayer->CastSpell(pPlayer, SPELL_SPRING_ACHIEV, true);
+                                if(Unit* pOther = pSpringRabbit->GetOwner())
+                                    pOther->CastSpell(pOther, SPELL_SPRING_ACHIEV, true);
+
+                                m_uiPhase = 2;
+                                break;
+                        }
+                        case 2:
+                        {
+                            if (!m_creature->hasUnitState(UNIT_STAT_FOLLOW))
+                                if (Unit* pOwner = m_creature->GetOwner())
+                                    m_creature->GetMotionMaster()->MoveFollow(pOwner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+
+                            if (m_uiWaitTimer < uiDiff)
+                            {
+                                m_uiPhase = 3;
+                                m_uiWaitTimer = 7000;
+                            }
+                            else
+                                m_uiWaitTimer -= uiDiff;
+
+                            break;
+                        }
+                        case 3:
+                        {
+                            if (m_uiLoveTimer < uiDiff)
+                            {
+                                DoCastSpellIfCan(m_creature, SPELL_BABY_BUNNY);
+ 
+                                m_uiLoveTimer = 3000;
+                                m_uiPhase = 2;
+                            }
+                            else
+                                m_uiLoveTimer -= uiDiff;
+
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    m_bIsInLove = false;
+
+                    if (m_creature->HasAura(SPELL_RABBIT_LOVE))
+                    {
+                        pSpringRabbit->RemoveAurasDueToSpell(SPELL_RABBIT_LOVE);
+                        m_creature->RemoveAurasDueToSpell(SPELL_RABBIT_LOVE);
+                       
+                        m_creature->CastSpell(m_creature, SPELL_BROKEN_HEART, true);
+                        pSpringRabbit->CastSpell(pSpringRabbit, SPELL_BROKEN_HEART, true);
+
+                        if (pet_spring_rabbitAI* pSpringRabbitAI = dynamic_cast<pet_spring_rabbitAI*>(pSpringRabbit->AI()))
+                            pSpringRabbitAI->SetClient(false);
+
+                        Reset();
+                    }
+                }
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_pet_spring_rabbit(Creature* pCreature)
+{
+    if (pCreature->IsPet())
+        return new pet_spring_rabbitAI((Pet*)pCreature);
+    else
+        return NULL;
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2996,5 +3194,16 @@ void AddSC_npcs_special()
     newscript->Name = "npc_metzen";
     newscript->pGossipHello = &GossipHello_npc_metzen;
     newscript->pGossipSelect = &GossipSelect_npc_metzen;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_experience_eliminator";
+    newscript->pGossipHello = &GossipHello_npc_experience_eliminator;
+    newscript->pGossipSelect = &GossipSelect_npc_experience_eliminator;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "pet_spring_rabbit";
+    newscript->GetAI = &GetAI_pet_spring_rabbit;
     newscript->RegisterSelf();
 }

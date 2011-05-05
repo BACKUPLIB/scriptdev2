@@ -22,6 +22,9 @@ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_invers
 ('2668606','26686','4','0','100','7','28','0','16245','Ferocious Rhino - Remove Animation Freeze Spell on Aggro'),
 ('2668405','26684','4','0','100','7','28','0','16245','Ravenous Furbolg - Remove Animation Freeze Spell on Aggro'),
 ('2668506','26685','4','0','100','7','28','0','16245','Massive Jormungar - Remove Animation Freeze Spell on Aggro');
+-- decrease timers
+UPDATE `creature_ai_scripts` SET `event_param1` = '1000',`event_param2` = '1500',`event_param3` = '5000',`event_param4` = '9000' WHERE `id` IN ('2668301','2668302','2668401','2668402','2668603','2668604');
+UPDATE `creature_ai_scripts` SET `event_param1` = '500',`event_param2` = '1000',`event_param3` = '9000',`event_param4` = '12000' WHERE `id` IN ('2668403','2668501');
 
 -- add creature_template for orb mob
 INSERT IGNORE INTO `creature_template` (`entry`,`modelid_1`,`modelid_2`,`name`,`faction_A`,`faction_H`,`InhabitType`,`unit_flags`) VALUES 

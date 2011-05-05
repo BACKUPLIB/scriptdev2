@@ -54,6 +54,19 @@ struct MANGOS_DLL_DECL instance_pinnacle : public ScriptedInstance
         }
     }
 
+    void OnCreatureCreate(Creature* pCreature)
+    {
+        switch(pCreature->GetEntry())
+        {
+            case NPC_WORGEN:
+            case NPC_FURBOLG:
+            case NPC_JORMUNGAR:
+            case NPC_RHINO:
+                pCreature->setFaction(35);
+        }
+        
+    }
+
     void SetData(uint32 uiType, uint32 uiData)
     {
         debug_log("SD2: Instance Pinnacle: SetData received for type %u with data %u", uiType, uiData);

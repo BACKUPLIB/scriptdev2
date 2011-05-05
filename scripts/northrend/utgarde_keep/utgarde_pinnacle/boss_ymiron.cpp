@@ -41,7 +41,7 @@ enum
     SPELL_BANE                  = 48294,
     SPELL_BANE_H                = 59301,
     SPELL_DARK_SLASH            = 48292,
-    SPELL_FETID_ROT_N           = 48291,
+    SPELL_FETID_ROT             = 48291,
     SPELL_FETID_ROT_H           = 59300,
     SPELL_SCREAMS_OF_THE_DEAD   = 51750,
     SPELL_SPIRIT_BURST          = 48529, // when Ranulf
@@ -56,7 +56,7 @@ enum
     SPELL_CHANNEL_SPIRIT_TO_YMIRON  = 48316,
     SPELL_CHANNEL_YMIRON_TO_SPIRIT  = 48307,
 
-    SPELL_SPIRIT_FOUNT            = 48380,
+    SPELL_SPIRIT_FOUNT              = 48380,
     SPELL_SPIRIT_FOUNT_H            = 59320,
 
     NPC_BJORN           = 27303, // Near Right Boat, summon Spirit Fount
@@ -111,6 +111,8 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
     uint32 m_uiTempSpellTimer;
     uint64 m_uiSpiritFountGUID;
     std::vector<uint64> mobList;
+    uint32 m_uiBaneTimer;
+    uint32 m_uiDarkSlashFetidRotTimer;
 
     void Reset()
     {
@@ -124,6 +126,9 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         m_uiChannelSpiritTimer = 0;
         m_bIsChanneling = false;
         m_uiTempSpellTimer = 15000;
+        m_uiBaneTimer = 5000;
+        m_uiDarkSlashFetidRotTimer = 1000;
+        m_uiBoatActiveCount = 0;
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
@@ -158,7 +163,7 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         {
             if (Creature* pTemp = m_creature->SummonCreature(currentActiveBoat.npc,currentActiveBoat.SpawnX,currentActiveBoat.SpawnY,currentActiveBoat.SpawnZ,currentActiveBoat.SpawnO,TEMPSUMMON_TIMED_DESPAWN,7000))
             {
-                pTemp->CastSpell(m_creature, SPELL_CHANNEL_SPIRIT_TO_YMIRON, true);
+                m_uiChannelSpiritTimer = 7000;
                 m_bIsChanneling = true;
                 pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 pTemp->SetSplineFlags(SPLINEFLAG_FLYING);
@@ -196,8 +201,8 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
 
                 if (currentActiveBoat.npc == NPC_BJORN_VISUAL)
                 {
-                    if(Creature* pFount = m_creature->SummonCreature(NPC_SPIRIT_FOUNT,m_creature->GetPositionX()+rand()%5,m_creature->GetPositionY()+rand()%5,m_creature->GetPositionZ(),0,TEMPSUMMON_MANUAL_DESPAWN,0))
-                    {    
+                    if(Creature* pFount = m_creature->SummonCreature(NPC_SPIRIT_FOUNT,m_creature->GetPositionX()+rand()%10,m_creature->GetPositionY()+rand()%10,m_creature->GetPositionZ(),0,TEMPSUMMON_MANUAL_DESPAWN,0))
+                    {   
                         pFount->GetMotionMaster()->MoveConfused();
                         mobList.push_back(pFount->GetGUID());
                     }
@@ -205,7 +210,7 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
                 else if (currentActiveBoat.npc == NPC_TORGYN_VISUAL)
                 {
                     for (int i=0;i<4;++i)
-                        if (Creature* pTemp = m_creature->SummonCreature(NPC_AVENGING_SPIRIT,m_creature->GetPositionX()+rand()%5,m_creature->GetPositionY()+rand()%5,m_creature->GetPositionZ(),0,TEMPSUMMON_CORPSE_DESPAWN,10000))
+                        if (Creature* pTemp = m_creature->SummonCreature(NPC_AVENGING_SPIRIT,m_creature->GetPositionX()+rand()%10,m_creature->GetPositionY()+rand()%10,m_creature->GetPositionZ(),0,TEMPSUMMON_CORPSE_DESPAWN,10000))
                         {
                             pTemp->SetInCombatWithZone();
                             mobList.push_back(pTemp->GetGUID());
@@ -213,17 +218,18 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
                 }
 
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                m_creature->SetInCombatWithZone();
+                m_creature->Attack(m_creature->getVictim(),true);
+                m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
                 m_bIsChanneling = false;
             }
             else
                 m_uiChannelSpiritTimer -= uiDiff;
+            
             return;
         }
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
-
 
         if ((m_bIsRegularMode && ((m_uiBoatActiveCount == 0 && m_creature->GetHealthPercent() < 67.f) || 
             (m_uiBoatActiveCount == 1 && m_creature->GetHealthPercent() < 34.f))) ||
@@ -253,7 +259,7 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
                 if (m_uiTempSpellTimer < uiDiff)
                 {
                     DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode?SPELL_SPIRIT_STRIKE:SPELL_SPIRIT_STRIKE_H);
-                    m_uiTempSpellTimer = urand(3000,8000);
+                    m_uiTempSpellTimer = urand(6000,10000);
                 }
                 else
                     m_uiTempSpellTimer -= uiDiff;
@@ -263,11 +269,22 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
                 if (m_uiTempSpellTimer < uiDiff)
                 {
                     DoCastSpellIfCan(m_creature, m_bIsRegularMode?SPELL_SPIRIT_BURST:SPELL_SPIRIT_BURST_H);
-                    m_uiTempSpellTimer = urand(3000,8000);
+                    m_uiTempSpellTimer = urand(10000,18000);
                 }
                 else
                     m_uiTempSpellTimer -= uiDiff;
             }
+
+            if (m_uiDarkSlashFetidRotTimer < uiDiff)
+            {
+                if(rand()%2)
+                    DoCastSpellIfCan(m_creature->getVictim(),SPELL_DARK_SLASH);
+                else
+                    DoCastSpellIfCan(m_creature->getVictim(),m_bIsRegularMode?SPELL_FETID_ROT:SPELL_FETID_ROT_H);
+                m_uiDarkSlashFetidRotTimer = urand(1000,8000);
+            }
+            else
+                m_uiDarkSlashFetidRotTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }
@@ -278,12 +295,63 @@ CreatureAI* GetAI_boss_ymiron(Creature* pCreature)
     return new boss_ymironAI(pCreature);
 }
 
+/*######
+## mob_spirit_fount
+######*/
+
+struct MANGOS_DLL_DECL mob_spirit_fountAI : public ScriptedAI
+{
+    mob_spirit_fountAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+    bool m_bIsRegularMode;
+
+    void Reset()
+    {
+        m_creature->CastSpell(m_creature,m_bIsRegularMode?SPELL_SPIRIT_FOUNT:SPELL_SPIRIT_FOUNT_H,true);
+        m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
+    }
+
+    void AttackStart(Unit* pWho)
+    {
+        return;
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage) // just in case
+    {
+        uiDamage = 0;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_bIsRegularMode && !m_creature->HasAura(SPELL_SPIRIT_FOUNT))
+            m_creature->CastSpell(m_creature,SPELL_SPIRIT_FOUNT,true);
+        else if (!m_bIsRegularMode && !m_creature->HasAura(SPELL_SPIRIT_FOUNT_H))
+            m_creature->CastSpell(m_creature,SPELL_SPIRIT_FOUNT_H,true);
+    }
+};
+
+CreatureAI* GetAI_mob_spirit_fount(Creature* pCreature)
+{
+    return new mob_spirit_fountAI(pCreature);
+}
+
 void AddSC_boss_ymiron()
 {
-    Script *newscript;
+    Script *pNewscript;
 
-    newscript = new Script;
-    newscript->Name = "boss_ymiron";
-    newscript->GetAI = &GetAI_boss_ymiron;
-    newscript->RegisterSelf();
+    pNewscript = new Script;
+    pNewscript->Name = "boss_ymiron";
+    pNewscript->GetAI = &GetAI_boss_ymiron;
+    pNewscript->RegisterSelf();
+
+    pNewscript = new Script;
+    pNewscript->Name = "mob_spirit_fount";
+    pNewscript->GetAI = &GetAI_mob_spirit_fount;
+    pNewscript->RegisterSelf();
 }

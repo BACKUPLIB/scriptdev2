@@ -104,6 +104,7 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
     uint64 m_uiChanneler1GUID;
     uint64 m_uiChanneler2GUID;
     uint64 m_uiChanneler3GUID;
+    uint64 m_uiRitualVictimGUID;
 
     bool m_bIsIntroDone;
     uint32 m_uiIntroTimer;
@@ -116,9 +117,10 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
     void Reset()
     {
         m_uiArthasGUID = 0;
-        uint64 m_uiChanneler1GUID = 0;
-        uint64 m_uiChanneler2GUID = 0;
-        uint64 m_uiChanneler3GUID = 0;
+        m_uiChanneler1GUID = 0;
+        m_uiChanneler2GUID = 0;
+        m_uiChanneler3GUID = 0;
+        m_uiRitualVictimGUID = 0;
 
         m_uiIntroTimer = 2500;
         m_uiIntroCount = 0;
@@ -267,7 +269,14 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
     void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)
     { 
         if (pSpellEntry->Id == SPELL_RITUAL_STRIKE_EFF_1)
+        {
             m_uiRitualProgress = 4;
+            if (Creature* pVictim = m_creature->GetMap()->GetCreature(m_uiRitualVictimGUID))
+            {
+                pVictim->DealDamage(pVictim, pVictim->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                m_uiRitualVictimGUID = 0;
+            }
+        }
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -359,6 +368,7 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
                 return;
 
             // finally we have our victim..
+            m_uiRitualVictimGUID = pVictim->GetGUID();
 
             // spawn ritual channelers
             m_creature->CastSpell(m_creature, SPELL_RITUAL_CHANNELER_1, true);

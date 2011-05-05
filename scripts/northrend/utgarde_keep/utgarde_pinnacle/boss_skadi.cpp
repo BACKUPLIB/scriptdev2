@@ -218,6 +218,7 @@ struct MANGOS_DLL_DECL boss_skadiAI : public ScriptedAI
 
         if(Creature* pGrauf = GetClosestCreatureWithEntry(m_creature, NPC_GRAUF, 20.f))
         {
+            pGrauf->Respawn();
             pGrauf->setFaction(14);
             pGrauf->SetVisibility(VISIBILITY_ON);
         }
@@ -281,6 +282,7 @@ struct MANGOS_DLL_DECL boss_skadiAI : public ScriptedAI
             {
                 pGrauf->setFaction(35);
                 pGrauf->SetVisibility(VISIBILITY_OFF);
+                pGrauf->DealDamage(pGrauf, pGrauf->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
 
             DoScriptText(SAY_AGGRO, m_creature);
@@ -464,7 +466,7 @@ struct MANGOS_DLL_DECL boss_skadiAI : public ScriptedAI
             {
                 if (m_uiWaveCounter < 5)
                     ++m_uiWaveCounter;
-                //SpawnMobs(m_uiWaveCounter);
+                SpawnMobs(m_uiWaveCounter);
                 m_uiNextWaveTimer = urand(20000,30000);
             }
             else 

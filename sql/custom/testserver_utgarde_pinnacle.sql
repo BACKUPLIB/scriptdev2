@@ -31,6 +31,7 @@ INSERT IGNORE INTO `creature_template` (`entry`,`modelid_1`,`modelid_2`,`name`,`
 DELETE FROM `creature_loot_template` WHERE `item` = '37372';
 INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`, `mincountOrRef`, `maxcount`) VALUES 
 ('26692','37372','100','1','1');
+UPDATE `creature_template` SET `lootid` = '26692' WHERE `entry` = '26692';
 
 -- fix soul fount mob in ymiron fight
-UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '83', `unit_flags` = '2', `faction_A` = '14', `faction_H` = '14', `MovementType` = '1' WHERE `entry` = '27339';
+UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '83', `unit_flags` = '2', `faction_A` = '14', `faction_H` = '14', `MovementType` = '1', `ScriptName` = 'mob_spirit_fount' WHERE `entry` = '27339';

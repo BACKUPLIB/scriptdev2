@@ -113,6 +113,7 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
     std::vector<uint64> mobList;
     uint32 m_uiBaneTimer;
     uint32 m_uiDarkSlashFetidRotTimer;
+    bool m_bBaneAchievement;
 
     void Reset()
     {
@@ -129,7 +130,7 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         m_uiBaneTimer = 5000;
         m_uiDarkSlashFetidRotTimer = 1000;
         m_uiBoatActiveCount = 0;
-
+        m_bBaneAchievement = true;
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
     }
 
@@ -152,6 +153,15 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (!m_bIsRegularMode && m_bBaneAchievement && m_pInstance)
+            m_pInstance->DoCompleteAchievement(ACHIEV_KINGS_BANE);
+    }
+
+    void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)
+    {
+        if (pSpellEntry->Id == 59302 && pUnit->GetTypeId() == TYPEID_PLAYER)
+            m_bBaneAchievement = false;
     }
 
     void MovementInform(uint32 uiType, uint32 uiPointId)
@@ -285,6 +295,14 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
             }
             else
                 m_uiDarkSlashFetidRotTimer -= uiDiff;
+
+            if (m_uiBaneTimer < uiDiff)
+            {
+                DoCastSpellIfCan(m_creature,m_bIsRegularMode?SPELL_BANE:SPELL_BANE_H);
+                m_uiBaneTimer = urand(10000,25000);
+            }
+            else
+                m_uiBaneTimer -= uiDiff;
 
         DoMeleeAttackIfReady();
     }

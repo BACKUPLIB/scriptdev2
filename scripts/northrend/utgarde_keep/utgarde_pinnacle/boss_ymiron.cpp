@@ -22,6 +22,7 @@ SDCategory: Utgarde Pinnacle
 EndScriptData */
 
 #include "precompiled.h"
+#include "utgarde_pinnacle.h"
 
 enum
 {
@@ -138,6 +139,9 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_YMIRON,IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -151,12 +155,20 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         }
     }
 
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_YMIRON, FAIL);
+    }
+
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
         if (!m_pInstance)
             return;
+
+        m_pInstance->SetData(TYPE_YMIRON,DONE);
 
         if (!m_bIsRegularMode && m_bBaneAchievement)
             m_pInstance->DoCompleteAchievement(ACHIEV_KINGS_BANE);
@@ -165,19 +177,17 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         Map::PlayerList const &pPlayers = m_creature->GetMap()->GetPlayers();
 
         for (Map::PlayerList::const_iterator i = pPlayers.begin(); i != pPlayers.end(); ++i)
-            if (Player* player = i->getSource())
-                if (player->GetMiniPet())
-                    switch(player->GetMiniPet()->GetEntry())
-                    {
-                        case 14305:
-                        case 22817:
-                        case 22818:
-                        case 33533:
-                        case 14444:
-                        case 33532:
-                        player->CompletedAchievement(ACHIEV_HAIL_TO_THE_KING); break;
-                        default: break;
-                    }
+        {
+            if (Player* pPlayer = i->getSource())
+            {
+                if (pPlayer->GetMiniPet() && pPlayer->isAlive())
+                {
+                    uint32 pet = pPlayer->GetMiniPet()->GetEntry();
+                    if (pet == 14305 || pet == 22817 || pet == 22818 || pet == 33533 || pet == 14444 || pet == 33532)
+                        pPlayer->CompletedAchievement(ACHIEV_HAIL_TO_THE_KING);
+                }
+            }
+        }
     }
 
     void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)

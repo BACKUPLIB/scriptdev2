@@ -275,6 +275,12 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
                 pVictim->DealDamage(pVictim, pVictim->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 m_uiRitualVictimGUID = 0;
             }
+            if (Creature* pChanneler1 = m_creature->GetMap()->GetCreature(m_uiChanneler1GUID))
+                pChanneler1->ForcedDespawn();
+            if (Creature* pChanneler2 = m_creature->GetMap()->GetCreature(m_uiChanneler2GUID))
+                pChanneler2->ForcedDespawn();
+            if (Creature* pChanneler3 = m_creature->GetMap()->GetCreature(m_uiChanneler3GUID))
+                pChanneler3->ForcedDespawn();
         }
     }
 
@@ -316,7 +322,6 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
                             DoScriptText(SAY_INTRO_5, m_creature);
                             m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             m_bIsIntroDone = true;
-
                             break;
                     }
 

@@ -464,7 +464,7 @@ struct MANGOS_DLL_DECL boss_skadiAI : public ScriptedAI
 
             if(m_uiNextWaveTimer < uiDiff) // spawn mobs
             {
-                if (m_uiWaveCounter < 5)
+                if (m_uiWaveCounter < 4)
                     ++m_uiWaveCounter;
                 SpawnMobs(m_uiWaveCounter);
                 m_uiNextWaveTimer = urand(20000,30000);

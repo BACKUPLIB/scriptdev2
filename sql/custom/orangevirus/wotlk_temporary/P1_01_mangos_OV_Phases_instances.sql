@@ -16,16 +16,18 @@ naxxramas 10 & 25
 obsidiansanctum 10
 culling of stratholme 
 halls of stone
+eye of eternity 10
+utgarde pinnacle
 */
 
 -- close instances of later phases
--- close instances eye of eternity(80), ulduar(80), onyxias lair(80), trial of the crusader(80), icecrown citadel(80) 
+-- close instances ulduar(80), onyxias lair(80), trial of the crusader(80), icecrown citadel(80) 
 -- vault of archavon(80), The Ruby Sanctum(80), halls of reflection(75), pit of saron(75), forge of souls(80), trial of the champion(80)
-UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (616,603,249,649,631,624,724,668,658,632,650);
+UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (603,249,649,631,624,724,668,658,632,650);
 
 -- close unfinished phase 1 instances (levelMin)
--- utgarde pinnacle(75), oculus(75), eye of eternity 10
-UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (575,578, 616);
+-- oculus(75)
+UPDATE `areatrigger_teleport` SET `required_level` = 90 WHERE `target_map` IN (578);
 
 -- despawn unfinished phase 1 instances
 -- despawn obsidiansanctum 25

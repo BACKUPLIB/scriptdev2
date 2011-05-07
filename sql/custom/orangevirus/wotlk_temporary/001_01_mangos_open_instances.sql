@@ -17,13 +17,14 @@ obsidiansanctum 10
 culling of stratholme 
 halls of stone
 eye of eternity
+utgarde pinnacle
 */
 
 -- open closed phase 1 instances
 UPDATE `areatrigger_teleport` SET `required_level` = 80 WHERE `target_map` = 616;
 UPDATE `areatrigger_teleport` SET `required_level` = 72 WHERE `target_map` = 599;
-/*UPDATE `areatrigger_teleport` SET `required_level` = 75 WHERE `target_map` = 575; -- utgarde pinnacle
-UPDATE `areatrigger_teleport` SET `required_level` = 75 WHERE `target_map` = 578; -- oculus
+UPDATE `areatrigger_teleport` SET `required_level` = 75 WHERE `target_map` = 575;
+/*UPDATE `areatrigger_teleport` SET `required_level` = 75 WHERE `target_map` = 578; -- oculus
 */
 
 -- =================================

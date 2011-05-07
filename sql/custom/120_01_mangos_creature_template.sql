@@ -81,6 +81,10 @@ UPDATE `creature_template` SET `ScriptName` = 'mob_crystalline_tangler' WHERE `e
 UPDATE `creature_template` SET `ScriptName` = 'mob_frost_tomb' WHERE `entry` = '23965';
 UPDATE `creature_template` SET `ScriptName` = 'mob_ingvar_throw_dummy' WHERE `entry` = '23997';
 
+-- Instance Utgarde Pinnacle
+UPDATE `creature_template` SET `ScriptName` = 'npc_spectator' WHERE `entry` = '26667';
+UPDATE `creature_template` SET `AIName` = 'NUllAI' WHERE `entry` = '27327';
+
 -- Instance Halls of Stone
 
 UPDATE `creature_template` SET `ScriptName` = 'mob_tribuna_controller' WHERE `entry` = '28234';

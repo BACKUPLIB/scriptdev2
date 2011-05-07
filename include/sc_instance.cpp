@@ -118,5 +118,5 @@ void ScriptedInstance::DoStartTimedAchievement(AchievementCriteriaTypes tCriteri
     }
     else
         debug_log("SD2: DoStartTimedAchievement attempt start achievements but no players in map.");
-
 }
+

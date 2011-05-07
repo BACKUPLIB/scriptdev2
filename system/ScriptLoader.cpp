@@ -33,6 +33,7 @@ extern void AddSC_example_misc();
 extern void AddSC_areatrigger_scripts();
 extern void AddSC_boss_emeriss();
 extern void AddSC_boss_taerar();
+extern void AddSC_boss_lethon();
 extern void AddSC_boss_ysondre();
 extern void AddSC_generic_creature();
 extern void AddSC_go_scripts();
@@ -231,7 +232,8 @@ extern void AddSC_boss_ayamiss();                           //ruins_of_ahnqiraj
 extern void AddSC_boss_kurinnaxx();
 extern void AddSC_boss_moam();
 extern void AddSC_ruins_of_ahnqiraj();
-extern void AddSC_boss_cthun();                             //temple_of_ahnqiraj
+extern void AddSC_instance_ruins_of_ahnqiraj();
+extern void AddSC_boss_cthun();                             // temple_of_ahnqiraj
 extern void AddSC_boss_fankriss();
 extern void AddSC_boss_huhuran();
 extern void AddSC_bug_trio();
@@ -567,6 +569,7 @@ void AddScripts()
     AddSC_areatrigger_scripts();
     AddSC_boss_emeriss();
     AddSC_boss_taerar();
+    AddSC_boss_lethon();
     AddSC_boss_ysondre();
     AddSC_generic_creature();
     AddSC_go_scripts();
@@ -765,7 +768,8 @@ void AddScripts()
     AddSC_boss_kurinnaxx();
     AddSC_boss_moam();
     AddSC_ruins_of_ahnqiraj();
-    AddSC_boss_cthun();                                     //temple_of_ahnqiraj
+    AddSC_instance_ruins_of_ahnqiraj();
+    AddSC_boss_cthun();                                     // temple_of_ahnqiraj
     AddSC_boss_fankriss();
     AddSC_boss_huhuran();
     AddSC_bug_trio();

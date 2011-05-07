@@ -97,3 +97,25 @@ UPDATE `creature_template` SET `ScriptName` = "npc_experience_eliminator" WHERE 
 
 UPDATE `creature_template` SET `ScriptName`='pet_spring_rabbit' WHERE `entry`='32791';
 
+-- World Boss Lethon
+
+UPDATE `creature_template` SET `ScriptName`='boss_lethon' WHERE `entry`='14888';
+
+-- Childrens Week Orphans
+
+UPDATE `creature_template` SET `ScriptName`='pet_orphan' WHERE `entry` IN(33532,33533);
+
+-- Quest Cold Hearted
+
+UPDATE `creature_template` SET `ScriptName`='npc_brunnhildar_prisoner' WHERE `entry`='29639';
+UPDATE `creature_template` SET `ScriptName`='npc_freed_protodrake', `flags_extra`='4096' WHERE `entry`='29709';
+
+-- Quest The Warm Up
+
+UPDATE `creature_template` SET `ScriptName`='npc_kirgaraak' WHERE `entry`='29352';
+UPDATE `creature_template` SET `spell1`='54459', `spell2`='54458', `spell3`='54460' WHERE `entry`='29918';
+
+-- Quest Plagued Lands
+
+UPDATE `creature_template` SET `ScriptName`='npc_captured_rabid_thistle_bear' WHERE `entry`='11836';
+UPDATE `creature_template` SET `ScriptName`='npc_rabid_thistle_bear' WHERE `entry`='2164';

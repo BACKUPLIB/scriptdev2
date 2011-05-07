@@ -48,10 +48,12 @@ npc_sayge               100%    Darkmoon event fortune teller, buff player based
 npc_tabard_vendor        50%    allow recovering quest related tabards, achievement related ones need core support
 npc_locksmith            75%    list of keys needs to be confirmed
 npc_death_knight_gargoyle       AI for summoned gargoyle of deathknights
-npc_training_dummy       100%   AI for training dummies
-npc_winter_reveler       100%   Winterveil event
-npc_metzen               100%   Winterveil event
+npc_training_dummy      100%    AI for training dummies
+npc_winter_reveler      100%    Winterveil event
+npc_metzen              100%    Winterveil event
 npc_experience_eliminator       NPC to stop gaining experience
+pet_spring_rabbit       100%    Noblegarden event
+pet_orphan              100%    Children's Week
 EndContentData */
 
 /*########
@@ -3035,6 +3037,132 @@ CreatureAI* GetAI_pet_spring_rabbit(Creature* pCreature)
         return NULL;
 }
 
+/*######
+## pet_orphan
+######*/
+
+enum
+{
+    AREA_GRRIZZLEMAW            = 395,
+    AREA_WINTERFIN_RETREAT      = 4099,
+    AREA_BRONZE_DRAGONSHRINE    = 4175,
+    AREA_SHAPERS_TERRACE        = 4382,
+    AREA_WYRMREST_TEMPLE        = 4254,
+
+    QUEST_THE_BIGGEST_TREE_O    = 13929,
+    QUEST_THE_BIGGEST_TREE_W    = 13930,
+    QUEST_BRONZE_DRAGONSHRINE_O = 13933,
+    QUEST_BRONZE_DRAGONSHRINE_W = 13934,
+    QUEST_PLAYMATES_O           = 13950,
+    QUEST_PLAYMATES_W           = 13951,
+    QUEST_MEETING_A_GREAT       = 13956,
+    QUEST_TRIP_TO_WONDERWORKS_O = 13937,
+    QUEST_TRIP_TO_WONDERWORKS_W = 13938,
+    QUEST_THE_DRAGON_QUEEN_O    = 13954,
+    QUEST_THE_DRAGON_QUEEN_W    = 13955,
+
+    NPC_ALEXSTRASZA             = 26917, 
+
+    SPELL_THE_BIGGEST_TREE_O    = 65378,
+    SPELL_THE_BIGGEST_TREE_W    = 65379,
+    SPELL_BRONZE_DRAGONSHRINE_O = 65391,
+    SPELL_BRONZE_DRAGONSHRINE_W = 65392,
+    SPELL_PLAYMATES_O           = 65502,
+    SPELL_PLAYMATES_W           = 65503,
+    SPELL_MEETING_A_GREAT       = 65564,
+    SPELL_THROW_PAPER_ZEPPELIN  = 65357,
+    SPELL_ALEXSTRASZA_O         = 65531,
+    SPELL_ALEXSTRASZA_W         = 65532,
+
+};
+
+struct MANGOS_DLL_DECL pet_orphanAI : public PetAI
+{
+    pet_orphanAI(Pet* pPet) : PetAI(pPet)
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+    }
+
+    void SpellHit(Unit *caster, const SpellEntry *spell)
+    {
+        if (caster->GetTypeId() == TYPEID_PLAYER && m_creature->isAlive() && spell->Id == SPELL_THROW_PAPER_ZEPPELIN)
+        {
+            if ((((Player*)caster)->GetQuestStatus(QUEST_TRIP_TO_WONDERWORKS_O) == QUEST_STATUS_INCOMPLETE))
+                ((Player*)caster)->CompleteQuest(QUEST_TRIP_TO_WONDERWORKS_O);
+            if ((((Player*)caster)->GetQuestStatus(QUEST_TRIP_TO_WONDERWORKS_W) == QUEST_STATUS_INCOMPLETE))
+                ((Player*)caster)->CompleteQuest(QUEST_TRIP_TO_WONDERWORKS_W);
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        PetAI::UpdateAI(uiDiff);
+        
+        // TODO: NPC Text and animations
+
+        if(Unit* pPlayer = m_creature->GetOwner())
+        {
+            if(pPlayer->GetTypeId() != TYPEID_PLAYER)
+                return;
+        
+            switch(m_creature->GetAreaId())
+            {
+                case AREA_GRRIZZLEMAW:
+                {
+                    if(((Player*)pPlayer)->GetQuestStatus(QUEST_THE_BIGGEST_TREE_O) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_THE_BIGGEST_TREE_O,true);
+                    else if (((Player*)pPlayer)->GetQuestStatus(QUEST_THE_BIGGEST_TREE_W) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_THE_BIGGEST_TREE_W,true);
+                    break;
+                }
+                case AREA_WINTERFIN_RETREAT:
+                {
+                    if(((Player*)pPlayer)->GetQuestStatus(QUEST_PLAYMATES_O) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_PLAYMATES_O,true);
+                    else if (((Player*)pPlayer)->GetQuestStatus(QUEST_PLAYMATES_W) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_PLAYMATES_W,true);
+                    break;
+                }
+                case AREA_BRONZE_DRAGONSHRINE:
+                {
+                    if(((Player*)pPlayer)->GetQuestStatus(QUEST_BRONZE_DRAGONSHRINE_O) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_BRONZE_DRAGONSHRINE_O,true);
+                    else if (((Player*)pPlayer)->GetQuestStatus(QUEST_BRONZE_DRAGONSHRINE_W) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_BRONZE_DRAGONSHRINE_W,true);
+                    break;
+                }
+                case AREA_SHAPERS_TERRACE:
+                {
+                    if(((Player*)pPlayer)->GetQuestStatus(QUEST_MEETING_A_GREAT) == QUEST_STATUS_INCOMPLETE)
+                        m_creature->CastSpell(pPlayer, SPELL_MEETING_A_GREAT,true);
+                    break;
+                }
+                case AREA_WYRMREST_TEMPLE:
+                {
+                    if(Creature* pTarget = GetClosestCreatureWithEntry(m_creature, NPC_ALEXSTRASZA, 10.0f))
+                        if(((Player*)pPlayer)->GetQuestStatus(QUEST_THE_DRAGON_QUEEN_O) == QUEST_STATUS_INCOMPLETE)
+                            m_creature->CastSpell(pPlayer, SPELL_ALEXSTRASZA_O,true);
+                        else if(((Player*)pPlayer)->GetQuestStatus(QUEST_THE_DRAGON_QUEEN_W) == QUEST_STATUS_INCOMPLETE)
+                            m_creature->CastSpell(pPlayer, SPELL_ALEXSTRASZA_W,true);
+                    break;
+                }
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_pet_orphan(Creature* pCreature)
+{
+    if (pCreature->IsPet())
+        return new pet_orphanAI((Pet*)pCreature);
+    else
+        return NULL;
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -3205,5 +3333,10 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "pet_spring_rabbit";
     newscript->GetAI = &GetAI_pet_spring_rabbit;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "pet_orphan";
+    newscript->GetAI = &GetAI_pet_orphan;
     newscript->RegisterSelf();
 }

@@ -1,9 +1,3 @@
--- arena vendor fixes
-UPDATE `creature_template` SET `npcflag` = '4480' WHERE `entry` IN ('33938', '33932', '33930', '34084');
-UPDATE `creature` SET `spawnMask` = 0 WHERE id IN (34093,40607,34059,40607); -- despawn higher lvl vendors
--- set sell-flag
-UPDATE `creature_template` SET `npcflag` =128 WHERE `entry` IN('31863', '31864', '31865', '32380', '32834', '32385', '32382', '32383');
-
 /*          Nargle Lashcord
 
     Arena set vedor in Dalaran: Sells set items of the current season.
@@ -1586,3 +1580,9 @@ INSERT INTO `npc_vendor` (entry, item, maxcount, incrtime, ExtendedCost) VALUES
 (34038, 42020, 0, 0, 2561),
 (34038, 42021, 0, 0, 2561),
 (34038, 42123, 0, 0, 2965);
+
+-- arena vendor fixes
+UPDATE `creature_template` SET `npcflag` = '4480' WHERE `entry` IN ('33938', '33932', '33930', '34084');
+UPDATE `creature` SET `spawnMask` = 0 WHERE id IN (34093,40607,34059,40607); -- despawn higher lvl vendors
+-- set sell-flag
+UPDATE `creature_template` SET `npcflag` =128 WHERE `entry` IN('31863', '31864', '31865', '32380', '32834', '32385', '32382', '32383');

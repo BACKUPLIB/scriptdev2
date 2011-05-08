@@ -1093,6 +1093,7 @@ INSERT INTO `npc_vendor` (`entry`, `item`, `maxcount`, `incrtime`, `ExtendedCost
 ('99998', '999057', '0', '0', '0');
 
 -- spawn trainers on gm island for char transfer
+DELETE FROM `creature` WHERE `guid` BETWEEN 4458169 AND 4458187 OR `guid` = 4458190;
 INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
 (4458169, 5504, 1, 1, 65535, 0, 464, 16218.5, 16265.8, 13.3387, 5.91478, 25, 5, 0, 4120, 0, 0, 0),
 (4458170, 918, 1, 1, 65535, 0, 452, 16214.2, 16267.1, 13.5363, 5.98232, 25, 5, 0, 4120, 0, 0, 0),

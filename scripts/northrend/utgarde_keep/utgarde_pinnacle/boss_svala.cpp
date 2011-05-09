@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_Svala
 SD%Complete: 90%
-SDComment: TODO: Call Flames need correct spell, Timers are not blizzlike, The way spells for intro works could use more research.
+SDComment: TODO: Call Flames need correct spell, some visual bugs, the way spells for intro works could use more research.
 SDCategory: Utgarde Pinnacle
 EndScriptData */
 
@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
 
             if (m_creature->GetEntry() != NPC_SVALA_SORROW)
                 m_creature->UpdateEntry(NPC_SVALA_SORROW);
-            //m_creature->CastSpell(m_creature, SPELL_TRANSFORMING, true);
+
             m_creature->SetByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_UNK_2);
             m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
 
@@ -250,7 +250,7 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
         m_creature->AddSplineFlag(SPLINEFLAG_FLYING);
 
         if (m_uiRitualProgress == 1)
-            m_creature->GetMotionMaster()->MovePoint(1,fX,fY,fZ+12.f);
+            m_creature->GetMotionMaster()->MovePoint(1,fX,fY,fZ+8.f);
         else
         {
             m_creature->SendMonsterMoveWithSpeed(fX, fY, fZ + 5.0f, m_uiIntroTimer);
@@ -271,11 +271,19 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
         if (pSpellEntry->Id == SPELL_RITUAL_STRIKE_EFF_1)
         {
             m_uiRitualProgress = 4;
-            if (Creature* pVictim = m_creature->GetMap()->GetCreature(m_uiRitualVictimGUID))
+
+            if (Unit* pVictim = m_creature->GetMap()->GetUnit(m_uiRitualVictimGUID))
             {
                 pVictim->DealDamage(pVictim, pVictim->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 m_uiRitualVictimGUID = 0;
             }
+
+            if (Creature* pChanneler1 = m_creature->GetMap()->GetCreature(m_uiChanneler1GUID))
+                pChanneler1->ForcedDespawn();
+            if (Creature* pChanneler2 = m_creature->GetMap()->GetCreature(m_uiChanneler2GUID))
+                pChanneler2->ForcedDespawn();
+            if (Creature* pChanneler3 = m_creature->GetMap()->GetCreature(m_uiChanneler3GUID))
+                pChanneler3->ForcedDespawn();
         }
     }
 
@@ -283,6 +291,7 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
+
             if (m_bIsIntroDone)
                 return;
 

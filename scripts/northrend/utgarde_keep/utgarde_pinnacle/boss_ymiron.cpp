@@ -16,12 +16,13 @@
 
 /* ScriptData
 SDName: Boss_Ymiron
-SD%Complete: 20%
-SDComment:
+SD%Complete: 90%
+SDComment: TODO: soul fount is not moving/working 100% right, spirit channel animation/event not working perfekt
 SDCategory: Utgarde Pinnacle
 EndScriptData */
 
 #include "precompiled.h"
+#include "utgarde_pinnacle.h"
 
 enum
 {
@@ -37,6 +38,7 @@ enum
     SAY_DEATH                   = -1575040,
 
     ACHIEV_KINGS_BANE           = 2157,
+    ACHIEV_HAIL_TO_THE_KING     = 1790,
 
     SPELL_BANE                  = 48294,
     SPELL_BANE_H                = 59301,
@@ -137,6 +139,9 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_YMIRON,IN_PROGRESS);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -150,12 +155,43 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
         }
     }
 
+    void JustReachedHome()
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_YMIRON, FAIL);
+    }
+
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
         if (!m_bIsRegularMode && m_bBaneAchievement && m_pInstance)
             m_pInstance->DoCompleteAchievement(ACHIEV_KINGS_BANE);
+
+        if (!m_pInstance)
+            return;
+
+        m_pInstance->SetData(TYPE_YMIRON,DONE);
+
+        if (!m_bIsRegularMode && m_bBaneAchievement)
+            m_pInstance->DoCompleteAchievement(ACHIEV_KINGS_BANE);
+
+
+        Map::PlayerList const &pPlayers = m_creature->GetMap()->GetPlayers();
+
+        for (Map::PlayerList::const_iterator i = pPlayers.begin(); i != pPlayers.end(); ++i)
+        {
+            if (Player* pPlayer = i->getSource())
+            {
+                if (pPlayer->GetMiniPet() && pPlayer->isAlive())
+                {
+                    uint32 pet = pPlayer->GetMiniPet()->GetEntry();
+                    if (pet == 14305 || pet == 22817 || pet == 22818 || pet == 33533 || pet == 14444 || pet == 33532)
+                        pPlayer->CompletedAchievement(ACHIEV_HAIL_TO_THE_KING);
+                }
+            }
+        }
+>>>>>>> ecb8494f6f15257d1bbbda85b2dbff8c312e748d
     }
 
     void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)

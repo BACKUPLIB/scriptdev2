@@ -26,13 +26,13 @@ EndScriptData */
 enum
 {
     // Spells
-    SPELL_DRAWSPIRIT                    24811,
-    SPELL_NOXIOUSBREATH                 24818,
-    SPELL_SLEEPINGFOG                   24813,
-    SPELL_SHADOWBOLTWHIRL               24834,
-    SPELL_SUMMONPLAYER                  24776,
-    SPELL_TAILSWEEP                     15847,
-    SPELL_MARKOFNATURE                  25040, // not working
+    SPELL_DRAWSPIRIT                    = 24811,
+    SPELL_NOXIOUSBREATH                 = 24818,
+    SPELL_SLEEPINGFOG                   = 24813,
+    SPELL_SHADOWBOLTWHIRL               = 24834,
+    SPELL_SUMMONPLAYER                  = 24776,
+    SPELL_TAILSWEEP                     = 15847,
+    SPELL_MARKOFNATURE                  = 25040, // not working
 };
 
 struct MANGOS_DLL_DECL boss_lethonAI : public ScriptedAI

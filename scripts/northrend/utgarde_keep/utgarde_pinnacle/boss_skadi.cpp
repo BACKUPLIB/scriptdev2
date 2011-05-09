@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Skadi
-SD%Complete: 90%
-SDComment: starts at trigger 4991
+SD%Complete: 95%
+SDComment: TODO: harpoon spells not working 100% blizzlike
 SDCategory: Utgarde Pinnacle
 EndScriptData */
 
@@ -464,7 +464,7 @@ struct MANGOS_DLL_DECL boss_skadiAI : public ScriptedAI
 
             if(m_uiNextWaveTimer < uiDiff) // spawn mobs
             {
-                if (m_uiWaveCounter < 5)
+                if (m_uiWaveCounter < 4)
                     ++m_uiWaveCounter;
                 SpawnMobs(m_uiWaveCounter);
                 m_uiNextWaveTimer = urand(20000,30000);
@@ -541,7 +541,7 @@ bool AreaTrigger_at_skadi(Player* pPlayer, AreaTriggerEntry const* pAt)
     return false;
 }
 
-bool GOHello_go_skaldi_harpoonlauncher(Player* pPlayer, GameObject* pGo)
+bool GOHello_go_skadi_harpoonlauncher(Player* pPlayer, GameObject* pGo)
 {
     if (Creature* pSkadi = GetClosestCreatureWithEntry(pGo, NPC_SKADI, 100))
     {
@@ -567,7 +567,7 @@ void AddSC_boss_skadi()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "go_skaldi_harpoonlauncher";
-    newscript->pGOUse = &GOHello_go_skaldi_harpoonlauncher;
+    newscript->Name = "go_skadi_harpoonlauncher";
+    newscript->pGOUse = &GOHello_go_skadi_harpoonlauncher;
     newscript->RegisterSelf();
 }

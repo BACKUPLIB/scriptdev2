@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_Gortok
 SD%Complete: 90%
-SDComment:
+SDComment: TODO: spell for stasis orb activating mob visual (red lightning thing)
 SDCategory: Utgarde Pinnacle
 EndScriptData */
 

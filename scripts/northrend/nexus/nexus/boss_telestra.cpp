@@ -26,24 +26,23 @@ EndScriptData */
 
 enum eEnums
 {
-	//Spells
+    // Spells
     SPELL_ICE_NOVA_N          = 47772,
     SPELL_ICE_NOVA_H          = 56935,
     SPELL_FIREBOMB_N          = 47773,
     SPELL_FIREBOMB_H          = 56934,
     SPELL_GRAVITY_WELL        = 47756,
     SPELL_TELESTRA_BACK       = 47714,
-
-	//At 50% HP - 3 clones, Frost, Fire, Arcane (and in 10% HP in Heroic)
-    MOB_FIRE_MAGUS            = 26928,
-    MOB_FROST_MAGUS           = 26930,
-    MOB_ARCANE_MAGUS          = 26929,
-
     SPELL_FIRE_MAGUS_VISUAL   = 47705,
     SPELL_FROST_MAGUS_VISUAL  = 47706,
     SPELL_ARCANE_MAGUS_VISUAL = 47704,
 
-	//Yell
+    // NPC's
+    NPC_FIRE_MAGUS            = 26928,
+    NPC_FROST_MAGUS           = 26930,
+    NPC_ARCANE_MAGUS          = 26929,
+
+    // Texts
     SAY_AGGRO                 = -1576000,
     SAY_KILL                  = -1576001,
     SAY_DEATH                 = -1576002,
@@ -51,7 +50,7 @@ enum eEnums
     SAY_SPLIT_1               = -1576004,
     SAY_SPLIT_2               = -1576005,
 
-	//Achievement
+    // Achievements
     ACHIEV_SPLIT_PERSONALITY  = 2150,
     ACHIEV_TIMER              = 5 * 1000
 };
@@ -71,7 +70,7 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
     }
 
     ScriptedInstance* m_pInstance;
-	bool m_bIsRegularMode;
+    bool m_bIsRegularMode;
 
     uint64 FireMagusGUID;
     uint64 FrostMagusGUID;
@@ -151,9 +150,9 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
             m_pInstance->SetData(TYPE_TELESTRA, DONE);
     }
 
-    void KilledUnit(Unit *victim)
+    void KilledUnit(Unit *pVictim)
     {
-		DoScriptText(SAY_KILL, m_creature);
+        DoScriptText(SAY_KILL, m_creature);
     }
 
     uint64 SplitPersonality(uint32 entry)
@@ -163,17 +162,17 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
         {
             switch (entry)
             {
-                case MOB_FIRE_MAGUS:
+                case NPC_FIRE_MAGUS:
                 {
                     Summoned->CastSpell(Summoned, SPELL_FIRE_MAGUS_VISUAL, false);
                     break;
                 }
-                case MOB_FROST_MAGUS:
+                case NPC_FROST_MAGUS:
                 {
                     Summoned->CastSpell(Summoned, SPELL_FROST_MAGUS_VISUAL, false);
                     break;
                 }
-                case MOB_ARCANE_MAGUS:
+                case NPC_ARCANE_MAGUS:
                 {
                     Summoned->CastSpell(Summoned, SPELL_ARCANE_MAGUS_VISUAL, false);
                     break;
@@ -265,9 +264,9 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
             m_creature->RemoveAllAuras();
             m_creature->SetVisibility(VISIBILITY_OFF);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            FireMagusGUID = SplitPersonality(MOB_FIRE_MAGUS);
-            FrostMagusGUID = SplitPersonality(MOB_FROST_MAGUS);
-            ArcaneMagusGUID = SplitPersonality(MOB_ARCANE_MAGUS);
+            FireMagusGUID = SplitPersonality(NPC_FIRE_MAGUS);
+            FrostMagusGUID = SplitPersonality(NPC_FROST_MAGUS);
+            ArcaneMagusGUID = SplitPersonality(NPC_ARCANE_MAGUS);
             FireMagusDead = false;
             FrostMagusDead = false;
             ArcaneMagusDead = false;
@@ -282,9 +281,9 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
             m_creature->RemoveAllAuras();
             m_creature->SetVisibility(VISIBILITY_OFF);
             m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            FireMagusGUID = SplitPersonality(MOB_FIRE_MAGUS);
-            FrostMagusGUID = SplitPersonality(MOB_FROST_MAGUS);
-            ArcaneMagusGUID = SplitPersonality(MOB_ARCANE_MAGUS);
+            FireMagusGUID = SplitPersonality(NPC_FIRE_MAGUS);
+            FrostMagusGUID = SplitPersonality(NPC_FROST_MAGUS);
+            ArcaneMagusGUID = SplitPersonality(NPC_ARCANE_MAGUS);
             FireMagusDead = false;
             FrostMagusDead = false;
             ArcaneMagusDead = false;
@@ -307,11 +306,13 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
         {
             if (Unit *pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
-				DoCast(pTarget, m_bIsRegularMode ? SPELL_ICE_NOVA_N : SPELL_ICE_NOVA_H);
+                DoCast(pTarget, m_bIsRegularMode ? SPELL_ICE_NOVA_N : SPELL_ICE_NOVA_H);
                 Cooldown = 1500;
             }
             SPELL_ICE_NOVA_Timer = 15000;
-        } else SPELL_ICE_NOVA_Timer -=diff;
+        }
+        else
+            SPELL_ICE_NOVA_Timer -=diff;
 
         if (SPELL_GRAVITY_WELL_Timer <= diff)
         {
@@ -321,17 +322,21 @@ struct MANGOS_DLL_DECL boss_telestraAI : public ScriptedAI
                 Cooldown = 6000;
             }
             SPELL_GRAVITY_WELL_Timer = 15000;
-        } else SPELL_GRAVITY_WELL_Timer -=diff;
+        }
+        else
+            SPELL_GRAVITY_WELL_Timer -=diff;
 
         if (SPELL_FIREBOMB_Timer <= diff)
         {
             if (Unit *pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
-				DoCast(pTarget, m_bIsRegularMode ? SPELL_FIREBOMB_N : SPELL_FIREBOMB_H);
+                DoCast(pTarget, m_bIsRegularMode ? SPELL_FIREBOMB_N : SPELL_FIREBOMB_H);
                 Cooldown = 2000;
-           }
+            }
             SPELL_FIREBOMB_Timer = 2000;
-        } else SPELL_FIREBOMB_Timer -=diff;
+        }
+        else
+            SPELL_FIREBOMB_Timer -=diff;
 
         DoMeleeAttackIfReady();
     }

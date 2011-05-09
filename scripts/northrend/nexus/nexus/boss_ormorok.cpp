@@ -24,37 +24,32 @@ EndScriptData */
 #include "precompiled.h"
 #include "nexus.h"
 
-enum Sounds
-{
-    SAY_AGGRO                               = -1576020,
-    SAY_DEATH                               = -1576021,
-    SAY_REFLECT                             = -1576022,
-    SAY_CRYSTAL_SPIKES                      = -1576023,
-    SAY_KILL                                = -1576024
-};
-
 enum
 {
+    // Spells
     SPELL_CRYSTAL_SPIKES_N                     = 47958, //Don't work, using walkaround
     SPELL_CRYSTAL_SPIKES_H                     = 57082, //Don't work, using walkaround
-
     SPELL_CRYSTALL_SPIKE_DAMAGE_N              = 47944,
     SPELL_CRYSTALL_SPIKE_DAMAGE_H              = 57067,
     SPELL_CRYSTAL_SPIKE_PREVISUAL              = 50442,
-
     SPELL_SPELL_REFLECTION                     = 35399, //47981,
     SPELL_TRAMPLE_N                            = 48016,
     SPELL_TRAMPLE_H                            = 57066,
     SPELL_FRENZY_H                             = 48017,
-	SPELL_FRENZY_N                             = 57086,
+    SPELL_FRENZY_N                             = 57086,
     SPELL_SUMMON_CRYSTALLINE_TANGLER           = 61564, //summons npc 32665
     SPELL_ROOTS                                = 28858, //proper spell id is unknown
-};
 
-enum Creatures
-{
+    // NPC's
     MOB_CRYSTAL_SPIKE                          = 27099,
     MOB_CRYSTALLINE_TANGLER                    = 32665,
+
+    // Texts
+    SAY_AGGRO                                  = -1576020,
+    SAY_DEATH                                  = -1576021,
+    SAY_REFLECT                                = -1576022,
+    SAY_CRYSTAL_SPIKES                         = -1576023,
+    SAY_KILL                                   = -1576024
 };
 
 #define SPIKE_DISTANCE                            5.0f
@@ -104,18 +99,20 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
     void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_AGGRO, m_creature);
-        if(m_pInstance)
+
+        if (m_pInstance)
             m_pInstance->SetData(TYPE_ORMOROK, IN_PROGRESS);
     }
 
-    void JustDied(Unit* killer)
+    void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ORMOROK, DONE);
     }
 
-    void KilledUnit(Unit *victim)
+    void KilledUnit(Unit* pVictim)
     {
         DoScriptText(SAY_KILL, m_creature);
     }
@@ -126,6 +123,7 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
             return;
 
         if (m_bIsCrystalSpikes)
+        {
             if (m_uiCrystalSpikesTimer < diff)
             {
                 m_fSpikeXY[0][0] = m_fBaseX+(SPIKE_DISTANCE*m_uiCrystalSpikesCount*cos(m_fBaseO));
@@ -141,11 +139,14 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
                 if (++m_uiCrystalSpikesCount >= 13)
                     m_bIsCrystalSpikes = false;
                 m_uiCrystalSpikesTimer = 200;
-            }else m_uiCrystalSpikesTimer -= diff;
+            }
+            else
+                m_uiCrystalSpikesTimer -= diff;
+        }
 
         if (!m_bIsFrenzy && (m_creature->GetHealthPercent() < 25.0f))
         {
-			DoCast(m_creature, m_bIsRegularMode ? SPELL_FRENZY_N : SPELL_FRENZY_H);
+            DoCast(m_creature, m_bIsRegularMode ? SPELL_FRENZY_N : SPELL_FRENZY_H);
             m_bIsFrenzy = true;
         }
 
@@ -153,14 +154,18 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
         {
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_TRAMPLE_N : SPELL_TRAMPLE_H);
             m_uiTrampleTimer = urand(10000, 35000);
-		}else m_uiTrampleTimer -= diff;
+        }
+        else
+            m_uiTrampleTimer -= diff;
 
         if (m_uiReflectionTimer < diff)
         {
             DoScriptText(SAY_REFLECT, m_creature);
             DoCast(m_creature, SPELL_SPELL_REFLECTION);
             m_uiReflectionTimer = 15000;
-        }else m_uiReflectionTimer -= diff;
+        }
+        else
+            m_uiReflectionTimer -= diff;
 
         if (m_uiSpellCrystalSpikesTimer < diff)
         {
@@ -173,17 +178,21 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
             m_fBaseZ = m_creature->GetPositionZ();
             m_fBaseO = m_creature->GetOrientation();
             m_uiSpellCrystalSpikesTimer = 20000;
-        }else m_uiSpellCrystalSpikesTimer -=diff;
+        }
+        else
+            m_uiSpellCrystalSpikesTimer -=diff;
 
         if (!m_bIsRegularMode && (m_uiSummonTanglerTimer < diff))
         {
             Creature* CrystallineTangler = m_creature->SummonCreature(MOB_CRYSTALLINE_TANGLER, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
             if (CrystallineTangler)
-				if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     CrystallineTangler->AI()->AttackStart(target);
 
             m_uiSummonTanglerTimer = 17000;
-        }else m_uiSummonTanglerTimer -=diff;
+        }
+        else
+            m_uiSummonTanglerTimer -=diff;
 
         DoMeleeAttackIfReady();
     }
@@ -218,13 +227,17 @@ struct MANGOS_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
         {
             DoCast(m_creature, SPELL_CRYSTAL_SPIKE_PREVISUAL);
             m_uiCrystalSpikePreVisualTimer = 10000;
-        }else m_uiCrystalSpikePreVisualTimer -=diff;
+        }
+        else
+            m_uiCrystalSpikePreVisualTimer -=diff;
 
         if (m_uiCrystallSpikeDamageTimer < diff)
         {
             DoCast(m_creature, m_bIsRegularMode ? SPELL_CRYSTALL_SPIKE_DAMAGE_N : SPELL_CRYSTALL_SPIKE_DAMAGE_H);
             m_uiCrystallSpikeDamageTimer = 10000;
-        }else m_uiCrystallSpikeDamageTimer -=diff;
+        }
+        else
+            m_uiCrystallSpikeDamageTimer -=diff;
     } 
 }; 
 
@@ -234,17 +247,23 @@ struct MANGOS_DLL_DECL mob_crystalline_tanglerAI : public ScriptedAI
 
     uint32 SPELL_ROOTS_Timer;
 
-    void Reset() {SPELL_ROOTS_Timer = 1000;}
+    void Reset()
+    {
+        SPELL_ROOTS_Timer = 1000;
+    }
 
     void UpdateAI(const uint32 diff) 
     {
         if (SPELL_ROOTS_Timer < diff)
         {
-			if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-				DoCast(target, SPELL_ROOTS, true);
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                DoCast(target, SPELL_ROOTS, true);
             SPELL_ROOTS_Timer = 15000;
-        }else SPELL_ROOTS_Timer -=diff;
-		DoMeleeAttackIfReady();   
+        }
+        else
+            SPELL_ROOTS_Timer -=diff;
+
+        DoMeleeAttackIfReady();   
     } 
 }; 
 

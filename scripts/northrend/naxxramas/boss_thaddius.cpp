@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Thaddius
-SD%Complete: 0
-SDComment: Placeholder. Includes Feugen & Stalagg.
+SD%Complete:
+SDComment:
 SDCategory: Naxxramas
 EndScriptData */
 

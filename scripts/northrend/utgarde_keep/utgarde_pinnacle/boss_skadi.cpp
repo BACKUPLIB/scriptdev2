@@ -541,7 +541,7 @@ bool AreaTrigger_at_skadi(Player* pPlayer, AreaTriggerEntry const* pAt)
     return false;
 }
 
-bool GOHello_go_skaldi_harpoonlauncher(Player* pPlayer, GameObject* pGo)
+bool GOHello_go_skadi_harpoonlauncher(Player* pPlayer, GameObject* pGo)
 {
     if (Creature* pSkadi = GetClosestCreatureWithEntry(pGo, NPC_SKADI, 100))
     {
@@ -567,7 +567,7 @@ void AddSC_boss_skadi()
     newscript->RegisterSelf();
 
     newscript = new Script;
-    newscript->Name = "go_skaldi_harpoonlauncher";
-    newscript->pGOUse = &GOHello_go_skaldi_harpoonlauncher;
+    newscript->Name = "go_skadi_harpoonlauncher";
+    newscript->pGOUse = &GOHello_go_skadi_harpoonlauncher;
     newscript->RegisterSelf();
 }

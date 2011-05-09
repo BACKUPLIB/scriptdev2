@@ -2068,6 +2068,9 @@
     <ClCompile Include="..\include\sc_outdoor_pvp.cpp">
       <Filter>include</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\kalimdor\razorfen_kraul\razorfen_kraul.cpp">
+      <Filter>scripts\kalimdor\razorfen_kraul</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\escort_ai.h">

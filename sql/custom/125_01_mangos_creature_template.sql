@@ -75,16 +75,12 @@ UPDATE `creature_template` SET `spell1` = '52006', `spell2` = '51859', `spell3` 
 
 UPDATE `creature_template` SET `ScriptName` = 'mob_crystal_spike' WHERE `entry` = '27099';
 UPDATE `creature_template` SET `ScriptName` = 'mob_crystalline_tangler' WHERE `entry` = '32665';
+UPDATE `creature_template` SET `ScriptName` = 'npc_chaotic_rift' WHERE `entry` = '26918';
 
 -- Instance Utgarde Keep
 
 UPDATE `creature_template` SET `ScriptName` = 'mob_frost_tomb' WHERE `entry` = '23965';
 UPDATE `creature_template` SET `ScriptName` = 'mob_ingvar_throw_dummy' WHERE `entry` = '23997';
-UPDATE `creature_template` SET `ScriptName` = 'mob_spirit_fount' WHERE `entry` = '27339';
-
--- Instance Utgarde Pinnacle
-UPDATE `creature_template` SET `ScriptName` = 'npc_spectator' WHERE `entry` = '26667';
-UPDATE `creature_template` SET `AIName` = 'NUllAI' WHERE `entry` = '27327';
 
 -- Instance Halls of Stone
 
@@ -124,3 +120,13 @@ UPDATE `creature_template` SET `spell1`='54459', `spell2`='54458', `spell3`='544
 
 UPDATE `creature_template` SET `ScriptName`='npc_captured_rabid_thistle_bear' WHERE `entry`='11836';
 UPDATE `creature_template` SET `ScriptName`='npc_rabid_thistle_bear' WHERE `entry`='2164';
+
+-- Instance Utgarde Pinnacle
+
+UPDATE `creature_template` SET `ScriptName` = 'npc_spectator' WHERE `entry` = '26667';
+UPDATE `creature_template` SET `AIName` = 'NUllAI' WHERE `entry` = '27327';
+UPDATE `creature_template` SET `ScriptName` = 'mob_spirit_fount' WHERE `entry` = '27339';
+
+-- Quest The Last of her kind
+
+UPDATE `creature_template` SET `ScriptName`='npc_harnessed_icemaw_matriarch', `flags_extra`='4098' WHERE `entry`='30468';

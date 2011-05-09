@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Storm_Peaks
 SD%Complete: 100
-SDComment: Vendor Support (31247). Quest support: 12970, 12684
+SDComment: Vendor Support (31247). Quest support: 12970, 12684, 12983
 SDCategory: Storm Peaks
 EndScriptData */
 
@@ -28,6 +28,7 @@ npc_frostborn_scout
 npc_freed_protodrake
 npc_brunnhildar_prisoner
 npc_kirgaraak
+npc_harnessed_icemaw_matriarch
 EndContentData */
 
 #include "precompiled.h"
@@ -454,6 +455,66 @@ CreatureAI* GetAI_npc_kirgaraak(Creature* pCreature)
     return new npc_kirgaraakAI(pCreature);
 }
 
+/*######
+## npc_harnessed_icemaw_matriarch
+######*/
+
+enum
+{
+    ENTRY_HARNESSED_MATRIARCH = 29563,
+};
+
+struct MANGOS_DLL_DECL npc_harnessed_icemaw_matriarchAI : public npc_escortAI
+{
+    npc_harnessed_icemaw_matriarchAI(Creature* pCreature) : npc_escortAI(pCreature)
+    {
+        Reset();
+    }
+
+    bool m_bNotOnRoute;
+
+    void Reset()
+    {
+        m_bNotOnRoute = false;
+    }
+
+    void WaypointReached(uint32 uiPointId)
+    {
+
+        if (uiPointId == 16) //reached village, give credits
+        {
+            Unit* pPlayer = m_creature->GetVehicleKit()->GetPassenger(0);
+            if (pPlayer && pPlayer->GetTypeId() == TYPEID_PLAYER)
+            {
+                ((Player*)pPlayer)->KilledMonsterCredit(ENTRY_HARNESSED_MATRIARCH);
+                pPlayer->ExitVehicle();
+            }
+
+            m_creature->SetVisibility(VISIBILITY_OFF);
+            m_creature->ForcedDespawn();
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_bNotOnRoute && m_creature->isCharmed())
+        {
+            ((Player*)(m_creature->GetCharmer()))->SetClientControl(m_creature, 0);
+            m_bNotOnRoute = true;
+
+            m_creature->SetSpeedRate(MOVE_WALK, 3.0f,true);
+
+            Start(false, ((Player*)(m_creature->GetCharmer()))->GetGUID());
+        }
+        npc_escortAI::UpdateAI(uiDiff);
+    }
+};
+
+CreatureAI* GetAI_npc_harnessed_icemaw_matriarch(Creature* pCreature)
+{
+    return new npc_harnessed_icemaw_matriarchAI(pCreature);
+}
+
 void AddSC_storm_peaks()
 {
     Script* newscript;
@@ -495,5 +556,10 @@ void AddSC_storm_peaks()
     newscript = new Script;
     newscript->Name = "npc_kirgaraak";
     newscript->GetAI = &GetAI_npc_kirgaraak;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_harnessed_icemaw_matriarch";
+    newscript->GetAI = &GetAI_npc_harnessed_icemaw_matriarch;
     newscript->RegisterSelf();
 }

@@ -26,24 +26,21 @@ EndScriptData */
 
 enum
 {
+    // Spells
+    SPELL_INTENSE_COLD          = 48094,
+    SPELL_CRYSTALFIRE_BREATH    = 48096,
+    SPELL_CRYSTALFIRE_BREATH_H  = 57091,
+    SPELL_CRYSTALLIZE           = 48179,
+    SPELL_CRYSTAL_CHAINS        = 50997,
+    SPELL_TAIL_SWEEP            = 50155,
+    SPELL_ENRAGE                = 8599,
+
+    // Texts
     SAY_AGGRO                   = -1576016,
     SAY_CRYSTAL_NOVA            = -1576017,
     SAY_ENRAGE                  = -1576018,
     SAY_KILL                    = -1576019,
     SAY_DEATH                   = -1576020,
-
-    SPELL_INTENSE_COLD          = 48094,
-
-    SPELL_CRYSTALFIRE_BREATH    = 48096,
-    SPELL_CRYSTALFIRE_BREATH_H  = 57091,
-
-    SPELL_CRYSTALLIZE           = 48179,
-
-    SPELL_CRYSTAL_CHAINS        = 50997,
-
-    SPELL_TAIL_SWEEP            = 50155,
-
-    SPELL_ENRAGE                = 8599
 };
 
 /*######
@@ -210,10 +207,10 @@ CreatureAI* GetAI_boss_keristrasza(Creature* pCreature)
 
 void AddSC_boss_keristrasza()
 {
-    Script *newscript;
+    Script *pNewScript;
 
-    newscript = new Script;
-    newscript->Name = "boss_keristrasza";
-    newscript->GetAI = &GetAI_boss_keristrasza;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name = "boss_keristrasza";
+    pNewScript->GetAI = &GetAI_boss_keristrasza;
+    pNewScript->RegisterSelf();
 }

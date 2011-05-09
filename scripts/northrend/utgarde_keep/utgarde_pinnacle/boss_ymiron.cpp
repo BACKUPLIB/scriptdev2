@@ -191,7 +191,6 @@ struct MANGOS_DLL_DECL boss_ymironAI : public ScriptedAI
                 }
             }
         }
->>>>>>> ecb8494f6f15257d1bbbda85b2dbff8c312e748d
     }
 
     void SpellHitTarget (Unit* pUnit, const SpellEntry* pSpellEntry)

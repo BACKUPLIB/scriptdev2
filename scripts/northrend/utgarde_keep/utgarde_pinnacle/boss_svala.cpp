@@ -148,7 +148,8 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
 
     void JustReachedHome()
     {
-        DoMoveToPosition();
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_SVALA, FAIL);
     }
 
     void MoveInLineOfSight(Unit* pWho)
@@ -449,13 +450,15 @@ struct MANGOS_DLL_DECL boss_svalaAI : public ScriptedAI
             {
                 std::list<Creature*> lBrazierList;
                 GetCreatureListWithEntryInGrid(lBrazierList, m_creature, NPC_FLAME_BRAZIER, 120.0f);
-                for(std::list<Creature*>::iterator itr = lBrazierList.begin(); itr != lBrazierList.end(); ++itr)
-                {
-                    uint32 dmg = urand(1900,2600); 
-                    if (!m_bIsRegularMode)
-                        dmg *= 2;
-                    m_creature->DealDamage(m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0),dmg,NULL,SPELL_DIRECT_DAMAGE,SPELL_SCHOOL_MASK_FIRE,NULL, false);
-                }
+                if (!lBrazierList.empty())
+                    for(std::list<Creature*>::iterator itr = lBrazierList.begin(); itr != lBrazierList.end(); ++itr)
+                    {
+                        uint32 dmg = urand(1900,2600); 
+                        if (!m_bIsRegularMode)
+                            dmg *= 2;
+                        if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                            m_creature->DealDamage(pVictim,dmg,NULL,SPELL_DIRECT_DAMAGE,SPELL_SCHOOL_MASK_FIRE,NULL, false);
+                    }
             }
             m_uiCallFlamesTimer = urand(5000,8000);
         }

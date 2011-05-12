@@ -222,12 +222,7 @@ enum
 {
     // Spells
     SPELL_DRAWSPIRIT                    = 24811,
-    SPELL_NOXIOUSBREATH                 = 24818,
-    SPELL_SLEEPINGFOG                   = 24813,
     SPELL_SHADOWBOLTWHIRL               = 24834,
-    SPELL_SUMMONPLAYER                  = 24776,
-    SPELL_TAILSWEEP                     = 15847,
-    SPELL_MARKOFNATURE                  = 25040, // not working
 };
 
 struct MANGOS_DLL_DECL boss_lethonAI : public ScriptedAI
@@ -236,7 +231,7 @@ struct MANGOS_DLL_DECL boss_lethonAI : public ScriptedAI
 
     uint32 m_uiDrawSpirit_Timer;
     uint32 m_uiNoxiousBreath_Timer;
-    uint32 m_uiSleepingFog_Timer;
+    uint32 m_uiSeepingFog_Timer;
     uint32 m_uiShadowBoltWhirl_Timer;
     uint32 m_uiTailSweep_Timer;
 
@@ -244,7 +239,7 @@ struct MANGOS_DLL_DECL boss_lethonAI : public ScriptedAI
     {
         m_uiDrawSpirit_Timer = 30000;
         m_uiNoxiousBreath_Timer = 45000;
-        m_uiSleepingFog_Timer = 40000;
+        m_uiSeepingFog_Timer = 40000;
         m_uiShadowBoltWhirl_Timer = 20000;
         m_uiTailSweep_Timer = 10000;
     }
@@ -280,21 +275,21 @@ struct MANGOS_DLL_DECL boss_lethonAI : public ScriptedAI
 
         if (m_uiNoxiousBreath_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_NOXIOUSBREATH);
+            DoCast(m_creature->getVictim(),SPELL_NOXIOUS_BREATH);
             m_uiNoxiousBreath_Timer = 10000;
         }
         else
             m_uiNoxiousBreath_Timer -= diff;
 
-        if (m_uiSleepingFog_Timer < diff)
+        if (m_uiSeepingFog_Timer < diff)
         {
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_SLEEPINGFOG);
+                DoCast(pTarget, SPELL_SEEPING_FOG_R);
 
-            m_uiSleepingFog_Timer = 18000;
+            m_uiSeepingFog_Timer = 18000;
         }
         else
-            m_uiSleepingFog_Timer -= diff;
+            m_uiSeepingFog_Timer -= diff;
 
         if (m_uiShadowBoltWhirl_Timer < diff)
         {

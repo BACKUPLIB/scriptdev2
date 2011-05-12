@@ -1272,18 +1272,6 @@
     <ClCompile Include="..\scripts\world\areatrigger_scripts.cpp">
       <Filter>scripts\world</Filter>
     </ClCompile>
-    <ClCompile Include="..\scripts\world\boss_emeriss.cpp">
-      <Filter>scripts\world</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\world\boss_lethon.cpp">
-      <Filter>scripts\world</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\world\boss_taerar.cpp">
-      <Filter>scripts\world</Filter>
-    </ClCompile>
-    <ClCompile Include="..\scripts\world\boss_ysondre.cpp">
-      <Filter>scripts\world</Filter>
-    </ClCompile>
     <ClCompile Include="..\scripts\world\go_scripts.cpp">
       <Filter>scripts\world</Filter>
     </ClCompile>
@@ -1969,6 +1957,9 @@
     <ClCompile Include="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\boss_black_knight.cpp">
       <Filter>scripts\northrend\crusaders_coliseum\trial_of_the_champion</Filter>
     </ClCompile>
+    <ClCompile Include="..\scripts\outland\tempest_keep\the_eye\boss_alar.cpp">
+      <Filter>scripts\outland\tempest_keep\the_eye</Filter>
+    </ClCompile>
     <ClCompile Include="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\boss_grand_champions.cpp">
       <Filter>scripts\northrend\crusaders_coliseum\trial_of_the_champion</Filter>
     </ClCompile>
@@ -2007,6 +1998,9 @@
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\boss_professor_putricide.cpp">
       <Filter>scripts\northrend\icecrown_citadel\icecrown_citadel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scripts\world\bosses_emerald_dragons.cpp">
+      <Filter>scripts\world</Filter>
     </ClCompile>
     <ClCompile Include="..\scripts\northrend\icecrown_citadel\icecrown_citadel\boss_rotface.cpp">
       <Filter>scripts\northrend\icecrown_citadel\icecrown_citadel</Filter>

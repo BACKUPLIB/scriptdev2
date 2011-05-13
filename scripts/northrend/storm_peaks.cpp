@@ -310,7 +310,7 @@ struct MANGOS_DLL_DECL npc_freed_protodrakeAI : public npc_escortAI
                 //flight he don't accept so we walk o_O
                 m_creature->SetSpeedRate(MOVE_WALK, 3.0f,true);
 
-                Start(false, ((Player*)(m_creature->GetCharmer()))->GetGUID());
+                Start(false, (Player*)(m_creature->GetCharmer()));
             }
         npc_escortAI::UpdateAI(uiDiff);
     }
@@ -504,7 +504,7 @@ struct MANGOS_DLL_DECL npc_harnessed_icemaw_matriarchAI : public npc_escortAI
 
             m_creature->SetSpeedRate(MOVE_WALK, 3.0f,true);
 
-            Start(false, ((Player*)(m_creature->GetCharmer()))->GetGUID());
+            Start(false, (Player*)(m_creature->GetCharmer()));
         }
         npc_escortAI::UpdateAI(uiDiff);
     }

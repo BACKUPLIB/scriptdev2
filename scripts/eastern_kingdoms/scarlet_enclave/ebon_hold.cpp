@@ -3355,7 +3355,7 @@ struct MANGOS_DLL_DECL npc_scarlet_minerAI : public npc_escortAI
         {
             m_uiMineCarGuid = pPlayer->GetVehicle()->GetBase()->GetGUID();
             m_uiPlayerGuid = pPlayer->GetGUID();
-            Start(false, pPlayer->GetGUID());
+            Start(false, pPlayer);
         }
     }
 
@@ -3536,7 +3536,7 @@ struct MANGOS_DLL_DECL npc_scourge_gryphonAI : public npc_escortAI
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         m_creature->SetSplineFlags(SPLINEFLAG_FLYING);
 
-        Start(true, pPlayer->GetGUID());
+        Start(true, pPlayer);
     }
 
     void WaypointReached(uint32 uiWp)

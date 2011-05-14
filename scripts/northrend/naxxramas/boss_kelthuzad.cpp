@@ -75,7 +75,7 @@ enum
     SPELL_CHAINED_WARLOCK               = 46561,
     SPELL_CHAINED_ROGUE                 = 49616,
     SPELL_CHAINED_HUNTER                = 37632,
-    SPELL_CHAINED_WARRIOR               = 8379,
+    SPELL_CHAINED_WARRIOR               = 43935,
     SPELL_CHAINED_DEATHKNIGHT           = 61112,
 
     SPELL_MANA_DETONATION               = 27819,
@@ -675,7 +675,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                         { 
                                             if (pUnit->getClass() == CLASS_WARRIOR)
                                             {
-                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_WARRIOR,false);
+                                                pUnit->CastSpell(pUnit,SPELL_CHAINED_WARRIOR,false);
                                             }
                                             else if (pUnit->getClass() == CLASS_DEATH_KNIGHT)
                                             {

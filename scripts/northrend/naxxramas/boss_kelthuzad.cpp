@@ -637,14 +637,14 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                             }
                         }
                         m_uiChainsEndTimer = 20000;
-                        m_uiChainsTargetsCastTimer = 1000;
-                        m_uiChainsTargetsCastTimer2 = 5000;
+                        m_uiChainsTargetsCastTimer = 0;
+                        m_uiChainsTargetsCastTimer2 = 0;
                         DoResetThreat();
                     }
                 
                     //DoCastSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
                     DoScriptText(urand(0, 1) ? SAY_CHAIN1 : SAY_CHAIN2, m_creature);
-                    m_uiChainsTimer = urand(60000, 90000);
+                    m_uiChainsTimer = urand(40000, 70000);
                 }
                 else
                     m_uiChainsTimer -= uiDiff;
@@ -659,7 +659,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                 if (pUnit->isDead())
                                     continue;
                             
-                                if (m_uiChainsTargetsCastTimer2 < uiDiff)
+                                if (!(m_uiChainsTargetsCastTimer2++%5))
                                 {
                                     if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN || pUnit->getClass() == CLASS_PALADIN ||
                                         pUnit->getClass() == CLASS_DRUID ||pUnit->getClass() == CLASS_HUNTER) // healer classes heal kelthuzad
@@ -669,7 +669,6 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                     }
                                     else if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
                                     { 
-                                        
                                         if (pUnit->getClass() == CLASS_WARRIOR)
                                         {
                                             pUnit->CastSpell(pUnit,SPELL_CHAINED_WARRIOR,false);
@@ -690,21 +689,18 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                         {
                                             pUnit->CastSpell(pVictim,SPELL_CHAINED_ROGUE,false);
                                         }
-
-                                        pUnit->GetMotionMaster()->MoveChase(pVictim);
-                                        pUnit->Attack(pVictim,true);
                                     }
-                                    m_uiChainsTargetsCastTimer2 = 5000;
                                 }
                                 else
                                 {
-                                    m_uiChainsTargetsCastTimer2 -= uiDiff;
-
                                     Unit* pVictim = pUnit->getVictim();
                                     if (!pVictim) 
                                         pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
                                     if (pVictim)
                                     { 
+                                        pUnit->GetMotionMaster()->MoveChase(pVictim);
+                                        pUnit->Attack(pVictim,true);
+                                        /*
                                         if (pUnit->getClass() == CLASS_MAGE)
                                         {
                                             pUnit->CastSpell(pVictim,SPELL_CHAINED_MAGE_2,false);
@@ -712,7 +708,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                         else if (pUnit->getClass() == CLASS_WARLOCK)
                                         {
                                             pUnit->CastSpell(pVictim,SPELL_CHAINED_WARLOCK_2,false);
-                                        }
+                                        }*/
                                     }
                                 }
                             }

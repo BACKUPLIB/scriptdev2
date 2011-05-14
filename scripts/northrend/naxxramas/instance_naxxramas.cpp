@@ -472,11 +472,14 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
         case TYPE_KELTHUZAD:
             m_auiEncounter[14] = uiData;
             DoUseDoorOrButton(m_uiKelthuzadExitDoorGUID);
-            DoUseDoorOrButton(m_uiKelthuzadWindow1GUID);
-            DoUseDoorOrButton(m_uiKelthuzadWindow2GUID);
-            DoUseDoorOrButton(m_uiKelthuzadWindow3GUID);
-            DoUseDoorOrButton(m_uiKelthuzadWindow4GUID);
-            if (uiData == IN_PROGRESS)
+            if (uiData == DONE)
+            {
+                DoUseDoorOrButton(m_uiKelthuzadWindow1GUID);
+                DoUseDoorOrButton(m_uiKelthuzadWindow2GUID);
+                DoUseDoorOrButton(m_uiKelthuzadWindow3GUID);
+                DoUseDoorOrButton(m_uiKelthuzadWindow4GUID);
+            }
+            else if (uiData == IN_PROGRESS)
                 SetSpecialAchievementCriteria(TYPE_ACHIEV_GET_ENOUGH, false);
             break;
         case TYPE_UNDYING_FAILED:

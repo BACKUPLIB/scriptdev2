@@ -71,13 +71,12 @@ enum
     SPELL_CHAINS_OF_KELTHUZAD           = 28408,            // 3.x, heroic only
     SPELL_CHAINS_OF_KELTHUZAD_TARGET    = 28410,
 
-    SPELL_CHAINED_WARRIOR               = 43935,
-    SPELL_CHAINED_DEATHKNIGHT           = 72108,
+    SPELL_CHAINED_MAGE                  = 61085,
+    SPELL_CHAINED_WARLOCK               = 46561,
     SPELL_CHAINED_ROGUE                 = 49616,
-    SPELL_CHAINED_MAGE_1                = 57629,
-    SPELL_CHAINED_MAGE_2                = 56936,
-    SPELL_CHAINED_WARLOCK_1             = 35183,
-    SPELL_CHAINED_WARLOCK_2             = 49518,
+    SPELL_CHAINED_HUNTER                = 37632,
+    SPELL_CHAINED_WARRIOR               = 8379,
+    SPELL_CHAINED_DEATHKNIGHT           = 61112,
 
     SPELL_MANA_DETONATION               = 27819,
     SPELL_SHADOW_FISSURE                = 27810,
@@ -659,35 +658,45 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                 if (pUnit->isDead())
                                     continue;
                             
-                                if (!(m_uiChainsTargetsCastTimer2++%5))
+                                if (!(m_uiChainsTargetsCastTimer2++%4)) // 4 sec spellcooldown
                                 {
                                     if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN || pUnit->getClass() == CLASS_PALADIN ||
-                                        pUnit->getClass() == CLASS_DRUID ||pUnit->getClass() == CLASS_HUNTER) // healer classes heal kelthuzad
+                                        pUnit->getClass() == CLASS_DRUID) // healer classes heal kelthuzad
                                     {
                                         int32 amount = urand(11000,19000);
                                         pUnit->CastCustomSpell(m_creature, 36983, &amount, NULL, NULL, false);
                                     }
-                                    else if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
-                                    { 
-                                        if (pUnit->getClass() == CLASS_WARRIOR)
-                                        {
-                                            pUnit->CastSpell(pUnit,SPELL_CHAINED_WARRIOR,false);
-                                        }
-                                        else if (pUnit->getClass() == CLASS_DEATH_KNIGHT)
-                                        {
-                                            pUnit->CastSpell(pVictim,SPELL_CHAINED_DEATHKNIGHT,false);
-                                        }
-                                        else if (pUnit->getClass() == CLASS_MAGE)
-                                        {
-                                            pUnit->CastSpell(pUnit,SPELL_CHAINED_MAGE_1,false);
-                                        }
-                                        else if (pUnit->getClass() == CLASS_WARLOCK)
-                                        {
-                                            pUnit->CastSpell(pVictim,SPELL_CHAINED_WARLOCK_1,false);
-                                        }
-                                        else if (pUnit->getClass() == CLASS_ROGUE)
-                                        {
-                                            pUnit->CastSpell(pVictim,SPELL_CHAINED_ROGUE,false);
+                                    else 
+                                    {
+                                        Unit* pVictim = pUnit->getVictim();
+                                        if (!pVictim) 
+                                            pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
+                                        if (pVictim)
+                                        { 
+                                            if (pUnit->getClass() == CLASS_WARRIOR)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_WARRIOR,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_DEATH_KNIGHT)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_DEATHKNIGHT,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_MAGE)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_MAGE,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_WARLOCK)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_WARLOCK,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_ROGUE)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_ROGUE,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_HUNTER)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_HUNTER,false);
+                                            }
                                         }
                                     }
                                 }

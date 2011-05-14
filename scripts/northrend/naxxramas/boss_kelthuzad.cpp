@@ -657,8 +657,8 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                             {
                                 if (pUnit->isDead())
                                     continue;
-                            
-                                if (!(m_uiChainsTargetsCastTimer2++%4)) // 4 sec spellcooldown
+
+                                if (!(m_uiChainsTargetsCastTimer2%5)) // 5 sec spellcooldown
                                 {
                                     if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN || pUnit->getClass() == CLASS_PALADIN ||
                                         pUnit->getClass() == CLASS_DRUID) // healer classes heal kelthuzad
@@ -720,6 +720,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                         }*/
                                     }
                                 }
+                                ++m_uiChainsTargetsCastTimer2;
                             }
                         m_uiChainsTargetsCastTimer = 1000;
                     }

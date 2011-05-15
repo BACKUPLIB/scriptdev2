@@ -193,6 +193,9 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         // it may be some spell should be used instead, to control the intro phase
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         SetCombatMovement(false);
+
+        if (m_pInstance && !m_pInstance->GetData(IS_KEL_READY) && !m_bIsRegularMode)
+            m_creature->setFaction(35);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -225,7 +228,11 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     void MoveInLineOfSight(Unit* pWho)
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_KELTHUZAD) != IN_PROGRESS)
+        {
+            if (!m_bIsRegularMode && m_pInstance->GetData(IS_KEL_READY))
+                m_creature->setFaction(21);
             return;
+        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }

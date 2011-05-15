@@ -174,6 +174,8 @@ enum
     ACHIEV_CRIT_UNDYING_MAEX    = 13238,
     ACHIEV_CRIT_UNDYING_LOA     = 13239,
     ACHIEV_CRIT_UNDYING_THAD    = 13240,
+
+    IS_KEL_READY                = 99,
 };
 
 struct GothTrigger
@@ -295,6 +297,8 @@ class MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
         float m_fChamberCenterX;
         float m_fChamberCenterY;
         float m_fChamberCenterZ;
+
+        bool m_bIsKelReady;
 };
 
 #endif

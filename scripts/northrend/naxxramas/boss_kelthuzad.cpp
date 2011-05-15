@@ -228,11 +228,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     void MoveInLineOfSight(Unit* pWho)
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_KELTHUZAD) != IN_PROGRESS)
-        {
-            if (!m_bIsRegularMode && m_pInstance->GetData(IS_KEL_READY))
-                m_creature->setFaction(21);
             return;
-        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }

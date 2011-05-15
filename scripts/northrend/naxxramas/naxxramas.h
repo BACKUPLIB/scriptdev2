@@ -175,7 +175,7 @@ enum
     ACHIEV_CRIT_UNDYING_LOA     = 13239,
     ACHIEV_CRIT_UNDYING_THAD    = 13240,
 
-    IS_KEL_READY                = 99,
+    IS_KEL_READY                = 99
 };
 
 struct GothTrigger

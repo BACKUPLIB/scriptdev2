@@ -498,6 +498,11 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
                 break;
         }
 
+        if (m_bIsKelReady)
+            if (Player* pPlayer = GetPlayerInMap())
+                if (Creature* pKel = pPlayer->GetMap()->GetCreature(m_uiKelthuzadDoorGUID))
+                    pKel->setFaction(21);
+
         OUT_SAVE_INST_DATA;
 
         std::ostringstream saveStream;

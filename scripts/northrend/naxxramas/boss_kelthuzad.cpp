@@ -646,7 +646,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                 
                     //DoCastSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
                     DoScriptText(urand(0, 1) ? SAY_CHAIN1 : SAY_CHAIN2, m_creature);
-                    m_uiChainsTimer = urand(40000, 70000);
+                    m_uiChainsTimer = urand(40000, 50000);
                 }
                 else
                     m_uiChainsTimer -= uiDiff;
@@ -666,7 +666,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                     if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN || pUnit->getClass() == CLASS_PALADIN ||
                                         pUnit->getClass() == CLASS_DRUID) // healer classes heal kelthuzad
                                     {
-                                        int32 amount = urand(11000,19000);
+                                        int32 amount = urand(45000,55000);
                                         pUnit->CastCustomSpell(m_creature, 36983, &amount, NULL, NULL, false);
                                     }
                                     else 

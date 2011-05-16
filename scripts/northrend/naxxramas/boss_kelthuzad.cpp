@@ -212,6 +212,15 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         DoScriptText(SAY_DEATH, m_creature);
         DespawnAdds();
 
+        if (!m_lChainsTargets.empty()) // in case kelthuzad dies during chain spell
+        {
+            for(std::set<uint64>::iterator itr = m_lChainsTargets.begin(); itr != m_lChainsTargets.end(); ++itr)
+                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                        pPlayer->SetClientControl(pPlayer, 1);
+
+            m_lChainsTargets.clear();
+        }
+
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KELTHUZAD, DONE);
     }

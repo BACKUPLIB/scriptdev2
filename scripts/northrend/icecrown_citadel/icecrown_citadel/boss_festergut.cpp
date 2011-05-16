@@ -47,14 +47,6 @@ enum
     SPELL_BLIGHTED_SPORES_25_H      = 73034,
     SPELL_INOCULATE                 = 69291,
     SPELL_REMOVE_UNOCULATE          = 69298, // not used
-    SPELL_GASTRIC_BLOAT_10_N        = 72219,
-    SPELL_GASTRIC_BLOAT_10_H        = 72551,
-    SPELL_GASTRIC_BLOAT_25_N        = 72552,
-    SPELL_GASTRIC_BLOAT_25_H        = 72553,
-    SPELL_GASTRIC_EXPLOSION_10_N    = 72227,
-    SPELL_GASTRIC_EXPLOSION_10_H    = 72228,
-    SPELL_GASTRIC_EXPLOSION_25_N    = 72229,
-    SPELL_GASTRIC_EXPLOSION_25_H    = 72230,
     SPELL_VILE_GAS_10_N             = 69240,
     SPELL_VILE_GAS_10_H             = 73019,
     SPELL_VILE_GAS_25_N             = 71218,
@@ -358,44 +350,6 @@ struct MANGOS_DLL_DECL boss_festergutAI : public ScriptedAI
         RemoveAuraFromAll(SPELL_BLIGHT_VISUAL_1);
         RemoveAuraFromAll(SPELL_BLIGHT_VISUAL_2);
         RemoveAuraFromAll(SPELL_BLIGHT_VISUAL_3);
-
-        switch (m_uiMode)
-        {
-            case RAID_DIFFICULTY_10MAN_NORMAL:
-                if (m_creature->getVictim()->HasAura(SPELL_GASTRIC_BLOAT_10_N))
-                    if (m_creature->getVictim()->GetAura(SPELL_GASTRIC_BLOAT_10_N, EFFECT_INDEX_1)->GetStackAmount() > 9)
-                    {
-                        m_creature->getVictim()->RemoveAurasDueToSpell(SPELL_GASTRIC_BLOAT_10_N);
-                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_GASTRIC_EXPLOSION_10_N, false);
-                    }
-                break;
-            case RAID_DIFFICULTY_10MAN_HEROIC:
-                if (m_creature->getVictim()->HasAura(SPELL_GASTRIC_BLOAT_10_H))
-                    if (m_creature->getVictim()->GetAura(SPELL_GASTRIC_BLOAT_10_H, EFFECT_INDEX_1)->GetStackAmount() > 9)
-                    {
-                        m_creature->getVictim()->RemoveAurasDueToSpell(SPELL_GASTRIC_BLOAT_10_H);
-                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_GASTRIC_EXPLOSION_10_H, false);
-                    }
-                break;
-            case RAID_DIFFICULTY_25MAN_NORMAL:
-                if (m_creature->getVictim()->HasAura(SPELL_GASTRIC_BLOAT_25_N))
-                    if (m_creature->getVictim()->GetAura(SPELL_GASTRIC_BLOAT_25_N, EFFECT_INDEX_1)->GetStackAmount() > 9)
-                    {
-                        m_creature->getVictim()->RemoveAurasDueToSpell(SPELL_GASTRIC_BLOAT_25_N);
-                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_GASTRIC_EXPLOSION_25_N, false);
-                    }
-                break;
-            case RAID_DIFFICULTY_25MAN_HEROIC:
-                if (m_creature->getVictim()->HasAura(SPELL_GASTRIC_BLOAT_25_H))
-                    if (m_creature->getVictim()->GetAura(SPELL_GASTRIC_BLOAT_25_H, EFFECT_INDEX_1)->GetStackAmount() > 9)
-                    {
-                        m_creature->getVictim()->RemoveAurasDueToSpell(SPELL_GASTRIC_BLOAT_25_H);
-                        m_creature->getVictim()->CastSpell(m_creature->getVictim(), SPELL_GASTRIC_EXPLOSION_25_H, false);
-                    }
-                break;
-            default:
-                break;
-        }
 
         if (m_uiInhalteBlightTimer < uiDiff)
         {

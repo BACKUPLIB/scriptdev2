@@ -724,7 +724,7 @@ struct MANGOS_DLL_DECL mob_coldflameAI : public ScriptedAI
 
         if (!m_bIsCreator)
         {
-            if (m_creature->GetCreatorGuid() == m_pInstance->GetData64(NPC_LORD_MARROWGAR))
+            if (m_creature->GetCreatorGuid().GetRawValue() == m_pInstance->GetData64(NPC_LORD_MARROWGAR))
             {
                 m_bIsFirst = true;
 

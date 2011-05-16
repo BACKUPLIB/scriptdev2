@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: Boss_KelThuzad
 SD%Complete: 75
-SDComment: Timers will need adjustments, along with tweaking positions and amounts
+SDComment: Timers will need adjustments, along with tweaking positions and amounts, kelthuzads chain spell doesn't work blizzlike
 SDCategory: Naxxramas
 EndScriptData */
 
@@ -70,6 +70,13 @@ enum
 
     SPELL_CHAINS_OF_KELTHUZAD           = 28408,            // 3.x, heroic only
     SPELL_CHAINS_OF_KELTHUZAD_TARGET    = 28410,
+
+    SPELL_CHAINED_MAGE                  = 61085,
+    SPELL_CHAINED_WARLOCK               = 46561,
+    SPELL_CHAINED_ROGUE                 = 49616,
+    SPELL_CHAINED_HUNTER                = 37632,
+    SPELL_CHAINED_WARRIOR               = 43935,
+    SPELL_CHAINED_DEATHKNIGHT           = 61112,
 
     SPELL_MANA_DETONATION               = 27819,
     SPELL_SHADOW_FISSURE                = 27810,
@@ -128,6 +135,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     bool m_bShadowFissureActive;
     uint32 m_uiChainsEndTimer;
     uint32 m_uiChainsTargetsCastTimer;
+    uint32 m_uiChainsTargetsCastTimer2;
 
     uint32 m_uiPhase1Timer;
     uint32 m_uiSoldierTimer;
@@ -170,6 +178,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         m_lChainsTargets.clear();
         m_uiChainsEndTimer              = 0;
         m_uiChainsTargetsCastTimer      = 0;
+        m_uiChainsTargetsCastTimer2     = 0;
 
         m_uiPhase1Timer         = 228000;                 //Phase 1 lasts "3 minutes and 48 seconds"
         m_uiSoldierTimer        = 5000;
@@ -199,6 +208,15 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
         DespawnAdds();
+
+        if (!m_lChainsTargets.empty()) // in case kelthuzad dies during chain spell
+        {
+            for(std::set<uint64>::iterator itr = m_lChainsTargets.begin(); itr != m_lChainsTargets.end(); ++itr)
+                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(*itr))
+                        pPlayer->SetClientControl(pPlayer, 1);
+
+            m_lChainsTargets.clear();
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KELTHUZAD, DONE);
@@ -616,10 +634,10 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                                 if (pTarget->GetTypeId() == TYPEID_PLAYER && !pTarget->HasAura(SPELL_CHAINS_OF_KELTHUZAD_TARGET, EFFECT_INDEX_0))
                                 {
                                     m_creature->InterruptNonMeleeSpells(false);
-                                    m_creature->CastCustomSpell(pTarget, TempSpell, NULL, NULL, NULL, true);
+                                    //m_creature->CastCustomSpell(pTarget, TempSpell, NULL, NULL, NULL, true);
+                                    m_creature->CastSpell(pTarget, SPELL_CHAINS_OF_KELTHUZAD_TARGET, true);
                                     ((Player*)pTarget)->SetClientControl(pTarget, 0);
                                     m_lChainsTargets.insert(pTarget->GetGUID());
-                                    pTarget->setFaction(14);
                                     ++uiChainsTargetsCount;
                                 }
                                 if (uiChainsTargetsCount>=3)
@@ -627,13 +645,14 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                             }
                         }
                         m_uiChainsEndTimer = 20000;
-                        m_uiChainsTargetsCastTimer = 3500;
+                        m_uiChainsTargetsCastTimer = 0;
+                        m_uiChainsTargetsCastTimer2 = 0;
                         DoResetThreat();
                     }
                 
                     //DoCastSpellIfCan(pTarget, SPELL_CHAINS_OF_KELTHUZAD);
                     DoScriptText(urand(0, 1) ? SAY_CHAIN1 : SAY_CHAIN2, m_creature);
-                    m_uiChainsTimer = urand(60000, 90000);
+                    m_uiChainsTimer = urand(40000, 50000);
                 }
                 else
                     m_uiChainsTimer -= uiDiff;
@@ -647,21 +666,72 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
                             {
                                 if (pUnit->isDead())
                                     continue;
-                            
-                                if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN ||  pUnit->getClass() == CLASS_MAGE ||
-                                    pUnit->getClass() == CLASS_WARLOCK) // healer classes heal kelthuzad
+
+                                if (!(m_uiChainsTargetsCastTimer2%5)) // 5 sec spellcooldown
                                 {
-                                    int32 amount = urand(11000,19000);
-                                    pUnit->CastCustomSpell(m_creature, 36983, &amount, NULL, NULL, false);
-                                }
-                                else // other classes melee players
-                                    if (Unit* pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+                                    if (pUnit->getClass() == CLASS_PRIEST || pUnit->getClass() == CLASS_SHAMAN || pUnit->getClass() == CLASS_PALADIN ||
+                                        pUnit->getClass() == CLASS_DRUID) // healer classes heal kelthuzad
                                     {
+                                        int32 amount = urand(45000,55000);
+                                        pUnit->CastCustomSpell(m_creature, 36983, &amount, NULL, NULL, false);
+                                    }
+                                    else 
+                                    {
+                                        Unit* pVictim = pUnit->getVictim();
+                                        if (!pVictim) 
+                                            pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
+                                        if (pVictim)
+                                        { 
+                                            if (pUnit->getClass() == CLASS_WARRIOR)
+                                            {
+                                                pUnit->CastSpell(pUnit,SPELL_CHAINED_WARRIOR,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_DEATH_KNIGHT)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_DEATHKNIGHT,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_MAGE)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_MAGE,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_WARLOCK)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_WARLOCK,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_ROGUE)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_ROGUE,false);
+                                            }
+                                            else if (pUnit->getClass() == CLASS_HUNTER)
+                                            {
+                                                pUnit->CastSpell(pVictim,SPELL_CHAINED_HUNTER,false);
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Unit* pVictim = pUnit->getVictim();
+                                    if (!pVictim) 
+                                        pVictim = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
+                                    if (pVictim)
+                                    { 
                                         pUnit->GetMotionMaster()->MoveChase(pVictim);
                                         pUnit->Attack(pVictim,true);
+                                        /*
+                                        if (pUnit->getClass() == CLASS_MAGE)
+                                        {
+                                            pUnit->CastSpell(pVictim,SPELL_CHAINED_MAGE_2,false);
+                                        }
+                                        else if (pUnit->getClass() == CLASS_WARLOCK)
+                                        {
+                                            pUnit->CastSpell(pVictim,SPELL_CHAINED_WARLOCK_2,false);
+                                        }*/
                                     }
+                                }
+                                ++m_uiChainsTargetsCastTimer2;
                             }
-                        m_uiChainsTargetsCastTimer = 4500;
+                        m_uiChainsTargetsCastTimer = 1000;
                     }
                     else
                         m_uiChainsTargetsCastTimer -= uiDiff;

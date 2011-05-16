@@ -47,6 +47,10 @@ enum
     SPELL_BLIGHTED_SPORES_25_H      = 73034,
     SPELL_INOCULATE                 = 69291,
     SPELL_REMOVE_UNOCULATE          = 69298, // not used
+    SPELL_GASTRIC_BLOAT_10_N        = 72219,
+    SPELL_GASTRIC_BLOAT_10_H        = 72551,
+    SPELL_GASTRIC_BLOAT_25_N        = 72552,
+    SPELL_GASTRIC_BLOAT_25_H        = 72553,
     SPELL_VILE_GAS_10_N             = 69240,
     SPELL_VILE_GAS_10_H             = 73019,
     SPELL_VILE_GAS_25_N             = 71218,

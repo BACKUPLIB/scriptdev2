@@ -3041,7 +3041,8 @@ enum
     AREA_WINTERFIN_RETREAT      = 4099,
     AREA_BRONZE_DRAGONSHRINE    = 4175,
     AREA_SHAPERS_TERRACE        = 4382,
-    AREA_WYRMREST_TEMPLE        = 4254,
+    AREA_WYRMREST_TEMPLE        = 4161,
+    AREA_NESSINGWARY_EXPED      = 4284,
 
     QUEST_THE_BIGGEST_TREE_O    = 13929,
     QUEST_THE_BIGGEST_TREE_W    = 13930,
@@ -3050,12 +3051,14 @@ enum
     QUEST_PLAYMATES_O           = 13950,
     QUEST_PLAYMATES_W           = 13951,
     QUEST_MEETING_A_GREAT       = 13956,
+    QUEST_THE_MIGHTY_HEMET      = 13957,
     QUEST_TRIP_TO_WONDERWORKS_O = 13937,
     QUEST_TRIP_TO_WONDERWORKS_W = 13938,
     QUEST_THE_DRAGON_QUEEN_O    = 13954,
     QUEST_THE_DRAGON_QUEEN_W    = 13955,
 
-    NPC_ALEXSTRASZA             = 26917, 
+    NPC_ALEXSTRASZA             = 26917,
+    NPC_NESSINGWARY             = 27986,
 
     SPELL_THE_BIGGEST_TREE_O    = 65378,
     SPELL_THE_BIGGEST_TREE_W    = 65379,
@@ -3064,10 +3067,10 @@ enum
     SPELL_PLAYMATES_O           = 65502,
     SPELL_PLAYMATES_W           = 65503,
     SPELL_MEETING_A_GREAT       = 65564,
+    SPELL_THE_BIG_NESSINGWARY   = 65565,
     SPELL_THROW_PAPER_ZEPPELIN  = 65357,
     SPELL_ALEXSTRASZA_O         = 65531,
-    SPELL_ALEXSTRASZA_W         = 65532,
-
+    SPELL_ALEXSTRASZA_W         = 65532
 };
 
 struct MANGOS_DLL_DECL pet_orphanAI : public PetAI
@@ -3142,6 +3145,13 @@ struct MANGOS_DLL_DECL pet_orphanAI : public PetAI
                             m_creature->CastSpell(pPlayer, SPELL_ALEXSTRASZA_O,true);
                         else if(((Player*)pPlayer)->GetQuestStatus(QUEST_THE_DRAGON_QUEEN_W) == QUEST_STATUS_INCOMPLETE)
                             m_creature->CastSpell(pPlayer, SPELL_ALEXSTRASZA_W,true);
+                    break;
+                }
+                case AREA_NESSINGWARY_EXPED:
+                {
+                    if(Creature* pTarget = GetClosestCreatureWithEntry(m_creature, NPC_NESSINGWARY, 10.0f))
+                        if(((Player*)pPlayer)->GetQuestStatus(QUEST_THE_MIGHTY_HEMET) == QUEST_STATUS_INCOMPLETE)
+                            m_creature->CastSpell(pPlayer, SPELL_THE_BIG_NESSINGWARY,true);
                     break;
                 }
             }

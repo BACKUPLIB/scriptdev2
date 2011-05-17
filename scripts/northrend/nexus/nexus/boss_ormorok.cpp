@@ -64,33 +64,31 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
     }
 
     ScriptedInstance* m_pInstance;
-
     bool m_bIsRegularMode;
+
     bool m_bIsFrenzy;
     bool m_bIsCrystalSpikes;
-    
-    float m_fBaseX;
-    float m_fBaseY;
-    float m_fBaseZ;
-    float m_fBaseO;
-    float m_fSpikeXY[4][2];
-
+    uint8  m_uiCrystalSpikesCount;
     uint32 m_uiSpellCrystalSpikesTimer;
     uint32 m_uiCrystalSpikesTimer;
     uint32 m_uiTrampleTimer;
     uint32 m_uiFrenzyTimer;
     uint32 m_uiReflectionTimer;
     uint32 m_uiSummonTanglerTimer;
-    uint8  m_uiCrystalSpikesCount;
+    float m_fBaseX;
+    float m_fBaseY;
+    float m_fBaseZ;
+    float m_fBaseO;
+    float m_fSpikeXY[4][2];
 
     void Reset()
     {
-        m_uiSpellCrystalSpikesTimer = 12000;                         
-        m_uiTrampleTimer            = 10000;
-        m_uiReflectionTimer         = 30000;
-        m_uiSummonTanglerTimer      = 17000;
-        m_bIsFrenzy                 = false;
-        m_bIsCrystalSpikes          = false;
+        m_uiSpellCrystalSpikesTimer = 12*IN_MILLISECONDS;                         
+        m_uiTrampleTimer = 10*IN_MILLISECONDS;
+        m_uiReflectionTimer = 30*IN_MILLISECONDS;
+        m_uiSummonTanglerTimer = 17*IN_MILLISECONDS;
+        m_bIsFrenzy = false;
+        m_bIsCrystalSpikes = false;
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_ORMOROK, NOT_STARTED);
@@ -134,11 +132,14 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
                 m_fSpikeXY[2][1] = m_fBaseY+(SPIKE_DISTANCE*m_uiCrystalSpikesCount*sin(m_fBaseO-(M_PI/2)));
                 m_fSpikeXY[3][0] = m_fBaseX-(SPIKE_DISTANCE*m_uiCrystalSpikesCount*cos(m_fBaseO-(M_PI/2)));
                 m_fSpikeXY[3][1] = m_fBaseY-(SPIKE_DISTANCE*m_uiCrystalSpikesCount*sin(m_fBaseO-(M_PI/2)));
+
                 for (uint8 i = 0; i < 4; i++)
                     Creature* Spike = m_creature->SummonCreature(MOB_CRYSTAL_SPIKE, m_fSpikeXY[i][0], m_fSpikeXY[i][1], m_fBaseZ, 0, TEMPSUMMON_TIMED_DESPAWN, 7000);
+
                 if (++m_uiCrystalSpikesCount >= 13)
                     m_bIsCrystalSpikes = false;
-                m_uiCrystalSpikesTimer = 200;
+
+                m_uiCrystalSpikesTimer = 0.2*IN_MILLISECONDS;
             }
             else
                 m_uiCrystalSpikesTimer -= diff;
@@ -153,7 +154,7 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
         if (m_uiTrampleTimer < diff)
         {
             DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_TRAMPLE_N : SPELL_TRAMPLE_H);
-            m_uiTrampleTimer = urand(10000, 35000);
+            m_uiTrampleTimer = urand(10*IN_MILLISECONDS, 35*IN_MILLISECONDS);
         }
         else
             m_uiTrampleTimer -= diff;
@@ -162,7 +163,7 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
         {
             DoScriptText(SAY_REFLECT, m_creature);
             DoCast(m_creature, SPELL_SPELL_REFLECTION);
-            m_uiReflectionTimer = 15000;
+            m_uiReflectionTimer = 15*IN_MILLISECONDS;
         }
         else
             m_uiReflectionTimer -= diff;
@@ -177,7 +178,7 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
             m_fBaseY = m_creature->GetPositionY();
             m_fBaseZ = m_creature->GetPositionZ();
             m_fBaseO = m_creature->GetOrientation();
-            m_uiSpellCrystalSpikesTimer = 20000;
+            m_uiSpellCrystalSpikesTimer = 20*IN_MILLISECONDS;
         }
         else
             m_uiSpellCrystalSpikesTimer -=diff;
@@ -189,7 +190,7 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
                 if(Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     CrystallineTangler->AI()->AttackStart(target);
 
-            m_uiSummonTanglerTimer = 17000;
+            m_uiSummonTanglerTimer = 17*IN_MILLISECONDS;
         }
         else
             m_uiSummonTanglerTimer -=diff;
@@ -213,91 +214,94 @@ struct MANGOS_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        m_uiCrystallSpikeDamageTimer   = 3700;
-        m_uiCrystalSpikePreVisualTimer = 1000;
+        m_uiCrystallSpikeDamageTimer = 3.7*IN_MILLISECONDS;
+        m_uiCrystalSpikePreVisualTimer = 1*IN_MILLISECONDS;
         m_creature->SetLevel(80);                                        //
         m_creature->setFaction(16);                                      //Walkaround to be independent from data in DB
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); //
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE); //
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 uiDiff) 
     {
-        if (m_uiCrystalSpikePreVisualTimer < diff)
+        if (m_uiCrystalSpikePreVisualTimer < uiDiff)
         {
             DoCast(m_creature, SPELL_CRYSTAL_SPIKE_PREVISUAL);
-            m_uiCrystalSpikePreVisualTimer = 10000;
+            m_uiCrystalSpikePreVisualTimer = 10*IN_MILLISECONDS;
         }
         else
-            m_uiCrystalSpikePreVisualTimer -=diff;
+            m_uiCrystalSpikePreVisualTimer -= uiDiff;
 
-        if (m_uiCrystallSpikeDamageTimer < diff)
+        if (m_uiCrystallSpikeDamageTimer < uiDiff)
         {
             DoCast(m_creature, m_bIsRegularMode ? SPELL_CRYSTALL_SPIKE_DAMAGE_N : SPELL_CRYSTALL_SPIKE_DAMAGE_H);
-            m_uiCrystallSpikeDamageTimer = 10000;
+            m_uiCrystallSpikeDamageTimer = 10*IN_MILLISECONDS;
         }
         else
-            m_uiCrystallSpikeDamageTimer -=diff;
+            m_uiCrystallSpikeDamageTimer -= uiDiff;
     } 
 }; 
 
 struct MANGOS_DLL_DECL mob_crystalline_tanglerAI : public ScriptedAI
 {
-    mob_crystalline_tanglerAI(Creature *c) : ScriptedAI(c) {Reset();}
+    mob_crystalline_tanglerAI(Creature *pCreature) : ScriptedAI(pCreature) 
+    {
+        Reset();
+    }
 
-    uint32 SPELL_ROOTS_Timer;
+    uint32 m_uiRootsTimer;
 
     void Reset()
     {
-        SPELL_ROOTS_Timer = 1000;
+        m_uiRootsTimer = 1*IN_MILLISECONDS;
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 uiDiff) 
     {
-        if (SPELL_ROOTS_Timer < diff)
+        if (m_uiRootsTimer < uiDiff)
         {
             if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                 DoCast(target, SPELL_ROOTS, true);
-            SPELL_ROOTS_Timer = 15000;
+            m_uiRootsTimer = 15*IN_MILLISECONDS;
         }
         else
-            SPELL_ROOTS_Timer -=diff;
+            m_uiRootsTimer -=diff;
 
         DoMeleeAttackIfReady();   
     } 
 }; 
 
-CreatureAI* GetAI_mob_crystal_spike(Creature *_Creature)
+CreatureAI* GetAI_mob_crystal_spike(Creature* pCreature)
 {
-    return new mob_crystal_spikeAI (_Creature);
+    return new mob_crystal_spikeAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_crystalline_tangler(Creature *_Creature)
+CreatureAI* GetAI_mob_crystalline_tangler(Creature* pCreature)
 {
-    return new mob_crystalline_tanglerAI (_Creature);
+    return new mob_crystalline_tanglerAI (pCreature);
 }
 
-CreatureAI* GetAI_boss_ormorok(Creature *_Creature)
+CreatureAI* GetAI_boss_ormorok(Creature* pCreature)
 {
-    return new boss_ormorokAI (_Creature);
+    return new boss_ormorokAI (pCreature);
 }
 
 void AddSC_boss_ormorok()
 {
-    Script *newscript;
+    Script *pNewScript;
 
-    newscript = new Script;
-    newscript->Name="boss_ormorok";
-    newscript->GetAI = &GetAI_boss_ormorok;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name= "boss_ormorok";
+    pNewScript->GetAI = &GetAI_boss_ormorok;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name="mob_crystal_spike";
-    newscript->GetAI = &GetAI_mob_crystal_spike;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name= "mob_crystal_spike";
+    pNewScript->GetAI = &GetAI_mob_crystal_spike;
+    pNewScript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name="mob_crystalline_tangler";
-    newscript->GetAI = &GetAI_mob_crystalline_tangler;
-    newscript->RegisterSelf();
+    pNewScript = new Script;
+    pNewScript->Name= "mob_crystalline_tangler";
+    pNewScript->GetAI = &GetAI_mob_crystalline_tangler;
+    pNewScript->RegisterSelf();
 }

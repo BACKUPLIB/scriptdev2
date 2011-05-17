@@ -67,8 +67,8 @@ CreatureAI* GetAI_ov_master(Creature *_Creature)
 
 bool GossipHello_ov_master(Player *player, Creature *_Creature)
 {
-    uint64 pguid = player->GetGUID();
-    uint64 cguid = _Creature->GetGUID();
+    ObjectGuid pguid = player->GetGUID();
+    ObjectGuid cguid = _Creature->GetGUID();
 
     /*if (_Creature->isQuestGiver()) {
         player->PrepareQuestMenu( cguid );
@@ -91,8 +91,8 @@ bool GossipHello_ov_master(Player *player, Creature *_Creature)
 
 bool GossipSelect_ov_master(Player *player, Creature *_Creature, uint32 sender, uint32 action )
 {
-    uint64 pguid = player->GetGUID();
-    uint64 cguid = _Creature->GetGUID();
+    ObjectGuid pguid = player->GetGUID();
+    ObjectGuid cguid = _Creature->GetGUID();
 
     if (action == GOSSIP_ACTION_INFO_DEF + 1) // Gib VIPQuest
     {

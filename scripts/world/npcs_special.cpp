@@ -3039,6 +3039,7 @@ enum
 {
     AREA_GRRIZZLEMAW            = 395,
     AREA_WINTERFIN_RETREAT      = 4099,
+    AREA_SNOWFALL_GLADE         = 4154,
     AREA_BRONZE_DRAGONSHRINE    = 4175,
     AREA_SHAPERS_TERRACE        = 4382,
     AREA_WYRMREST_TEMPLE        = 4161,
@@ -3120,7 +3121,11 @@ struct MANGOS_DLL_DECL pet_orphanAI : public PetAI
                 {
                     if(((Player*)pPlayer)->GetQuestStatus(QUEST_PLAYMATES_O) == QUEST_STATUS_INCOMPLETE)
                         m_creature->CastSpell(pPlayer, SPELL_PLAYMATES_O,true);
-                    else if (((Player*)pPlayer)->GetQuestStatus(QUEST_PLAYMATES_W) == QUEST_STATUS_INCOMPLETE)
+                    break;
+                }
+                case AREA_SNOWFALL_GLADE:
+                {
+                    if (((Player*)pPlayer)->GetQuestStatus(QUEST_PLAYMATES_W) == QUEST_STATUS_INCOMPLETE)
                         m_creature->CastSpell(pPlayer, SPELL_PLAYMATES_W,true);
                     break;
                 }

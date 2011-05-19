@@ -15,7 +15,7 @@ UPDATE `command` SET `security` = 2 WHERE `name` IN ('npc whisper','bank','dista
 'tele add','tele del','baninfo character','event','event start','event stop','instance unbind','instance listbinds','instance stats','modify money','account set addon',
 'account characters','ban account','banlist ip','repairitems','npc unfollow','npc follow','npc tame','account friend add','modify gender','send items','npc additem',
 'character reputation','modify runicpower','modify phase','gobject near','npc setdeathstate','reset stats','reset all','unban account','explorecheat','levelup',
-'unban character','unban ip','npc textemote','mute','unmute','guild delete','quit','die','quest add','delticket','demorph','dismount','account password','maxskill'
+'unban character','unban ip','npc textemote','mute','unmute','guild delete','quit','die','quest add','delticket','demorph','dismount','account password','maxskill',
 'character deleted list','stable','auction alliance','auction horde', 'auction goblin','send mass items','send mass mail','send mass money','account friend delete',
 'account friend list','additem','additemset','ticket','learn','cast','setskill','notify','learn _all','learn all_crafts','learn all_gm','learn all_lang','learn all_myclass',
 'learn all_myspells','learn all_mytalents','guild invite','groupgo','learn all_default','damage','quest complete','cast self','cast target','cast dist','learn all_recipes',

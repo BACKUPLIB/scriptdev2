@@ -148,12 +148,12 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 
         m_bGhoul = false;
         m_uiPhase = 1;
-        m_uiPlagueStrikeTimer = m_bIsRegularMode ? 5*IN_MILLISECONDS : 4*IN_MILLISECOND;
-        Icy_Touch_Timer = m_bIsRegularMode ? 10*IN_MILLISECOND : 7*IN_MILLISECOND;
-        m_uiObliterateTimer = m_bIsRegularMode ? 16*IN_MILLISECOND : 10*IN_MILLISECOND;
-        m_uiChokeTimer = 15*IN_MILLISECOND;
-        m_uiSummonGhoulTimer = 4*IN_MILLISECOND;
-        m_uiBerserk_Timer = m_bIsRegularMode ? 5*MINUTE*IN_MILLISECOND : 3*MINUTE*IN_MILLISECOND;
+        m_uiPlagueStrikeTimer = m_bIsRegularMode ? 5*IN_MILLISECONDS : 4*IN_MILLISECONDS;
+        Icy_Touch_Timer = m_bIsRegularMode ? 10*IN_MILLISECONDS : 7*IN_MILLISECONDS;
+        m_uiObliterateTimer = m_bIsRegularMode ? 16*IN_MILLISECONDS : 10*IN_MILLISECONDS;
+        m_uiChokeTimer = 15*IN_MILLISECONDS;
+        m_uiSummonGhoulTimer = 4*IN_MILLISECONDS;
+        m_uiBerserk_Timer = m_bIsRegularMode ? 5*MINUTE*IN_MILLISECONDS : 3*MINUTE*IN_MILLISECONDS;
     }
 
 
@@ -168,7 +168,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 
     void DamageTaken(Unit* pDoneBy, uint32& uiDamage)
     {
-        if ((uiDamage > m_creature->GetHealth() || m_creature->GetHealth()/m_creature->GetHealth() <= 0.1 )  && !phase3)
+        if ((uiDamage > m_creature->GetHealth() || m_creature->GetHealth()/m_creature->GetHealth() <= 0.1 ) && m_uiPhase != 3)
         {
             uiDamage = 0;
 
@@ -195,9 +195,9 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
         m_creature->SetDisplayId(27550);
         DoCast(m_creature, SPELL_ARMY);
         m_uiPhase = 2;
-        m_uiPlagueStrikeTimer = m_bIsRegularMode ? 14*IN_MILLISECOND : 8*IN_MILLISECOND;
-        Icy_Touch_Timer = m_bIsRegularMode ? 12*IN_MILLISECOND : 7*IN_MILLISECOND;
-        m_uiObliterateTimer = m_bIsRegularMode ? 18*IN_MILLISECOND : 10*IN_MILLISECOND;
+        m_uiPlagueStrikeTimer = m_bIsRegularMode ? 14*IN_MILLISECONDS : 8*IN_MILLISECONDS;
+        Icy_Touch_Timer = m_bIsRegularMode ? 12*IN_MILLISECONDS : 7*IN_MILLISECONDS;
+        m_uiObliterateTimer = m_bIsRegularMode ? 18*IN_MILLISECONDS : 10*IN_MILLISECONDS;
     }
 
     void StartPhase3()
@@ -206,8 +206,8 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
         m_creature->SetDisplayId(14560);
         SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
         m_uiPhase = 3;
-        m_uiDeathTimer = m_bIsRegularMode ? 5*IN_MILLISECOND : 3*IN_MILLISECOND;
-        m_uiMarkTimer = m_bIsRegularMode ? 9*IN_MILLISECOND : 7*IN_MILLISECOND;
+        m_uiDeathTimer = m_bIsRegularMode ? 5*IN_MILLISECONDS : 3*IN_MILLISECONDS;
+        m_uiMarkTimer = m_bIsRegularMode ? 9*IN_MILLISECONDS : 7*IN_MILLISECONDS;
     }
 
     void UpdateAI(const uint32 uiDiff)
@@ -222,7 +222,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
                 if (m_uiChokeTimer < uiDiff)
                 {               
                     DoCast(m_creature->getVictim(), SPELL_CHOKE);
-                    m_uiChokeTimer = m_bIsRegularMode ? 15*IN_MILLISECOND : 10*IN_MILLISECOND;
+                    m_uiChokeTimer = m_bIsRegularMode ? 15*IN_MILLISECONDS : 10*IN_MILLISECONDS;
                 }
                 else
                     m_uiChokeTimer -= uiDiff;
@@ -242,7 +242,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
             if (m_uiPlagueStrikeTimer < uiDiff)
             {
                 DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_PLAGUE_STRIKE : SPELL_PLAGUE_STRIKE_H);
-                m_uiPlagueStrikeTimer = m_bIsRegularMode ? 10.5*IN_MILLISECOND : 7*IN_MILLISECOND;
+                m_uiPlagueStrikeTimer = m_bIsRegularMode ? 10.5*IN_MILLISECONDS : 7*IN_MILLISECONDS;
             }
             else
                 m_uiPlagueStrikeTimer -= uiDiff;  
@@ -250,7 +250,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
             if (Icy_Touch_Timer < uiDiff)
             {
                 DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ICY_TOUCH : SPELL_ICY_TOUCH_H);
-                Icy_Touch_Timer = m_bIsRegularMode ? 10*IN_MILLISECOND : 8*IN_MILLISECOND;
+                Icy_Touch_Timer = m_bIsRegularMode ? 10*IN_MILLISECONDS : 8*IN_MILLISECONDS;
             }
             else
                 Icy_Touch_Timer -= uiDiff;
@@ -258,7 +258,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
             if (m_uiObliterateTimer < uiDiff)
             {
                 DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_OBLITERATE : SPELL_OBLITERATE_H);
-                m_uiObliterateTimer = m_bIsRegularMode ? 11*IN_MILLISECOND : 8*IN_MILLISECOND;
+                m_uiObliterateTimer = m_bIsRegularMode ? 11*IN_MILLISECONDS : 8*IN_MILLISECONDS;
             }
             else
                 m_uiObliterateTimer -= uiDiff;
@@ -269,7 +269,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
             {
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
                     DoCast(pTarget, SPELL_MARK);
-                m_uiMarkTimer = m_bIsRegularMode ? 15*IN_MILLISECOND : 10*IN_MILLISECOND;
+                m_uiMarkTimer = m_bIsRegularMode ? 15*IN_MILLISECONDS : 10*IN_MILLISECONDS;
             }
             else
                 m_uiMarkTimer -= uiDiff;
@@ -277,7 +277,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
             if (m_uiDeathTimer < uiDiff)
             {
                 DoCast(m_creature, m_bIsRegularMode ? SPELL_DEATH : SPELL_DEATH_H);
-                m_uiDeathTimer = 3.5*IN_MILLISECOND;
+                m_uiDeathTimer = 3.5*IN_MILLISECONDS;
             }
             else
                 m_uiDeathTimer -= uiDiff;
@@ -286,7 +286,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
         if (m_uiBerserk_Timer < uiDiff)
         {
             DoCast(m_creature, SPELL_BERSERK);
-            m_uiBerserk_Timer = m_bIsRegularMode ? 5*MINUTE*IN_MILLISECOND : 3*MINUTE*IN_MILLISECOND;
+            m_uiBerserk_Timer = m_bIsRegularMode ? 5*MINUTE*IN_MILLISECONDS : 3*MINUTE*IN_MILLISECONDS;
         }
         else
             m_uiBerserk_Timer -= uiDiff;

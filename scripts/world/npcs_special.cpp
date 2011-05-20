@@ -1778,7 +1778,6 @@ struct MANGOS_DLL_DECL npc_mirror_imageAI : public ScriptedAI
             m_creature->clearUnitState(UNIT_STAT_FOLLOW);
             m_creature->SetInCombatWith(pWho);
             pWho->SetInCombatWith(m_creature);
-            m_creature->AddThreat(pWho, 100.0f);
             DoStartMovement(pWho, 30.0f);
             SetCombatMovement(true);
             inCombat = true;

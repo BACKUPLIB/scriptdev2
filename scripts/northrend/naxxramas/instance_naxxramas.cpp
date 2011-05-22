@@ -86,9 +86,7 @@ instance_naxxramas::instance_naxxramas(Map* pMap) : ScriptedInstance(pMap),
 
     m_fChamberCenterX(0.0f),
     m_fChamberCenterY(0.0f),
-    m_fChamberCenterZ(0.0f),
-
-    m_bIsKelReady(false)
+    m_fChamberCenterZ(0.0f)
 {
     Initialize();
 }
@@ -491,18 +489,6 @@ void instance_naxxramas::SetData(uint32 uiType, uint32 uiData)
 
     if (uiData == DONE)
     {
-        for (int i=0;i<14;++i)
-        {
-            m_bIsKelReady = m_auiEncounter[i] == DONE;
-            if(!m_bIsKelReady)
-                break;
-        }
-
-        if (m_bIsKelReady)
-            if (Player* pPlayer = GetPlayerInMap())
-                if (Creature* pKel = pPlayer->GetMap()->GetCreature(m_uiKelthuzadDoorGUID))
-                    pKel->setFaction(21);
-
         OUT_SAVE_INST_DATA;
 
         std::ostringstream saveStream;
@@ -586,9 +572,6 @@ uint32 instance_naxxramas::GetData(uint32 uiType)
         case TYPE_MAX_HEIGAN_TRAPS_2:   return m_avuiHeiganTraps[1].size();
         case TYPE_MAX_HEIGAN_TRAPS_3:   return m_avuiHeiganTraps[2].size();
         case TYPE_MAX_HEIGAN_TRAPS_4:   return m_avuiHeiganTraps[3].size();
-
-        case IS_KEL_READY: 
-            return m_bIsKelReady?1:0;
 
         default:
             return 0;
